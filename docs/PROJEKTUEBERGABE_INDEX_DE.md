@@ -25,6 +25,9 @@
 - `docs/LINUX_BOOT_SYSTEM_ENTWURF_DE.md`
 - `docs/USB_BRIDGE_HILFE_DE.md`
 
+## Rechner und Hardware
+- `docs/RECHNER_HARDWARE_ANALYSE_ENTWURF_DE.md` – Rechneranalyse, USB-/PCIe-Topologie und KI-Hardwarebewertung.
+
 ## Diagnose, Firmware und Recovery
 - `docs/CONTROLLER_WISSEN_ENTWURF_DE.md`
 - `docs/FEHLERBILDER_RECOVERY_ENTWURF_DE.md`
