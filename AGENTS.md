@@ -1,41 +1,44 @@
-# Entwicklungsanweisungen für KI-Coding-Agenten
+# NVMe Recovery Studio AI – Projektentwurf für die weiterentwickelnde KI
 
-Dieses Repository enthält **NVMe Recovery Studio AI**. Lies vor jeder Änderung:
-1. `README.md`
-2. `docs/MASTER_SPECIFICATION_DE.md`
-3. `docs/ARCHITEKTUR_DE.md`
-4. `docs/SICHERHEIT_DE.md`
-5. `docs/AI_ENTWICKLUNGSPLAN_DE.md`
-6. `docs/ENTWICKLUNGSSTAND_DE.md`
+Dieses Dokument übergibt ausschließlich unsere Produktidee und Anforderungen. Die andere KI entscheidet selbst über Programmierung, Umsetzung, Qualitätssicherung und ihren Arbeitsablauf. Hier werden **keine Tests vorgeschrieben oder durchgeführt**.
 
-## Unveränderliche Produktregeln
-- Windows 11 Edition: **nur externe USB-NVMe-Geräte**. Keine internen Datenträger als Ziele, auch nicht für experimentelle Aktionen.
-- Linux Boot Edition: direktes PCIe/NVMe, bootfähiges USB-Medium, Vollbild-Kiosk, WLAN, Offline-Betrieb. Bootmedium und Systemdatenträger nie beschreiben.
-- Standardmäßig nur lesende Diagnosen. Firmware-Schreibzugriffe ausschließlich mit geprüfter Kompatibilität, nachgewiesenem Programmierweg, eindeutigem Ziel und ausdrücklicher, separater Benutzerfreigabe.
-- KI darf neue Diagnosemethoden und experimentelle Firmware entwickeln, aber kein selbständiges, unbestätigtes Flashen. Unbekannte Kompatibilität bedeutet blockieren.
-- Lokale KI, Fallgedächtnis, nachvollziehbarer Live-Monitor. **Keine erfundenen Gedankenprotokolle**: Messwerte, Werkzeugausgaben, Hypothesen, Quellen und begründete Entscheidungen protokollieren.
-- Proprietäre Firmware und Tools nur mit geklärten Rechten integrieren. Keine nicht vorhandenen Binärdateien oder Hardwarefunktionen behaupten.
-- Handbücher DE/EN mit echten Screenshots erst nach Fertigstellung der Software erstellen.
+## Ziel
+Eine eigenständige, möglichst offlinefähige KI-Reparatursoftware für M.2-NVMe-SSDs mit zwei Editionen.
 
-## Arbeitsablauf für jeden Agenten
-1. Repository und Branch prüfen; bestehende Implementierung lesen.
-2. Eine klar abgegrenzte Aufgabe aus `docs/AI_ENTWICKLUNGSPLAN_DE.md` auswählen.
-3. Betroffene Schnittstellen und Sicherheitsinvarianten dokumentieren.
-4. Implementierung klein und modular halten; neue Abhängigkeiten und Lizenz erfassen.
-5. Soweit möglich automatisierte Unit-/Integrationstests hinzufügen; Hardwaretests niemals vortäuschen.
-6. `docs/ENTWICKLUNGSSTAND_DE.md` und `docs/CHANGELOG_DE.md` aktualisieren.
-7. Änderungen auf eigenem Feature-Branch mit nachvollziehbaren Commits einreichen, sofern verfügbar. Keine fremden Änderungen überschreiben.
-8. Abschlussbericht: Dateien, implementierte Funktionen, Teststatus, Risiken, offene Punkte, nächster Schritt.
+## Edition 1: Windows
+- Windows 11 mit moderner dunkler Oberfläche.
+- Ausschließlich **extern per USB angeschlossene NVMe-SSDs** bearbeiten.
+- USB-Bridge erkennen und anzeigen, welche Diagnose- und Firmwarefunktionen durchgereicht werden.
+- Wenn eine Bridge nicht geeignet ist, Ursache und belegte Alternativen anzeigen.
+- Interne Laufwerke niemals als Reparaturziel anbieten.
 
-## Definition of Done
-Eine Aufgabe ist erst fertig, wenn ihr Code eingecheckt, Sicherheitsanforderungen berücksichtigt, Schnittstellen dokumentiert und Prüfstatus ehrlich festgehalten sind. Ein Entwurf oder UI-Mockup ist kein fertiger Hardware-Recovery-Build.
+## Edition 2: Linux Boot USB
+- Bootfähiger USB-Stick, der unmittelbar die Recovery-Anwendung im Vollbild startet.
+- Direkter PCIe-Zugriff auf intern verbaute NVMe-SSDs.
+- WLAN zum Abruf fehlender Firmware, Controllerinformationen und Updates.
+- Auch offline mit lokal mitgelieferten Werkzeugen, Datenbanken, Hilfen und KI-Modell nutzbar.
+- Bootmedium und andere nicht ausgewählte Datenträger schützen.
 
-## Priorität
-1. Geräteidentität und Schutzmechanismen
-2. Lesende Hardwarediagnose
-3. Lokale Fallakten und nachvollziehbare UI
-4. Firmwarekatalog und Kompatibilitätsprüfung
-5. Freigabegesteuerte Recovery
-6. Experimentelle KI-Firmwareentwicklung
-7. Installationspakete und bootfähige Linux-Edition
-8. Abschließende bebilderte Handbücher
+## KI-Funktionen
+- Controller, Firmware, NAND und Fehlerzustand soweit technisch erkennbar analysieren.
+- Geeignete Firmware und Recovery-Strategien suchen und zuordnen.
+- Reparaturfälle lokal speichern, aus bestätigten Ergebnissen lernen und Wissen erweitern.
+- Bei fehlender Original-Firmware experimentell eigene Diagnose-, Boot- oder Controller-Firmware entwickeln können, soweit die Hardware dies technisch zulässt.
+- Vor tatsächlichen Firmware-Schreibvorgängen immer verständliche Risiken anzeigen und die ausdrückliche Freigabe des Benutzers einholen.
+
+## KI-Live-Monitor
+- Live anzeigen, welche Daten gelesen werden, welche Hypothesen entstehen, welche Entscheidung vorgeschlagen wird und warum.
+- Technische Messwerte, Fehlercodes, Quellen, Protokolle, Codeänderungen und Firmwareentwicklungsfortschritt sichtbar machen.
+- Einfacher und Expertenmodus.
+- Keine angebliche Einsicht in verborgene Modellgedanken; stattdessen nachvollziehbare Analyse- und Entscheidungsprotokolle.
+
+## Gestaltung
+- Professionelle, aufgeräumte dunkle Oberfläche.
+- Bereiche für Dashboard, Geräte, Diagnose, KI-Live-Monitor, Firmware, Recovery, Fallakten, WLAN und Einstellungen.
+- Windows-Installer und Linux-Bootpaket als eigenständige Ausgaben.
+
+## Handbücher
+Deutsche und englische bebilderte PDF-Anleitungen erst erstellen, wenn die Software fertig programmiert ist, mit echten Screenshots.
+
+## Übergabe
+Die übrigen Projektdokumente erläutern den Entwurf. **Alle Entscheidungen zur konkreten Implementierung und zu Prüfungen liegen bei der anderen KI.** Keine Implementierung oder Funktion als fertig darstellen, solange sie nicht tatsächlich existiert.
