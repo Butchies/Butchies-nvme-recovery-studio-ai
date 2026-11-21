@@ -29,6 +29,8 @@ inline QVariantMap inspect(const QString &path) {
     report["percentageUsed"]="Nicht ermittelt";
     report["mediaErrors"]="Nicht ermittelt";
     report["errorLogEntries"]="Nicht ermittelt";
+    report["errorLogAvailable"]=false;
+    report["recentNvmeErrors"]=QVariantList{};
     report["error"]="";
 #ifdef Q_OS_WIN
     if (!path.startsWith(QStringLiteral("\\\\.\\PHYSICALDRIVE"),Qt::CaseInsensitive)) {
@@ -162,6 +164,61 @@ inline QVariantMap inspect(const QString &path) {
                 report["percentageUsed"]=QString::number(unsigned(data[5]));
                 report["mediaErrors"]=uint128Text(160);
                 report["errorLogEntries"]=uint128Text(176);
+            }
+        }
+    }
+    if(report.value("nvmeIdentifyAvailable").toBool()) {
+        // Read the first four entries of NVMe Error Information Log (LID 01h).
+        // No reset, recovery command or device write is issued.
+        constexpr size_t header=offsetof(STORAGE_PROPERTY_QUERY,AdditionalParameters);
+        constexpr size_t logLength=4*64;
+        std::vector<unsigned char> logBuffer(
+            header+sizeof(STORAGE_PROTOCOL_SPECIFIC_DATA)+logLength,0);
+        auto *property=reinterpret_cast<STORAGE_PROPERTY_QUERY*>(logBuffer.data());
+        property->PropertyId=StorageDeviceProtocolSpecificProperty;
+        property->QueryType=PropertyStandardQuery;
+        auto *specific=reinterpret_cast<STORAGE_PROTOCOL_SPECIFIC_DATA*>(
+            logBuffer.data()+header);
+        specific->ProtocolType=ProtocolTypeNvme;
+        specific->DataType=NVMeDataTypeLogPage;
+        specific->ProtocolDataRequestValue=0x01;
+        specific->ProtocolDataRequestSubValue=0xffffffff;
+        specific->ProtocolDataOffset=sizeof(STORAGE_PROTOCOL_SPECIFIC_DATA);
+        specific->ProtocolDataLength=logLength;
+        DWORD bytes=0;
+        if(DeviceIoControl(handle,IOCTL_STORAGE_QUERY_PROPERTY,
+                logBuffer.data(),static_cast<DWORD>(header+sizeof(STORAGE_PROTOCOL_SPECIFIC_DATA)),
+                logBuffer.data(),static_cast<DWORD>(logBuffer.size()),&bytes,nullptr)) {
+            const auto *protocol=reinterpret_cast<const STORAGE_PROTOCOL_SPECIFIC_DATA*>(
+                logBuffer.data()+header);
+            const size_t available=qMin<size_t>(bytes,logBuffer.size());
+            const size_t baseOffset=header+protocol->ProtocolDataOffset;
+            if(protocol->ProtocolType==ProtocolTypeNvme &&
+               protocol->DataType==NVMeDataTypeLogPage &&
+               protocol->ProtocolDataLength>=logLength &&
+               baseOffset<=available && available-baseOffset>=logLength) {
+                const auto *data=logBuffer.data()+baseOffset;
+                QVariantList errors;
+                for(size_t entry=0;entry<4;++entry) {
+                    const auto *p=data+entry*64;
+                    quint64 count=0;
+                    for(int i=7;i>=0;--i) count=(count<<8)|p[i];
+                    if(count==0) continue;
+                    const auto status=unsigned(p[12])|(unsigned(p[13])<<8);
+                    const auto sqid=unsigned(p[8])|(unsigned(p[9])<<8);
+                    const auto cid=unsigned(p[10])|(unsigned(p[11])<<8);
+                    QVariantMap item;
+                    item["errorCount"]=QString::number(count);
+                    item["submissionQueueId"]=sqid;
+                    item["commandId"]=cid;
+                    item["statusField"]=QStringLiteral("0x%1").arg(status,4,16,QLatin1Char('0'));
+                    item["statusCode"]=(status>>1)&0xff;
+                    item["statusCodeType"]=(status>>9)&0x7;
+                    item["doNotRetry"]=(status&0x8000)!=0;
+                    errors.append(item);
+                }
+                report["recentNvmeErrors"]=errors;
+                report["errorLogAvailable"]=true;
             }
         }
     }
