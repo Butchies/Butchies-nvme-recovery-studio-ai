@@ -1,0 +1,17 @@
+#!/bin/sh
+# Kompiliert NVMe Recovery Studio AI im Live-System und entfernt danach die
+# Build-Werkzeuge wieder, damit das Abbild klein bleibt.
+set -e
+cmake -S /opt/src/native -B /opt/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/nvme-recovery-studio
+cmake --build /opt/build --parallel "$(nproc)"
+cmake --install /opt/build
+rm -rf /opt/build /opt/src
+# Laufzeitbibliotheken behalten, bevor die Build-Pakete entfernt werden
+apt-mark manual $(dpkg-query -W -f='${Package}\n' 'libqt6*' 'qt6-*' 'qml6-*' 2>/dev/null | grep -v -- '-dev$') >/dev/null
+apt-get purge -y build-essential cmake qt6-base-dev qt6-declarative-dev || true
+apt-get autoremove -y --purge
+systemctl enable nvme-recovery-persistence.service
+systemctl enable nvme-recovery-kiosk.service
+systemctl enable NetworkManager.service
+systemctl set-default graphical.target
+systemctl disable getty@tty1.service || true

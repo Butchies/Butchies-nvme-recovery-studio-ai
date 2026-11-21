@@ -1,38 +1,46 @@
 # NVMe Recovery Studio AI
 
-KI-gestützte NVMe-Controllerdiagnose und Firmware-Wiederherstellung. **Projektstatus: erste ausführbare Desktop-Grundlage (0.1.0), noch keine funktionsfähige SSD-Recovery.**\n\n## Vorschau der Benutzeroberfläche
+KI-gesteuerte Diagnose, Datenrettung und Reparatur von M.2-NVMe-SSDs – als Windows-Programm für externe USB-SSDs und als Linux-Boot-Stick mit direktem PCIe-Zugriff.
 
-![NVMe Recovery Studio AI: schematische Vorschau der Benutzeroberfläche](docs/images/gui-preview.svg)
+**Projektstatus:** Funktionen programmiert, **noch nicht gebaut und nicht auf echter Hardware getestet**. Die „KI“ ist eine regelbasierte, lernende Entscheidungslogik mit Wissensbasis und Controller-Vorlagen – kein Sprachmodell.
 
-*Darstellung anhand der aktuellen Tkinter-Oberfläche und ihrer Schaltflächen. Die angezeigte SSD ist ein Beispiel. Dies ist kein echter Screenshot und kein Nachweis eines erfolgreichen Hardwaretests.*
 
-**NVMe-Diagnose unter Linux:** Zusätzlich werden jetzt die Firmware-Slot-Tabelle (`nvme fw-log`) und die Namespace-Identität (`nvme id-ns`) lesend abgefragt. Diese Angaben dienen der Controlleranalyse und erlauben keine Firmware-Schreiboperationen.\n\n**Firmware-Fähigkeitsanalyse:** Das Modul `app/nvme_capabilities.py` dekodiert die NVMe-Identify-Bits `FRMW` und `OACS`, die aktive bzw. vorgemerkte Firmware-Slot-Nummer aus `AFI` sowie Namespace-Metadaten. Diese Werte sind reine Diagnosehinweise, keine Firmware-Kompatibilitäts- oder Flashfreigabe.\n\n**Begrenzte Rohdaten-Leseprobe:** Unter Linux kann nach ausdrücklicher Bestätigung ein direktes NVMe-Namespace auf maximal 4 KiB am Anfang lesend geprüft werden. Seriennummer und Kapazität werden vorher erneut abgeglichen. Es wird kein Abbild erzeugt. Ein blockierender Gerätezugriff kann derzeit nicht zuverlässig abgebrochen werden; für instabile SSDs ist die Funktion mit Vorsicht zu verwenden.\n\n**Partitionssignaturen:** Die 4-KiB-Leseprobe interpretiert jetzt vorhandene MBR-Einträge, Schutz-MBR-Hinweise auf GPT und mögliche NTFS-/exFAT-/FAT-Bootsektoren, ohne zusätzliche SSD-Lesevorgänge. Es handelt sich nur um Signaturhinweise, nicht um eine Dateisystem- oder Datenrettungsprüfung.\n\n**GPT-Header-Analyse:** Aus dem vorhandenen maximal 4 KiB großen Lesepuffer werden mögliche primäre GPT-Header erkannt. Das Programm prüft Headergröße, CRC32 und grundlegende LBA-/Partitionseintragsfelder. Die Prüfung ersetzt weder das Lesen der Backup-GPT noch die Validierung der vollständigen Partitionseintragstabelle. Bei 4-KiB-Logiksektoren liegt LBA 1 außerhalb der Probe.\n\n**GPT-Partitionseinträge:** Bereits gelesene GPT-Einträge werden bis zu 16 vollständigen Einträgen als begrenzte Vorschau ausgewertet (Typ-GUID-Rohbytes und LBA-Grenzen). Die CRC32 der Partitionseintragstabelle wird nur berechnet, wenn die gesamte Tabelle im vorhandenen Lesepuffer liegt; sonst bleibt das Prüfergebnis unbekannt. Keine weiteren Gerätezugriffe.\n\n**Recovery-Leitfaden mit Rohdatenbefunden:** Fehlgeschlagene 4-KiB-Leseproben, fehlende GPT-Header trotz Schutz-MBR, ungültige GPT-Prüfsummen und unplausible Partitionseinträge werden jetzt als priorisierte Hinweise in den Leitfaden übernommen. Es werden keine Reparaturbefehle ausgelöst.\n\n**Offline-Image-Analyse:** Die Schaltfläche „Image analysieren“ untersucht vorhandene reguläre Rohabbild-Dateien nach JPEG-, PNG-, PDF-, ZIP- und SQLite-Signaturen. Fortschritt, Abbruchanforderung und maximal 1.000 Treffer sind vorgesehen. Dies ist noch kein File-Carving: Es werden weder Dateigrenzen verifiziert noch Dateien rekonstruiert. Die Analyse öffnet keine physischen Laufwerke und schreibt keine Daten.\n\n**PNG-Kandidatenprüfung:** Bei der Offline-Image-Analyse können bis zu 32 PNG-Signaturtreffer anhand der Chunk-Struktur, CRC32, IHDR-Abmessungen und IEND-Endmarkierung geprüft werden (maximal 32 MiB je Kandidat). Dies ist keine vollständige Bilddekodierung und noch kein Dateiexport oder Recovery.\n\n**Robustere Offline-Suche:** Signaturtreffer an Chunk-Grenzen werden ohne Doppelzählung erfasst. Verkürzte oder während des Scans vergrößerte Image-Dateien werden als Fehler gekennzeichnet. Eine parallele Veränderung des Inhalts bei unveränderter Größe lässt sich damit nicht ausschließen.\n\n**Experimenteller PNG-Export (Linux/POSIX):** Nach der Offline-Image-Analyse bietet „PNG retten“ den Export strukturell validierter, zusammenhängender PNG-Kandidaten in neue Dateien auf einem anderen Dateisystem. Vor dem Kopieren wird erneut geprüft; Dateien werden exklusiv neu angelegt (kein Überschreiben), unvollständige Exporte nach Möglichkeit entfernt und SHA-256-Werte erfasst. Das Image wird nur gelesen. Die Implementierung verwendet POSIX-Verzeichnis-Dateideskriptoren und ist unter Windows noch nicht freigegeben. Dies ist keine vollständige Dateisystem- oder SSD-Recovery.\n\n**Aktuelle Funktionen:** Laufwerke erfassen, Rechner- und SSD-Diagnose, Linux-NVMe-Controlleridentifikation, USB-Verbindungsprüfung, Schutzprüfung, lokale Firmwaredatei und Firmwarekatalog untersuchen, Recovery-Leitfaden, Abbildplanung, Befund und Vergleich sowie Fallakten.
+## Zwei Editionen, ein Programm (`native/`, C++20, Qt 6, QML)
+| | Windows 10/11 | Linux-Boot-Edition (USB-Stick) |
+|---|---|---|
+| Laufwerke | nur externe USB-SSDs, interne gesperrt | interne M.2-SSDs direkt über PCIe; Boot-Stick und Systemlaufwerke gesperrt |
+| NVMe-Daten | über Bridge-Befehle mit smartctl | direkt (Identify, SMART, Fehlerprotokoll, Firmware-Slots) |
+| Notmodus-Erkennung | „Bridge ohne Medium“ | PCIe-Gerät eines SSD-Controllerherstellers ohne NVMe-Funktion |
+| Rettungsabbild | ja | ja (gleiches Format, Fortsetzen über Editionen hinweg) |
+| Firmware-Manager | gesperrt (USB) | Standard-NVMe-Update mit Prüfungen, Freigabecode, Kontrolle |
+| Boot-Stick erstellen | ja | `linux-boot/make-stick.sh` |
 
-**Noch nicht implementiert:** tatsächliche Datenrettung, Firmware-Recovery/Flash und bootfähige Linux-Edition.
-
-## Zwei Editionen
-- **Windows 10 und 11:** Ausschließlich externe NVMe-SSDs über USB. Interne Laufwerke sind weder Diagnose- noch Flash-Ziele.
-- **Linux Boot Edition:** Eigenständiges UEFI-USB-Recovery-System, das direkt in die Vollbildanwendung startet. Direkte PCIe/NVMe-Diagnose interner Ziel-SSDs, WLAN, lokales KI-Modell und Offline-Werkzeuge.
-
-## Geplante Module
-- PCIe/NVMe/USB-Bridge-Erkennung und Kompatibilitätsassistent
-- SMART, Error Logs, Identify, Firmware-Slots und Controllerdiagnose
-- Firmwarekatalog mit Herkunft, Hash, Signatur, NAND-/Board-/Revision-Kompatibilität
-- KI-Diagnose, Reparaturplanung und Fallgedächtnis
-- Experimenteller Custom-Firmware-Modus mit Codegenerierung und isolierter Prüfung
-- Live-Monitor für Messwerte, Belege, Entscheidungen, generierten Code und Flashprotokolle
-- Offline-Hilfe und signierte Aktualisierungen über WLAN
+## Was die KI macht
+1. Erkennt angeschlossene SSDs automatisch (Überwachung ab Programmstart).
+2. Diagnostiziert selbstständig: Controller/Bridge laut Vorlagen (121 Hersteller, 835 NVMe-Controller/-Produkte aus pci.ids), SMART, Fehlerprotokoll, bekannte Firmwarefehler, Verlauf seit der letzten Untersuchung.
+3. Bewertet Reparaturwege je Controllerfamilie (Datenrettung, Firmware-Update, Notmodus-Werkzeug, Labor) inkl. Datenverlust-Risiko.
+4. Startet auf Knopfdruck die automatische Rettung (Mehrpass-Abbild, Lesekarte, Fortsetzen, Prüfsumme, Bericht).
+5. Lernt aus jedem Versuch (lokale Wissensbasis je Gerät, USB-Bridge und Controller) und passt künftige Pläne an.
+6. Zeigt alles im KI-Live-Monitor; Werkzeuge (smartmontools, Herstellertools, eigene MPTools) werden erkannt bzw. installiert.
 
 ## Sicherheitsgrundsätze
-1. Alle Diagnosezugriffe zunächst lesend.
-2. Schreibbefehle nur an eindeutig identifiziertes, explizit freigegebenes Ziel.
-3. Systemlaufwerke und Recovery-Bootmedium besonders schützen.
-4. Kein blindes Durchprobieren inkompatibler Firmware.
-5. Kein automatischer Flash aufgrund einer KI-Vermutung. Erforderlich: technische Kompatibilitätsprüfung und separate ausdrückliche Freigabe.
-6. Keine Garantie, dass ein nicht ansprechbarer oder signaturgesperrter Controller wiederherstellbar ist.
-7. Datenrettung hat Vorrang vor potenziell destruktiven Controller-Neuinitialisierungen.
+- Die defekte SSD wird für Diagnose und Rettung nur gelesen.
+- Firmware schreiben nur im Firmware-Manager nach bestandenen Pflichtprüfungen, Datensicherung (oder ausdrücklichem Verzicht) und Eingabe des Bestätigungscodes.
+- Notmodus-Werkzeuge setzen die SSD zurück (Datenverlust) und werden nur nach ausdrücklicher Freigabe eingesetzt.
+- Keine Firmware oder Herstellerwerkzeuge aus inoffiziellen Quellen.
 
-Siehe [Master-Spezifikation](docs/MASTER_SPECIFICATION_DE.md), [Architektur](docs/ARCHITEKTUR_DE.md), [Sicherheit](docs/SICHERHEIT_DE.md), [Roadmap](docs/ROADMAP_DE.md).
+## Verzeichnisse
+- `native/` – Anwendung (Windows und Linux)
+- `data/catalog/` – Vorlagen: Controller, Bridges, Firmwarefehler, Werkzeuge (`README_DE.md`)
+- `linux-boot/` – Bau des Boot-Sticks (`README_DE.md`)
+- `docs/WERKZEUGE_DOWNLOADLISTE_DE.md` – offizielle Werkzeugquellen
+- `app/` – ältere Python/Tkinter-Grundlage (Offline-Image-Analyse, PNG/JPEG-Export)
+
+Weitere Dokumente: [Master-Spezifikation](docs/MASTER_SPECIFICATION_DE.md), [Sicherheit](docs/SICHERHEIT_DE.md), [Roadmap](docs/ROADMAP_DE.md), [Änderungsprotokoll](docs/CHANGELOG_DE.md).
+
+## Bauen
+- Windows: Qt 6.5+ (MSVC), `cmake -S native -B build && cmake --build build --config Release`
+- Linux-Boot-Stick: siehe `linux-boot/README_DE.md`
 
 ## Rechtliches
-Proprietäre Firmware, Treiber und Tools werden nur bei erlaubter Weitergabe eingebunden. Noch keine Firmwareimages, Modelle oder bootfähigen Builds enthalten.
+Vorlagen aus pci.ids/usb.ids (GPL-2.0+/BSD-3). Proprietäre Firmware und Werkzeuge werden nicht mitgeliefert.

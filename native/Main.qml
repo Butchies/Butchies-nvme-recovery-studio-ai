@@ -20,12 +20,15 @@ ApplicationWindow {
             color: "#eef5ff"
         }
         Label {
-            text: "Windows 10/11 · Nur externe USB-Laufwerke · Interne SSDs gesperrt"
+            text: controller.linuxEdition
+                  ? "Linux-Boot-Edition · Direkter PCIe/NVMe-Zugriff · Boot-Stick und Systemlaufwerke geschützt"
+                  : "Windows 10/11 · Nur externe USB-Laufwerke · Interne SSDs gesperrt"
             color: "#a5bed3"
         }
         RowLayout {
             Button { text: "USB-Geräte erkennen"; onClicked: controller.refresh() }
             Button { text: "Zielordner wählen"; enabled: !controller.recoveryRunning; onClicked: folderDialog.open() }
+            Button { text: "Linux-Boot-Stick erstellen"; visible: !controller.linuxEdition; enabled: !controller.recoveryRunning; onClicked: stickDialog.open() }
             Button { text: "Ziel prüfen"; onClicked: controller.inspectDestination(destination.text) }
             TextField {
                 id: destination
@@ -38,8 +41,9 @@ ApplicationWindow {
             id: folderDialog
             title: "Zielordner für das Rettungsabbild"
             onAccepted: {
-                var path = decodeURIComponent(selectedFolder.toString().replace(/^file:\/{3}/, ""))
-                destination.text = path.replace(/\//g, "\\")
+                var path = decodeURIComponent(selectedFolder.toString().replace(/^file:\/\//, ""))
+                if (!controller.linuxEdition) path = path.replace(/^\//, "").replace(/\//g, "\\")
+                destination.text = path
             }
         }
         Rectangle {
@@ -172,13 +176,13 @@ ApplicationWindow {
             color: "#192333"; radius: 12
             ColumnLayout {
                 anchors.fill: parent; anchors.margins: 16
-                Label { text: "Externe Laufwerke"; font.bold: true; font.pixelSize: 18; color: "white" }
+                Label { text: controller.linuxEdition ? "NVMe-Geräte am PCIe-Bus" : "Externe Laufwerke"; font.bold: true; font.pixelSize: 18; color: "white" }
                 ListView {
                     Layout.fillWidth: true; Layout.fillHeight: true
                     model: controller.devices
                     clip: true
                     delegate: Rectangle {
-                        width: ListView.view.width; height: 222
+                        width: ListView.view.width; height: 246
                         color: index%2 ? "#1c2939" : "#243346"
                         radius: 6
                         MouseArea {
@@ -201,6 +205,11 @@ ApplicationWindow {
                                     enabled: !controller.recoveryRunning
                                     onClicked: controller.startAutoRecovery(index, destination.text)
                                 }
+                                Button {
+                                    text: "Firmware …"
+                                    enabled: !controller.recoveryRunning
+                                    onClicked: { firmwareFileDialog.deviceIndex = index; firmwareFileDialog.open() }
+                                }
                             }
                             Label {
                                 visible: !!modelData.aiDiagnosis
@@ -210,10 +219,17 @@ ApplicationWindow {
                                 elide: Text.ElideRight
                             }
                             Label {
-                                text: "USB · VID " + modelData.bridgeVendorId + " · PID " + modelData.bridgeProductId
+                                visible: !!modelData.protected || !!modelData.romModeSuspect
+                                text: modelData.protected ? "GESCHÜTZT: " + modelData.protectedReason : "Notmodus-Verdacht: PCIe " + modelData.pciVendorId + ":" + modelData.pciDeviceId + " ohne NVMe-Funktion"
+                                color: "#ffb4a2"; font.bold: true
+                            }
+                            Label {
+                                text: modelData.connection === "PCIe"
+                                      ? "PCIe " + modelData.pciAddress + " · " + modelData.pciVendorId + ":" + modelData.pciDeviceId + " · Treiber " + modelData.driver + " · " + (modelData.devicePath || "kein Namespace")
+                                      : "USB · VID " + modelData.bridgeVendorId + " · PID " + modelData.bridgeProductId
                                 color: "#a5bed3"
                             }
-                            Label { text: "Geräterevision: " + modelData.bridgeFirmware; color: "#a5bed3" }
+                            Label { visible: modelData.connection !== "PCIe"; text: "Geräterevision: " + modelData.bridgeFirmware; color: "#a5bed3" }
                             Label {
                                 text: "NVMe-Passthrough: " + modelData.nvmePassthrough + " · Nur lesend"
                                 color: "#a5bed3"
@@ -332,6 +348,141 @@ ApplicationWindow {
                 }
             }
         }
+        }
+        FileDialog {
+            id: firmwareFileDialog
+            property int deviceIndex: -1
+            title: "Offizielle Firmwaredatei des Herstellers auswählen"
+            nameFilters: ["Firmware (*.bin *.img *.fw *.enc *.fluf *.rom)", "Alle Dateien (*)"]
+            onAccepted: {
+                firmwareDialog.fileUrl = selectedFile.toString()
+                firmwareDialog.deviceIndex = deviceIndex
+                controller.prepareFirmware(deviceIndex, firmwareDialog.fileUrl, noBackupBox.checked)
+                firmwareDialog.open()
+            }
+        }
+        Dialog {
+            id: firmwareDialog
+            property string fileUrl: ""
+            property int deviceIndex: -1
+            parent: Overlay.overlay
+            anchors.centerIn: parent
+            width: Math.min(760, window.width - 60)
+            modal: true
+            title: "Firmware-Manager"
+            closePolicy: controller.firmwareProgress.running ? Popup.NoAutoClose : Popup.CloseOnEscape
+            ColumnLayout {
+                anchors.fill: parent
+                spacing: 6
+                Label { Layout.fillWidth: true; wrapMode: Text.WordWrap; text: controller.firmwarePlan.summary || "Prüfe …"; font.bold: true }
+                Repeater {
+                    model: controller.firmwarePlan.checks || []
+                    Label {
+                        Layout.fillWidth: true; wrapMode: Text.WordWrap
+                        text: (modelData.ok ? "✓ " : (modelData.pflicht ? "✗ " : "! ")) + modelData.name + ": " + modelData.detail
+                        color: modelData.ok ? "#2e7d32" : (modelData.pflicht ? "#c62828" : "#ef6c00")
+                    }
+                }
+                Label { text: "Risiken"; font.bold: true }
+                Repeater {
+                    model: controller.firmwarePlan.risks || []
+                    Label { Layout.fillWidth: true; wrapMode: Text.WordWrap; text: "• " + modelData }
+                }
+                Label { Layout.fillWidth: true; wrapMode: Text.WrapAnywhere; text: "SHA-256: " + (controller.firmwarePlan.sha256 || ""); font.pixelSize: 11 }
+                CheckBox {
+                    id: noBackupBox
+                    text: "Ich bestätige: Die Daten auf dieser SSD werden nicht benötigt (keine Sicherung nötig)"
+                    onToggled: controller.prepareFirmware(firmwareDialog.deviceIndex, firmwareDialog.fileUrl, checked)
+                }
+                RowLayout {
+                    Layout.fillWidth: true
+                    TextField {
+                        id: approvalField
+                        Layout.fillWidth: true
+                        enabled: !!controller.firmwarePlan.allowed && !controller.firmwareProgress.running
+                        placeholderText: "Bestätigungscode: letzte 4 Zeichen der Seriennummer"
+                    }
+                    Button {
+                        text: "Jetzt flashen"
+                        enabled: !!controller.firmwarePlan.allowed && !controller.firmwareProgress.running && approvalField.text.length === 4
+                        onClicked: controller.flashFirmware(approvalField.text)
+                    }
+                }
+                RowLayout {
+                    Layout.fillWidth: true
+                    visible: !!controller.firmwareProgress.phase
+                    ProgressBar { Layout.fillWidth: true; from: 0; to: 100; value: controller.firmwareProgress.percent || 0 }
+                    Label { text: (controller.firmwareProgress.percent || 0) + " % · " + (controller.firmwareProgress.phase || "") }
+                }
+                Label {
+                    Layout.fillWidth: true; wrapMode: Text.WordWrap
+                    visible: !!controller.firmwareProgress.result
+                    text: controller.firmwareProgress.result ? controller.firmwareProgress.result.message : ""
+                    font.bold: true
+                }
+            }
+            standardButtons: controller.firmwareProgress.running ? Dialog.NoButton : Dialog.Close
+        }
+        FileDialog {
+            id: stickImageDialog
+            title: "Linux-Boot-Abbild auswählen"
+            nameFilters: ["Boot-Abbild (*.iso *.img)"]
+            onAccepted: stickImage.text = selectedFile.toString()
+        }
+        Dialog {
+            id: stickDialog
+            parent: Overlay.overlay
+            anchors.centerIn: parent
+            width: Math.min(700, window.width - 60)
+            modal: true
+            title: "Linux-Boot-Stick erstellen"
+            closePolicy: controller.stickProgress.running ? Popup.NoAutoClose : Popup.CloseOnEscape
+            ColumnLayout {
+                anchors.fill: parent
+                spacing: 8
+                Label {
+                    Layout.fillWidth: true; wrapMode: Text.WordWrap
+                    text: "Der USB-Stick wird vollständig überschrieben. Danach startet der Rechner vom Stick direkt in NVMe Recovery Studio AI (UEFI), mit direktem Zugriff auf interne M.2-SSDs. Beim ersten Start wird auf dem Stick ein dauerhafter Speicher für Fallakten und KI-Wissen angelegt."
+                }
+                RowLayout {
+                    Layout.fillWidth: true
+                    TextField {
+                        id: stickImage; Layout.fillWidth: true
+                        placeholderText: "Boot-Abbild (.iso)"
+                        Connections {
+                            target: controller
+                            function onStickChanged() { if (controller.stickProgress.image) stickImage.text = "file:///" + controller.stickProgress.image }
+                        }
+                    }
+                    Button { text: "Datei wählen"; onClicked: stickImageDialog.open() }
+                    Button { text: "Neueste laden"; enabled: !controller.stickProgress.running; onClicked: controller.downloadBootImage() }
+                }
+                ComboBox {
+                    id: stickTarget
+                    Layout.fillWidth: true
+                    model: controller.devices
+                    textRole: "name"
+                    displayText: currentIndex >= 0 ? (controller.devices[currentIndex].name + " · " + controller.devices[currentIndex].devicePath) : "USB-Stick wählen"
+                }
+                TextField {
+                    id: stickConfirm
+                    Layout.fillWidth: true
+                    placeholderText: "Zur Bestätigung STICK eingeben"
+                }
+                Button {
+                    text: "Stick jetzt beschreiben"
+                    enabled: !controller.stickProgress.running && stickTarget.currentIndex >= 0 && stickImage.text.length > 0 && stickConfirm.text.toUpperCase() === "STICK"
+                    onClicked: controller.createBootStick(stickTarget.currentIndex, stickImage.text, stickConfirm.text)
+                }
+                RowLayout {
+                    Layout.fillWidth: true
+                    visible: !!controller.stickProgress.phase
+                    ProgressBar { Layout.fillWidth: true; from: 0; to: 100; value: controller.stickProgress.percent || 0 }
+                    Label { text: (controller.stickProgress.percent || 0) + " %" }
+                }
+                Label { Layout.fillWidth: true; wrapMode: Text.WordWrap; text: controller.stickProgress.phase || "" }
+            }
+            standardButtons: controller.stickProgress.running ? Dialog.NoButton : Dialog.Close
         }
         FileDialog {
             id: toolFileDialog

@@ -1,5 +1,15 @@
 # Änderungsprotokoll
 
+## 2026-11-21 – Linux-Boot-Edition, Firmware-Manager, Boot-Stick
+- `native/platform_io.h`: Rettungs-Ein-/Ausgabe für Windows und Linux (O_DIRECT + Kernel-AIO mit Zeitlimit); Zielprüfung unter Linux inkl. LVM/LUKS/RAID-Auflösung und Sperre für RAM-Dateisysteme des Live-Systems.
+- `native/linux_nvme.h`: PCIe-/NVMe-Erkennung über sysfs, Notmodus-Verdacht, Schutz von Boot-Stick und Systemlaufwerken, NVMe-Admin-Befehle (Identify, SMART, Fehlerprotokoll, Firmware-Slots).
+- `native/firmware_manager.h`: Pflichtprüfungen, Risiken, Bestätigungscode, Firmware-Download/Commit/Reset mit Prozentanzeige und anschließender Kontrolle.
+- `native/stick_writer.h` + Oberfläche: Linux-Boot-Stick aus Windows erstellen (Laufwerke sperren, schreiben, per SHA-256 prüfen), neueste Version aus GitHub-Releases laden.
+- `linux-boot/`: live-build-Konfiguration (Debian 13, UEFI/BIOS), Vollbild-Kiosk mit cage, WLAN, smartmontools/nvme-cli/ddrescue, dauerhafter Speicher, `make-stick.sh`.
+- Agent und Oberfläche unterscheiden die Editionen.
+- README und Entwicklungsstand aktualisiert.
+- Nicht gebaut und nicht auf Hardware getestet.
+
 ## 2026-11-21 – Werkzeug-Manager und Downloadliste
 - `data/catalog/tools.json` und `docs/WERKZEUGE_DOWNLOADLISTE_DE.md`: smartmontools, nvme-cli, GNU ddrescue, Samsung Magician, WD/SanDisk Dashboard, Crucial Storage Executive, Kingston SSD Manager, SK hynix Drive Manager, Solidigm Storage Tool, KIOXIA SSD Utility, Seagate SeaTools – jeweils mit offizieller Quelle; Notmodus-MPTools (Phison, SMI, Realtek, Maxio) als vom Nutzer bereitzustellende Werkzeuge.
 - `native/tool_manager.h`: Erkennung installierter Werkzeuge, Registrierung eigener Werkzeuge, smartctl-Abfrage.

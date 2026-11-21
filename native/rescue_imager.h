@@ -38,10 +38,7 @@
 #include <optional>
 #include <vector>
 #include <algorithm>
-#ifdef Q_OS_WIN
-#include <windows.h>
-#include <winioctl.h>
-#endif
+#include "platform_io.h"
 
 namespace RescueImager {
 
@@ -163,151 +160,25 @@ inline QString formatBytes(quint64 v) {
     return QStringLiteral("%1 %2").arg(d,0,'f',u==0?0:2).arg(QLatin1String(units[u]));
 }
 
-#ifdef Q_OS_WIN
-constexpr DWORD ReadHung=0xE0000001;   // device did not finish a cancelled read
-
-inline LPCWSTR wide(const QString &s) { return reinterpret_cast<LPCWSTR>(s.utf16()); }
-
-inline bool isDeviceLost(DWORD e) {
-    return e==ERROR_DEVICE_NOT_CONNECTED || e==ERROR_NO_SUCH_DEVICE || e==ERROR_DEV_NOT_EXIST ||
-           e==ERROR_FILE_NOT_FOUND || e==ERROR_INVALID_HANDLE || e==ERROR_NOT_READY ||
-           e==ERROR_DEVICE_REMOVED;
-}
-
-class Source {
-public:
-    ~Source() { close(); }
-    bool open(const QString &path, QString &error) {
-        close();
-        m_path=path;
-        m_handle=CreateFileW(wide(path),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,
-            OPEN_EXISTING,FILE_FLAG_NO_BUFFERING|FILE_FLAG_OVERLAPPED,nullptr);
-        if(m_handle==INVALID_HANDLE_VALUE) {
-            const DWORD e=GetLastError();
-            error=e==ERROR_ACCESS_DENIED
-                ? QStringLiteral("Lesezugriff auf die SSD verweigert. Programm als Administrator starten.")
-                : QStringLiteral("Quelllaufwerk kann nicht lesend geöffnet werden (Windows-Fehler %1).").arg(e);
-            return false;
-        }
-        m_event=CreateEventW(nullptr,TRUE,FALSE,nullptr);
-        if(!m_event) { error=QStringLiteral("Interner Fehler: Ereignisobjekt nicht verfügbar."); close(); return false; }
-        DWORD bytes=0;
-        DISK_GEOMETRY_EX geo{};
-        if(DeviceIoControl(m_handle,IOCTL_DISK_GET_DRIVE_GEOMETRY_EX,nullptr,0,&geo,sizeof(geo),&bytes,nullptr)
-           && geo.Geometry.BytesPerSector>=512 && geo.Geometry.BytesPerSector<=65536
-           && (geo.Geometry.BytesPerSector & (geo.Geometry.BytesPerSector-1))==0)
-            m_sector=geo.Geometry.BytesPerSector;
-        else { error=QStringLiteral("Sektorgröße der SSD nicht ermittelbar (%1).").arg(GetLastError()); close(); return false; }
-        GET_LENGTH_INFORMATION len{};
-        if(DeviceIoControl(m_handle,IOCTL_DISK_GET_LENGTH_INFO,nullptr,0,&len,sizeof(len),&bytes,nullptr)
-           && len.Length.QuadPart>0)
-            m_size=quint64(len.Length.QuadPart);
-        else { error=QStringLiteral("Kapazität der SSD nicht ermittelbar (%1).").arg(GetLastError()); close(); return false; }
-        m_size-=m_size%m_sector;
-        return true;
-    }
-    bool reopen() { QString e; const auto p=m_path; return open(p,e); }
-    void close() {
-        if(m_hung) return; // a pending I/O may still reference the handle; leak deliberately
-        if(m_handle!=INVALID_HANDLE_VALUE) CloseHandle(m_handle);
-        if(m_event) CloseHandle(m_event);
-        m_handle=INVALID_HANDLE_VALUE; m_event=nullptr;
-    }
-    quint32 sectorSize() const { return m_sector; }
-    quint64 size() const { return m_size; }
-    // 0 on success, otherwise a Windows error, WAIT_TIMEOUT or ReadHung.
-    DWORD read(quint64 offset, void *buffer, DWORD length, DWORD timeoutMs) {
-        if(m_hung) return ReadHung;
-        OVERLAPPED ov{};
-        ov.Offset=DWORD(offset & 0xffffffffULL);
-        ov.OffsetHigh=DWORD(offset>>32);
-        ov.hEvent=m_event;
-        ResetEvent(m_event);
-        DWORD got=0;
-        if(!ReadFile(m_handle,buffer,length,nullptr,&ov)) {
-            const DWORD e=GetLastError();
-            if(e!=ERROR_IO_PENDING) return e;
-            if(WaitForSingleObject(m_event,timeoutMs)==WAIT_TIMEOUT) {
-                CancelIoEx(m_handle,&ov);
-                if(!GetOverlappedResultEx(m_handle,&ov,&got,10000,FALSE)
-                   && GetLastError()==WAIT_TIMEOUT) { m_hung=true; return ReadHung; }
-                return WAIT_TIMEOUT;
-            }
-        }
-        if(!GetOverlappedResult(m_handle,&ov,&got,TRUE)) return GetLastError();
-        return got==length ? 0 : ERROR_READ_FAULT;
-    }
-    bool hung() const { return m_hung; }
-private:
-    QString m_path;
-    HANDLE m_handle=INVALID_HANDLE_VALUE;
-    HANDLE m_event=nullptr;
-    quint32 m_sector=512;
-    quint64 m_size=0;
-    bool m_hung=false;
-};
-
-// Ensures the destination volume does not reside on the source disk.
-inline bool destinationOnSeparateDisk(const QString &dir, quint32 sourceDisk, QString &error) {
-    const QString native=QDir::toNativeSeparators(QFileInfo(dir).absoluteFilePath());
-    wchar_t volumePath[MAX_PATH+1]{};
-    if(!GetVolumePathNameW(wide(native),volumePath,MAX_PATH)) {
-        error=QStringLiteral("Ziellaufwerk nicht bestimmbar."); return false;
-    }
-    if(GetDriveTypeW(volumePath)==DRIVE_REMOTE) return true; // network share: never the local USB source
-    wchar_t volumeName[MAX_PATH+1]{};
-    if(!GetVolumeNameForVolumeMountPointW(volumePath,volumeName,MAX_PATH)) {
-        error=QStringLiteral("Zielvolume nicht eindeutig bestimmbar; Rettung gesperrt."); return false;
-    }
-    std::wstring device(volumeName);
-    if(!device.empty() && device.back()==L'\\') device.pop_back();
-    const HANDLE volume=CreateFileW(device.c_str(),0,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr);
-    if(volume==INVALID_HANDLE_VALUE) {
-        error=QStringLiteral("Zielvolume kann nicht geprüft werden (%1); Rettung gesperrt.").arg(GetLastError()); return false;
-    }
-    std::vector<unsigned char> buffer(sizeof(VOLUME_DISK_EXTENTS)+31*sizeof(DISK_EXTENT));
-    DWORD bytes=0;
-    const BOOL ok=DeviceIoControl(volume,IOCTL_VOLUME_GET_VOLUME_DISK_EXTENTS,nullptr,0,
-        buffer.data(),DWORD(buffer.size()),&bytes,nullptr);
-    CloseHandle(volume);
-    if(!ok) { error=QStringLiteral("Datenträgerzuordnung des Ziels nicht ermittelbar; Rettung gesperrt."); return false; }
-    const auto *extents=reinterpret_cast<const VOLUME_DISK_EXTENTS*>(buffer.data());
-    for(DWORD i=0;i<extents->NumberOfDiskExtents && i<32;++i)
-        if(extents->Extents[i].DiskNumber==sourceDisk) {
-            error=QStringLiteral("Der Zielordner liegt auf der zu rettenden SSD. Bitte ein anderes Laufwerk wählen.");
-            return false;
-        }
-    return true;
-}
-#endif
-
 inline QVariantMap run(const Config &cfg, std::atomic_bool &cancel, const ProgressFn &progress) {
     QVariantMap result;
     result["state"]="fehler";
     result["ok"]=false;
     const auto fail=[&](const QString &message) { result["message"]=message; return result; };
-#ifndef Q_OS_WIN
-    Q_UNUSED(cfg) Q_UNUSED(cancel) Q_UNUSED(progress)
-    return fail(QStringLiteral("Rettungsabbild ist in dieser Edition nur unter Windows verfügbar."));
-#else
     const auto &plan=cfg.plan;
     if(!plan.value("allowed").toBool())
         return fail(plan.value("reason",QStringLiteral("Rettung durch Sicherheitsregeln gesperrt.")).toString());
-    if(!cfg.sourcePath.startsWith(QStringLiteral("\\\\.\\PHYSICALDRIVE"),Qt::CaseInsensitive))
-        return fail(QStringLiteral("Kein physischer Laufwerkpfad."));
-    bool numberOk=false;
-    const quint32 diskNumber=cfg.sourcePath.mid(QStringLiteral("\\\\.\\PHYSICALDRIVE").size()).toUInt(&numberOk);
-    if(!numberOk) return fail(QStringLiteral("Ungültige Laufwerksnummer."));
+    if(cfg.sourcePath.trimmed().isEmpty()) return fail(QStringLiteral("Kein Quelllaufwerk angegeben."));
 
     // --- Destination checks -------------------------------------------------
     const QFileInfo destInfo(cfg.destinationDir);
     if(cfg.destinationDir.trimmed().isEmpty() || !destInfo.exists() || !destInfo.isDir() || destInfo.isSymLink())
         return fail(QStringLiteral("Bitte einen gültigen Zielordner auf einem anderen Laufwerk angeben."));
     QString error;
-    if(!destinationOnSeparateDisk(cfg.destinationDir,diskNumber,error)) return fail(error);
+    if(!PlatformIO::destinationOnSeparateDisk(cfg.destinationDir,cfg.sourcePath,error)) return fail(error);
 
     // --- Source -------------------------------------------------------------
-    Source src;
+    PlatformIO::SourceDevice src;
     if(!src.open(cfg.sourcePath,error)) return fail(error);
     const quint64 total=src.size();
     const quint32 sector=src.sectorSize();
@@ -391,38 +262,24 @@ inline QVariantMap run(const Config &cfg, std::atomic_bool &cancel, const Progre
     }
 
     // --- Image file ----------------------------------------------------------
-    const HANDLE image=CreateFileW(wide(QDir::toNativeSeparators(imagePath)),GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ,
-        nullptr,resume ? OPEN_EXISTING : CREATE_NEW,FILE_ATTRIBUTE_NORMAL,nullptr);
-    if(image==INVALID_HANDLE_VALUE)
-        return fail(QStringLiteral("Abbilddatei kann nicht angelegt werden (%1).").arg(GetLastError()));
-    struct ImageGuard { HANDLE h; ~ImageGuard(){ CloseHandle(h); } } imageGuard{image};
-    if(!resume) {
-        DWORD b=0;
-        DeviceIoControl(image,FSCTL_SET_SPARSE,nullptr,0,nullptr,0,&b,nullptr); // optional, FS-dependent
-        FILE_END_OF_FILE_INFO eof{};
-        eof.EndOfFile.QuadPart=LONGLONG(total);
-        if(!SetFileInformationByHandle(image,FileEndOfFileInfo,&eof,sizeof(eof)))
-            return fail(QStringLiteral("Abbilddatei kann nicht auf SSD-Größe gebracht werden (%1).").arg(GetLastError()));
-    }
-    const auto writeImage=[&](quint64 offset,const void *data,DWORD length)->bool {
-        LARGE_INTEGER li; li.QuadPart=LONGLONG(offset);
-        DWORD written=0;
-        return SetFilePointerEx(image,li,nullptr,FILE_BEGIN) && WriteFile(image,data,length,&written,nullptr) && written==length;
-    };
+    PlatformIO::ImageFile image;
+    if(!image.open(imagePath,!resume,error)) return fail(error);
+    if(!resume && !image.resize(total))
+        return fail(QStringLiteral("Abbilddatei kann nicht auf SSD-Größe gebracht werden (%1).").arg(image.lastError()));
 
     // --- Plan parameters ----------------------------------------------------
     const auto alignUp=[&](quint64 v){ return qMax<quint64>(sector,(v+sector-1)/sector*sector); };
     const quint64 chunk=qMin<quint64>(alignUp(plan.value("chunkBytes",1048576).toULongLong()),16ULL*1024*1024);
     const quint64 skipStart=alignUp(plan.value("skipStartBytes",1048576).toULongLong());
     const quint64 skipMax=alignUp(plan.value("skipMaxBytes",268435456ULL).toULongLong());
-    const DWORD timeoutMs=DWORD(plan.value("readTimeoutMs",30000).toUInt());
+    const quint32 timeoutMs=plan.value("readTimeoutMs",30000).toUInt();
     const int retryPasses=qBound(0,plan.value("retryPasses",1).toInt(),5);
     const int maxConsecutiveTimeouts=qBound(1,plan.value("maxConsecutiveTimeouts",3).toInt(),20);
     const unsigned long reconnectWait=qBound(1,plan.value("reconnectWaitSeconds",3).toInt(),60);
 
-    void *buffer=VirtualAlloc(nullptr,SIZE_T(chunk),MEM_COMMIT|MEM_RESERVE,PAGE_READWRITE);
+    void *buffer=PlatformIO::allocAligned(size_t(chunk),sector);
     if(!buffer) return fail(QStringLiteral("Lesepuffer kann nicht angelegt werden."));
-    struct BufferGuard { void *p; Source *s; ~BufferGuard(){ if(!s->hung()) VirtualFree(p,0,MEM_RELEASE); } } bufferGuard{buffer,&src};
+    struct BufferGuard { void *p; PlatformIO::SourceDevice *s; ~BufferGuard(){ if(!s->hung()) PlatformIO::freeAligned(p); } } bufferGuard{buffer,&src};
 
     event(resume ? QStringLiteral("Rettung wird fortgesetzt: %1 bereits gesichert.").arg(formatBytes(map.bytes(Finished)))
                  : QStringLiteral("Neues Rettungsabbild: %1, Sektorgröße %2 Byte.").arg(formatBytes(total)).arg(sector));
@@ -436,7 +293,7 @@ inline QVariantMap run(const Config &cfg, std::atomic_bool &cancel, const Progre
     int pass=0; QString phase; quint64 currentPos=0; int readErrors=0; int consecutiveTimeouts=0;
     int timeouts=0; int deviceLost=0;
     const auto saveMap=[&](char st)->bool {
-        FlushFileBuffers(image);
+        image.flush();
         QSaveFile f(mapPath);
         return f.open(QIODevice::WriteOnly|QIODevice::Text) && f.write(map.serialize(currentPos,st,pass).toUtf8())>=0 && f.commit();
     };
@@ -469,32 +326,33 @@ inline QVariantMap run(const Config &cfg, std::atomic_bool &cancel, const Progre
         readFailed=false;
         if(cancel.load()) return Cancelled;
         currentPos=pos;
-        DWORD e=src.read(pos,buffer,DWORD(len),timeoutMs);
-        if(e==ReadHung) {
+        using PlatformIO::ReadStatus;
+        auto r=src.read(pos,buffer,quint32(len),timeoutMs);
+        if(r.status==ReadStatus::Hung) {
             ++timeouts;
-            fatalMessage=QStringLiteral("Die SSD reagiert nicht mehr auf Lesebefehle. Fortschritt ist gespeichert. USB trennen, SSD abkühlen lassen, neu verbinden und Rettung fortsetzen.");
+            fatalMessage=QStringLiteral("Die SSD reagiert nicht mehr auf Lesebefehle. Fortschritt ist gespeichert. SSD trennen bzw. Rechner neu starten, abkühlen lassen und Rettung fortsetzen.");
             return Fatal;
         }
-        if(isDeviceLost(e)) {
-            event(QStringLiteral("Verbindung zur SSD verloren (Fehler %1); neuer Verbindungsversuch.").arg(e));
+        if(r.status==ReadStatus::DeviceLost) {
+            event(QStringLiteral("Verbindung zur SSD verloren (%1); neuer Verbindungsversuch.").arg(PlatformIO::describe(r)));
             ++deviceLost;
             QThread::sleep(reconnectWait);
             if(!src.reopen() || src.size()!=total || src.sectorSize()!=sector) {
                 fatalMessage=QStringLiteral("SSD nicht mehr erreichbar. Fortschritt ist gespeichert; nach dem Neuverbinden kann die Rettung fortgesetzt werden.");
                 return Fatal;
             }
-            e=src.read(pos,buffer,DWORD(len),timeoutMs);
-            if(e==ReadHung || isDeviceLost(e)) { fatalMessage=QStringLiteral("SSD nach Neuverbindung nicht stabil lesbar. Fortschritt ist gespeichert."); return Fatal; }
+            r=src.read(pos,buffer,quint32(len),timeoutMs);
+            if(r.status==ReadStatus::Hung || r.status==ReadStatus::DeviceLost) { fatalMessage=QStringLiteral("SSD nach Neuverbindung nicht stabil lesbar. Fortschritt ist gespeichert."); return Fatal; }
         }
-        if(e==ERROR_INVALID_PARAMETER) { fatalMessage=QStringLiteral("Lesebefehl vom Gerät abgelehnt (Ausrichtung/Parameter)."); return Fatal; }
-        if(e==0) {
+        if(r.status==ReadStatus::Rejected) { fatalMessage=QStringLiteral("Lesebefehl vom Gerät abgelehnt (Ausrichtung/Parameter)."); return Fatal; }
+        if(r.status==ReadStatus::Ok) {
             consecutiveTimeouts=0;
-            if(!writeImage(pos,buffer,DWORD(len))) { fatalMessage=QStringLiteral("Schreiben auf das Ziellaufwerk fehlgeschlagen (%1). Ziel voll oder getrennt?").arg(GetLastError()); return Fatal; }
+            if(!image.write(pos,buffer,quint32(len))) { fatalMessage=QStringLiteral("Schreiben auf das Ziellaufwerk fehlgeschlagen (%1). Ziel voll oder getrennt?").arg(image.lastError()); return Fatal; }
             map.set(pos,len,Finished);
             return Ok;
         }
         readFailed=true; ++readErrors;
-        if(e==WAIT_TIMEOUT) {
+        if(r.status==ReadStatus::Timeout) {
             ++timeouts;
             if(++consecutiveTimeouts>=maxConsecutiveTimeouts) {
                 fatalMessage=QStringLiteral("%1 Zeitüberschreitungen in Folge: Die SSD wird geschont und die Rettung pausiert. Fortschritt ist gespeichert; später fortsetzen.").arg(consecutiveTimeouts);
@@ -502,8 +360,7 @@ inline QVariantMap run(const Config &cfg, std::atomic_bool &cancel, const Progre
             }
         } else consecutiveTimeouts=0;
         if(readErrors<=50 || readErrors%1000==0)
-            event(QStringLiteral("Lesefehler bei Byte %1 (%2): %3").arg(pos).arg(formatBytes(len))
-                .arg(e==WAIT_TIMEOUT ? QStringLiteral("Zeitüberschreitung") : QStringLiteral("Windows-Fehler %1").arg(e)));
+            event(QStringLiteral("Lesefehler bei Byte %1 (%2): %3").arg(pos).arg(formatBytes(len)).arg(PlatformIO::describe(r)));
         return Ok;
     };
 
@@ -602,8 +459,7 @@ inline QVariantMap run(const Config &cfg, std::atomic_bool &cancel, const Progre
     }
     result["badList"]=badList;
 
-    LARGE_INTEGER imageSize{};
-    const bool sizeOk=GetFileSizeEx(image,&imageSize) && quint64(imageSize.QuadPart)==total;
+    const bool sizeOk=image.size()==total;
     result["imageSizeOk"]=sizeOk;
     if(!sizeOk) event(QStringLiteral("Prüfung: Abbildgröße stimmt nicht mit der SSD-Kapazität überein."));
 
@@ -613,7 +469,7 @@ inline QVariantMap run(const Config &cfg, std::atomic_bool &cancel, const Progre
         result["state"]="abgeschlossen";
         result["message"]=bad==0 ? QStringLiteral("Alle Sektoren wurden gelesen.") : QStringLiteral("Rettung abgeschlossen; einzelne Sektoren sind nicht lesbar.");
         // Integrity hash of the finished image (destination only; the SSD is not read again).
-        FlushFileBuffers(image);
+        image.flush();
         phase=QStringLiteral("Prüfsumme des Abbilds (SHA-256)");
         event(phase);
         QFile img(imagePath);
@@ -641,7 +497,6 @@ inline QVariantMap run(const Config &cfg, std::atomic_bool &cancel, const Progre
         .arg(formatBytes(done),formatBytes(total)).arg(result["rescuedPercent"].toDouble(),0,'f',3)
         .arg(formatBytes(bad)).arg(map.count(BadSector)));
     return result;
-#endif
 }
 
 // Writes bericht.txt and bericht.json into the rescue folder.
@@ -667,7 +522,10 @@ inline QString writeReport(const QString &folder, const QVariantMap &device, con
     s << QStringLiteral("  Modell:        ") << device.value("nvmeControllerModel").toString() << QStringLiteral(" / ") << device.value("name").toString() << QStringLiteral("\n");
     s << QStringLiteral("  Seriennummer:  ") << device.value("nvmeControllerSerial").toString() << QStringLiteral("\n");
     s << QStringLiteral("  Firmware:      ") << device.value("nvmeFirmware").toString() << QStringLiteral("\n");
-    s << QStringLiteral("  Anschluss:     USB, VID ") << device.value("bridgeVendorId").toString() << QStringLiteral(" PID ") << device.value("bridgeProductId").toString() << QStringLiteral("\n\n");
+    if(device.value("connection").toString()==QStringLiteral("PCIe"))
+        s << QStringLiteral("  Anschluss:     PCIe ") << device.value("pciAddress").toString() << QStringLiteral(" (") << device.value("pciVendorId").toString() << QStringLiteral(":") << device.value("pciDeviceId").toString() << QStringLiteral(")\n\n");
+    else
+        s << QStringLiteral("  Anschluss:     USB, VID ") << device.value("bridgeVendorId").toString() << QStringLiteral(" PID ") << device.value("bridgeProductId").toString() << QStringLiteral("\n\n");
     s << QStringLiteral("DIAGNOSE\n  ") << diagnosis.value("diagnosis").toString() << QStringLiteral("\n");
     s << QStringLiteral("  Bewertung: ") << diagnosis.value("severity").toString() << QStringLiteral(" · Sicherheit: ") << diagnosis.value("confidence").toString() << QStringLiteral("\n");
     for(const auto &e:diagnosis.value("evidence").toList()) s << QStringLiteral("  Beleg: ") << e.toString() << QStringLiteral("\n");

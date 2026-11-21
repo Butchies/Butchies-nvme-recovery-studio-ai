@@ -19,3 +19,6 @@ cases/
 *.gguf
 *.safetensors
 .env
+linux-boot/work/
+linux-boot/out/
+build/

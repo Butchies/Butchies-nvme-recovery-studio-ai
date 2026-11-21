@@ -1,0 +1,48 @@
+# Grundsystem und Hardware
+linux-image-amd64
+firmware-linux-free
+firmware-misc-nonfree
+firmware-iwlwifi
+firmware-realtek
+firmware-atheros
+firmware-brcm80211
+pciutils
+usbutils
+util-linux
+parted
+e2fsprogs
+dosfstools
+exfatprogs
+ntfs-3g
+rsync
+
+# Netzwerk / WLAN
+network-manager
+wpasupplicant
+iw
+ca-certificates
+
+# Kiosk-Oberfläche (Wayland, startet nur die Anwendung)
+cage
+fonts-dejavu-core
+qt6-wayland
+qt6-qpa-plugins
+qml6-module-qtquick
+qml6-module-qtquick-controls
+qml6-module-qtquick-layouts
+qml6-module-qtquick-dialogs
+qml6-module-qtquick-templates
+qml6-module-qtquick-window
+qml6-module-qtqml-workerscript
+qml6-module-qt-labs-folderlistmodel
+
+# Werkzeuge der KI
+smartmontools
+nvme-cli
+gddrescue
+
+# Nur zum Kompilieren (werden im Hook wieder entfernt)
+build-essential
+cmake
+qt6-base-dev
+qt6-declarative-dev

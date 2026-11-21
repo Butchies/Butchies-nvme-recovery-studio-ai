@@ -1,0 +1,30 @@
+#!/bin/sh
+# Legt beim ersten Start im freien Bereich des Boot-Sticks eine Partition
+# "persistence" an (ext4). Darin bleiben KI-Wissen, Fallakten, Lesekarten und
+# registrierte Werkzeuge (/root) über Neustarts erhalten.
+# Arbeitet ausschließlich auf dem Datenträger, von dem gebootet wurde.
+set -eu
+LOG=/run/nvme-recovery-persistence.log
+exec >>"$LOG" 2>&1
+
+SRC="$(findmnt -n -o SOURCE /run/live/medium || true)"
+[ -n "$SRC" ] || { echo "Boot-Medium nicht gefunden"; exit 0; }
+DISK="/dev/$(lsblk -no PKNAME "$SRC" | head -n1)"
+[ -b "$DISK" ] || { echo "Boot-Datenträger nicht bestimmbar"; exit 0; }
+[ "$(lsblk -dno RM "$DISK")" = "1" ] || [ "$(lsblk -dno TRAN "$DISK")" = "usb" ] || { echo "$DISK ist kein USB-Stick – keine Änderung"; exit 0; }
+if lsblk -no LABEL "$DISK" | grep -qx persistence; then echo "persistence existiert bereits"; exit 0; fi
+
+# Freien Platz am Ende des Sticks ermitteln (mindestens 1 GiB).
+END_USED=$(parted -sm "$DISK" unit MiB print | awk -F: 'NR>2{gsub("MiB","",$3); if($3>m)m=$3} END{print int(m)+1}')
+TOTAL=$(parted -sm "$DISK" unit MiB print | awk -F: 'NR==2{gsub("MiB","",$2); print int($2)}')
+[ $((TOTAL-END_USED)) -ge 1024 ] || { echo "Zu wenig freier Platz auf dem Stick"; exit 0; }
+
+parted -s "$DISK" mkpart primary ext4 "${END_USED}MiB" 100%
+partprobe "$DISK"; sleep 2
+PART="$(lsblk -lnpo NAME "$DISK" | tail -n1)"
+mkfs.ext4 -F -L persistence "$PART"
+mkdir -p /mnt/persistence
+mount "$PART" /mnt/persistence
+echo "/root union" > /mnt/persistence/persistence.conf
+umount /mnt/persistence
+echo "Dauerhafter Speicher angelegt auf $PART – aktiv ab dem nächsten Start."

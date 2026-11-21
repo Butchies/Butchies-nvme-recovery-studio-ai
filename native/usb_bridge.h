@@ -2,6 +2,9 @@
 #include <QString>
 #include <QVariantMap>
 #ifdef Q_OS_WIN
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
 #include <windows.h>
 #include <winioctl.h>
 #include <vector>

@@ -1,0 +1,13 @@
+[Unit]
+Description=NVMe Recovery Studio AI – dauerhaften Speicher auf dem Boot-Stick einrichten
+After=local-fs.target
+ConditionPathExists=/run/live/medium
+ConditionPathExists=!/run/live/persistence
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/nvme-recovery-persistence-setup
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

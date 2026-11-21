@@ -26,9 +26,19 @@ inline QVariantMap analyze(const QVariantMap &device, const QVariantMap &experie
     QString severity="Unbekannt";
     bool canRead=false;
 
-    if(!device.value("readOnly").toBool() ||
+    const bool linuxEdition=device.value("edition").toString()=="linux";
+    if(linuxEdition && device.value("protected").toBool()) {
+        result["diagnosis"]=QStringLiteral("Geschützt: %1. Dieses Laufwerk wird weder gerettet noch repariert.").arg(device.value("protectedReason").toString());
+        result["severity"]="Gesperrt";
+        result["confidence"]="Hoch";
+        result["actions"]=actions;
+        result["evidence"]=evidence;
+        result["automaticAction"]="Keine Aktion";
+        return result;
+    }
+    if(!device.value("readOnly").toBool() || (!linuxEdition && (
        device.value("connection").toString()!="USB" ||
-       device.value("storageBus").toString()!="USB") {
+       device.value("storageBus").toString()!="USB"))) {
         result["diagnosis"]="Gerät gesperrt: externe USB-Herkunft nicht bestätigt.";
         result["severity"]="Gesperrt";
         result["confidence"]="Hoch";
@@ -37,18 +47,33 @@ inline QVariantMap analyze(const QVariantMap &device, const QVariantMap &experie
         result["automaticAction"]="Keine Aktion";
         return result;
     }
-    evidence.append("Windows bestätigt USB-Speicherbus; nur lesende Analyse.");
+    evidence.append(linuxEdition ? QStringLiteral("Direkter PCIe-Zugriff (Linux-Boot-Edition) auf %1, Treiber %2; nur lesende Analyse.")
+                                       .arg(device.value("pciAddress").toString(),device.value("driver").toString())
+                                 : QStringLiteral("Windows bestätigt USB-Speicherbus; nur lesende Analyse."));
     canRead=true;
     const QString sizeText=device.value("sizeBytes").toString().trimmed();
     const bool noMedium=sizeText.isEmpty() || sizeText=="0";
-    if(noMedium) {
-        diagnosis="SSD meldet sich nicht: Die USB-Bridge ist vorhanden, liefert aber kein Speichermedium. Der SSD-Controller startet nicht normal (Notmodus, Firmware- oder Flash-Defekt, Stromversorgung oder Kontakt).";
+    const bool romMode=linuxEdition && device.value("romModeSuspect").toBool();
+    if(romMode) {
+        diagnosis=QStringLiteral("Notmodus-Verdacht: Controller %1:%2 ist am PCIe-Bus sichtbar (Klasse %3, Treiber %4, Zustand %5), stellt aber keine funktionsfähige NVMe-Schnittstelle bereit. Typisch für ROM-/Safe-Mode nach Firmware- oder Flash-Defekt.")
+            .arg(device.value("pciVendorId").toString(),device.value("pciDeviceId").toString(),device.value("pciClass").toString(),
+                 device.value("driver").toString(),device.value("nvmeState",QStringLiteral("–")).toString());
+        severity="Kritisch";
+        confidence="Mittel";
+        canRead=false;
+        warnings << "Kein Datenzugriff möglich; Rettungsabbild nicht möglich, solange der Controller nicht normal startet.";
+        actions.append("Kalt-Neustart (Stromlos, 30 s) und erneute Erkennung; manche Controller starten danach wieder normal.");
+        actions.append("Notmodus-Reparatur nur mit passendem Herstellerwerkzeug der Controllerfamilie – setzt die SSD zurück (Datenverlust). Bei wichtigen Daten zuerst Labor erwägen.");
+    } else if(noMedium) {
+        diagnosis=linuxEdition
+            ? QStringLiteral("Controller antwortet, meldet aber keinen nutzbaren Speicherbereich (kein Namespace oder Kapazität 0). Typisch für beschädigte Firmware-Konfiguration oder Flash-Verwaltung.")
+            : QStringLiteral("SSD meldet sich nicht: Die USB-Bridge ist vorhanden, liefert aber kein Speichermedium. Der SSD-Controller startet nicht normal (Notmodus, Firmware- oder Flash-Defekt, Stromversorgung oder Kontakt).");
         severity="Kritisch";
         confidence="Mittel";
         canRead=false;
         warnings << "Kein Datenzugriff über USB möglich; ein Rettungsabbild kann nicht erstellt werden.";
         actions.append("Hardware prüfen: anderes Gehäuse/Kabel, direkter USB-Anschluss ohne Hub, SSD-Kontakte und Temperatur.");
-        actions.append("SSD direkt in einen M.2-Steckplatz setzen und mit der Linux-Boot-Edition auf Notmodus prüfen (Controller-Identifikation über PCIe).");
+        if(!linuxEdition) actions.append("SSD direkt in einen M.2-Steckplatz setzen und mit der Linux-Boot-Edition auf Notmodus prüfen (Controller-Identifikation über PCIe).");
     } else if(!device.value("nvmeIdentifyAvailable").toBool()) {
         diagnosis="NVMe-Controller über die USB-Bridge nicht identifizierbar.";
         severity="Diagnose eingeschränkt";
@@ -185,7 +210,7 @@ inline QVariantMap analyze(const QVariantMap &device, const QVariantMap &experie
     QVariantList familyPaths=family.value("reparaturwege").toList();
     if(familyPaths.isEmpty())
         familyPaths={QVariantMap{{"typ","datenrettung"}},QVariantMap{{"typ","nvme_firmware_update"}},QVariantMap{{"typ","labor"}}};
-    if(noMedium) familyPaths.prepend(QVariantMap{{"typ","hardware_pruefung"}});
+    if(noMedium || romMode) familyPaths.prepend(QVariantMap{{"typ","hardware_pruefung"}});
     for(const auto &fp:familyPaths) {
         auto p=fp.toMap();
         const QString typ=p.value("typ").toString();
@@ -193,10 +218,17 @@ inline QVariantMap analyze(const QVariantMap &device, const QVariantMap &experie
         QString status;
         if(typ=="datenrettung") status=canRead ? "Jetzt automatisch möglich" : "Über diese Verbindung nicht möglich";
         else if(typ=="hardware_pruefung") status="Jetzt durch Sie möglich";
-        else if(typ=="nvme_firmware_update")
-            status=issues.isEmpty() ? "Kein bekannter Firmwarefehler; nur bei Bedarf"
-                 : "Empfohlen – Firmware-Manager mit Freigabe (über USB-Bridge meist nicht durchführbar, dann direkter M.2-Anschluss)";
-        else if(typ=="notmodus_hersteller_werkzeug") status="Nur mit Linux-Boot-Edition und vom Nutzer bereitgestelltem Herstellerwerkzeug; Datenverlust";
+        else if(typ=="nvme_firmware_update") {
+            const QString how=linuxEdition
+                ? (device.value("firmwareDownloadSupported").toBool() ? QStringLiteral("Firmware-Manager: jetzt möglich (Freigabe nötig)")
+                                                                      : QStringLiteral("Controller meldet keine Firmware-Download-Unterstützung"))
+                : QStringLiteral("über USB nicht möglich – Linux-Boot-Stick mit SSD im M.2-Steckplatz verwenden");
+            status=(issues.isEmpty() ? QStringLiteral("Kein bekannter Firmwarefehler; nur bei Bedarf. ") : QStringLiteral("Empfohlen. "))+how;
+        }
+        else if(typ=="notmodus_hersteller_werkzeug")
+            status=linuxEdition ? (romMode ? "Passt zum Befund – nur mit registriertem Herstellerwerkzeug, Freigabe und Datenverlust"
+                                           : "Nur bei Notmodus nötig; Datenverlust")
+                                : "Nur mit Linux-Boot-Edition und vom Nutzer bereitgestelltem Herstellerwerkzeug; Datenverlust";
         else if(typ=="labor") status="Immer möglich (extern)";
         p["status"]=status;
         paths.append(p);

@@ -22,6 +22,10 @@
 #include "knowledge_base.h"
 #include "controller_catalog.h"
 #include "tool_manager.h"
+#include "linux_nvme.h"
+#include "firmware_manager.h"
+#include "stick_writer.h"
+#include <QSet>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
@@ -44,6 +48,10 @@ class RecoveryController final : public QObject {
     Q_PROPERTY(QVariantMap catalog READ catalog CONSTANT)
     Q_PROPERTY(QVariantList tools READ tools NOTIFY toolsChanged)
     Q_PROPERTY(QVariantMap toolDownload READ toolDownload NOTIFY toolsChanged)
+    Q_PROPERTY(QVariantMap firmwarePlan READ firmwarePlan NOTIFY firmwareChanged)
+    Q_PROPERTY(QVariantMap firmwareProgress READ firmwareProgress NOTIFY firmwareChanged)
+    Q_PROPERTY(bool linuxEdition READ linuxEdition CONSTANT)
+    Q_PROPERTY(QVariantMap stickProgress READ stickProgress NOTIFY stickChanged)
 public:
     explicit RecoveryController(QObject *parent=nullptr):QObject(parent) {
         const auto k=m_kb.summary();
@@ -68,6 +76,151 @@ public:
     QVariantMap knowledge() const { return m_kb.summary(); }
     QVariantMap catalog() const { return ControllerCatalog::totals(); }
     QVariantList tools() const { return m_tools.status(); }
+    QVariantMap firmwarePlan() const { return m_fwPlan; }
+    QVariantMap stickProgress() const { return m_stick; }
+    // Downloads the newest Linux Boot Edition image from this project's
+    // GitHub releases (asset *.iso), progress in percent.
+    Q_INVOKABLE void downloadBootImage() {
+        if(m_stick.value("running").toBool()) return;
+        m_stick={{"running",true},{"percent",0},{"phase",QStringLiteral("Suche neueste Linux-Boot-Edition …")}};
+        emit stickChanged();
+        QNetworkRequest req(QUrl(QStringLiteral("https://api.github.com/repos/Butchies/Butchies-nvme-recovery-studio-ai/releases/latest")));
+        req.setHeader(QNetworkRequest::UserAgentHeader,QStringLiteral("NVMeRecoveryStudioAI"));
+        auto *reply=m_net.get(req);
+        connect(reply,&QNetworkReply::finished,this,[this,reply]{
+            reply->deleteLater();
+            QString url,file;
+            for(const auto &a:QJsonDocument::fromJson(reply->readAll()).object().value("assets").toArray())
+                if(a.toObject().value("name").toString().endsWith(QStringLiteral(".iso"))) { url=a.toObject().value("browser_download_url").toString(); file=a.toObject().value("name").toString(); }
+            if(url.isEmpty()) {
+                m_stick={{"running",false},{"phase",QStringLiteral("Noch kein veröffentlichtes Boot-Abbild gefunden. Abbild mit linux-boot/build.sh erzeugen und hier auswählen.")}};
+                emit stickChanged(); ai(m_stick.value("phase").toString()); return;
+            }
+            const QString target=QDir(ToolManager::appDataFile(QStringLiteral("boot"))).filePath(file);
+            QDir().mkpath(QFileInfo(target).path());
+            QNetworkRequest dl{QUrl(url)};
+            dl.setHeader(QNetworkRequest::UserAgentHeader,QStringLiteral("NVMeRecoveryStudioAI"));
+            auto *r2=m_net.get(dl);
+            auto *out=new QFile(target+QStringLiteral(".part"),r2);
+            out->open(QIODevice::WriteOnly);
+            auto *lastStep=new int(-1);
+            connect(r2,&QNetworkReply::readyRead,this,[r2,out]{ out->write(r2->readAll()); });
+            connect(r2,&QNetworkReply::downloadProgress,this,[this,lastStep](qint64 got,qint64 total){
+                if(total<=0) return;
+                const int p=int(100*got/total);
+                m_stick["percent"]=p; m_stick["phase"]=QStringLiteral("Lade Linux-Boot-Edition …"); emit stickChanged();
+                if(p/5!=*lastStep) { *lastStep=p/5; ai(QStringLiteral("Boot-Abbild [%1%2] %3 %").arg(QString(p/5,QChar(0x2588)),QString(20-p/5,QChar(0x2591))).arg(p)); }
+            });
+            connect(r2,&QNetworkReply::finished,this,[this,r2,out,target,lastStep]{
+                delete lastStep;
+                out->write(r2->readAll()); out->close();
+                r2->deleteLater();
+                const bool ok=r2->error()==QNetworkReply::NoError && (QFile::remove(target),QFile::rename(out->fileName(),target));
+                m_stick={{"running",false},{"percent",ok?100:0},{"image",ok?target:QString()},
+                         {"phase",ok?QStringLiteral("Boot-Abbild geladen: %1").arg(QDir::toNativeSeparators(target)):QStringLiteral("Download fehlgeschlagen: %1").arg(r2->errorString())}};
+                emit stickChanged(); ai(m_stick.value("phase").toString());
+            });
+        });
+    }
+    // Writes the boot image to a USB stick. Destructive for the stick only.
+    Q_INVOKABLE void createBootStick(int index, const QString &imageUrl, const QString &confirm) {
+        if(m_worker || m_fwWorker || m_stickWorker) { ai(QStringLiteral("Stick kann nicht erstellt werden, solange ein anderer Vorgang läuft.")); return; }
+        if(index<0 || index>=m_devices.size()) return;
+        const auto target=m_devices.at(index).toMap();
+        if(target.value("nvmeIdentifyAvailable").toBool() || target.value("connection").toString()!=QStringLiteral("USB")) {
+            ai(QStringLiteral("Abgelehnt: %1 ist eine NVMe-SSD bzw. kein USB-Stick. Als Boot-Stick bitte einen gewöhnlichen USB-Stick verwenden.").arg(target.value("name").toString()));
+            return;
+        }
+        if(m_kb.experience(target).value("device").toMap().value("rettungen").toInt()>0) {
+            ai(QStringLiteral("Abgelehnt: Von diesem Gerät existiert eine Rettung – es wird nicht überschrieben."));
+            return;
+        }
+        const QString image=imageUrl.startsWith(QStringLiteral("file:")) ? QUrl(imageUrl).toLocalFile() : imageUrl;
+        m_kb.recordAction(QStringLiteral("bootstick_erstellen"),target,{{"abbild",QFileInfo(image).fileName()}});
+        ai(QStringLiteral("Erstelle Linux-Boot-Stick auf %1 (%2) – alle Daten auf dem Stick werden überschrieben.").arg(target.value("name").toString(),target.value("devicePath").toString()));
+        m_cancel=false;
+        m_stick={{"running",true},{"percent",0},{"phase",QStringLiteral("Vorbereitung …")}};
+        emit stickChanged();
+        const QString disk=target.value("devicePath").toString();
+        m_stickWorker=QThread::create([this,image,disk,confirm]{
+            int lastStep=-1;
+            const auto result=StickWriter::write(image,disk,confirm,m_cancel,[this,&lastStep](int p,const QString &t){
+                const bool step=p/5!=lastStep; lastStep=p/5;
+                QMetaObject::invokeMethod(this,[this,p,t,step]{
+                    m_stick["percent"]=p; m_stick["phase"]=t; emit stickChanged();
+                    if(step) ai(QStringLiteral("Boot-Stick [%1%2] %3 %").arg(QString(p/5,QChar(0x2588)),QString(20-p/5,QChar(0x2591))).arg(p));
+                },Qt::QueuedConnection);
+            });
+            QMetaObject::invokeMethod(this,[this,result]{
+                if(m_stickWorker) { m_stickWorker->wait(); m_stickWorker->deleteLater(); m_stickWorker=nullptr; }
+                m_stick["running"]=false; m_stick["phase"]=result.value("message"); m_stick["ok"]=result.value("ok");
+                emit stickChanged();
+                ai(result.value("message").toString());
+                m_kb.recordAction(QStringLiteral("bootstick_ergebnis"),{},result);
+            },Qt::QueuedConnection);
+        });
+        m_stickWorker->start();
+    }
+    QVariantMap firmwareProgress() const { return m_fwProgress; }
+    bool linuxEdition() const {
+#ifdef Q_OS_WIN
+        return false;
+#else
+        return true;
+#endif
+    }
+    // Step 1: check everything, write nothing.
+    Q_INVOKABLE void prepareFirmware(int index, const QString &fileUrl, bool noBackupNeeded) {
+        if(m_worker || m_fwWorker) { ai(QStringLiteral("Firmware-Prüfung nicht möglich, solange eine Rettung oder ein Flashvorgang läuft.")); return; }
+        if(!diagnose(index)) return;
+        const QString file=fileUrl.startsWith(QStringLiteral("file:")) ? QUrl(fileUrl).toLocalFile() : fileUrl;
+        m_fwDevice=m_verified;
+        m_fwPlan=FirmwareManager::prepare(m_verified,m_aiReport,file,m_experience,noBackupNeeded);
+        m_fwProgress.clear();
+        emit firmwareChanged();
+        ai(QStringLiteral("Firmware-Manager prüft %1 für %2:").arg(QFileInfo(file).fileName(),m_verified.value("nvmeControllerModel").toString()));
+        for(const auto &c:m_fwPlan.value("checks").toList()) {
+            const auto m=c.toMap();
+            ai(QStringLiteral("%1 %2: %3").arg(m.value("ok").toBool() ? QStringLiteral("✓") : (m.value("pflicht").toBool() ? QStringLiteral("✗") : QStringLiteral("!")),
+                m.value("name").toString(),m.value("detail").toString()));
+        }
+        ai(m_fwPlan.value("summary").toString());
+        m_kb.recordAction(QStringLiteral("firmware_geprueft"),m_verified,{{"datei",QFileInfo(file).fileName()},{"sha256",m_fwPlan.value("sha256")},{"freigabefaehig",m_fwPlan.value("allowed")}});
+    }
+    // Step 2: only with the approval code.
+    Q_INVOKABLE void flashFirmware(const QString &code) {
+        if(m_fwWorker || m_worker || !m_fwPlan.value("allowed").toBool()) return;
+        if(code.trimmed().toUpper()!=m_fwPlan.value("approvalCode").toString()) {
+            ai(QStringLiteral("Bestätigungscode falsch – es wurde nichts geschrieben."));
+            return;
+        }
+        m_kb.recordAction(QStringLiteral("firmware_freigegeben"),m_fwDevice,{{"sha256",m_fwPlan.value("sha256")}});
+        ai(QStringLiteral("Freigabe erteilt. Firmware wird übertragen – Rechner nicht ausschalten, SSD nicht trennen!"));
+        const QVariantMap plan=m_fwPlan, device=m_fwDevice;
+        m_fwProgress={{"running",true},{"percent",0},{"phase",QStringLiteral("Start …")}};
+        emit firmwareChanged();
+        m_fwWorker=QThread::create([this,plan,device,code]{
+            int lastStep=-1;
+            const auto result=FirmwareManager::execute(plan,device,code,[this,&lastStep](int p,const QString &text){
+                const bool step=(p/5!=lastStep); lastStep=p/5;
+                QMetaObject::invokeMethod(this,[this,p,text,step]{
+                    m_fwProgress["percent"]=p; m_fwProgress["phase"]=text;
+                    emit firmwareChanged();
+                    if(step) { const int bars=p/5; ai(QStringLiteral("Firmware [%1%2] %3 %").arg(QString(bars,QChar(0x2588)),QString(20-bars,QChar(0x2591))).arg(p)); }
+                },Qt::QueuedConnection);
+            });
+            QMetaObject::invokeMethod(this,[this,result]{
+                if(m_fwWorker) { m_fwWorker->wait(); m_fwWorker->deleteLater(); m_fwWorker=nullptr; }
+                m_fwProgress["running"]=false;
+                m_fwProgress["result"]=result;
+                emit firmwareChanged();
+                ai(QStringLiteral("Firmware-Ergebnis: %1").arg(result.value("message").toString()));
+                m_kb.recordAction(QStringLiteral("firmware_ergebnis"),m_fwDevice,result);
+                refresh();
+            },Qt::QueuedConnection);
+        });
+        m_fwWorker->start();
+    }
     QVariantMap toolDownload() const { return m_download; }
     // Installs a tool: automatic download for freely distributable tools
     // (progress in percent), otherwise opens the official page.
@@ -123,8 +276,10 @@ public:
     ~RecoveryController() override {
         m_cancel=true;
         if(m_worker) { m_worker->wait(); }
+        if(m_fwWorker) { m_fwWorker->wait(); }
+        if(m_stickWorker) { m_stickWorker->wait(); }
     }
-    bool recoveryRunning() const { return m_worker!=nullptr; }
+    bool recoveryRunning() const { return m_worker!=nullptr || m_fwWorker!=nullptr; }
     QVariantMap recoveryProgress() const { return m_progress; }
     QVariantMap recoveryResult() const { return m_result; }
     QStringList recoveryLog() const { return m_log; }
@@ -202,22 +357,44 @@ public:
         m_aiReport.clear();
         emit aiReportChanged();
         emit devicesChanged();
+#ifdef Q_OS_WIN
         m_signature=UsbBridge::usbDiskSignature();
+#endif
         setStatus(QStringLiteral("%1 externe USB-Geräte erkannt. Interne Laufwerke ausgeschlossen.").arg(found.size()));
         ai(found.isEmpty() ? QStringLiteral("Keine externe USB-SSD angeschlossen. Warte auf Gerät …")
                            : QStringLiteral("%1 externe USB-Geräte erkannt – starte automatische Diagnose.").arg(found.size()));
         // The agent examines every detected device on its own.
         for(int i=0;i<m_devices.size();++i) diagnose(i);
 #else
-        m_devices.clear();emit devicesChanged();
-        setStatus(QStringLiteral("Diese native Edition ist für Windows 10/11 vorgesehen."));
+        // Linux Boot Edition: direct PCIe access, internal SSDs allowed,
+        // boot medium and system disks protected.
+        QSet<QString> vendors;
+        for(const auto &f:ControllerCatalog::Catalog::instance().families.value("familien").toArray())
+            for(const auto &v:f.toObject().value("pciVendor").toArray()) vendors.insert(v.toString());
+        const auto found=LinuxNvme::enumerate(vendors);
+        m_devices=found;
+        m_aiReport.clear();
+        emit aiReportChanged();
+        emit devicesChanged();
+        m_signature=LinuxNvme::signature();
+        int protectedCount=0, romCount=0;
+        for(const auto &d:found) {
+            const auto m=d.toMap();
+            if(m.value("protected").toBool()) { ++protectedCount; ai(QStringLiteral("Geschützt: %1 – %2").arg(m.value("devicePath").toString(),m.value("protectedReason").toString())); }
+            if(m.value("romModeSuspect").toBool()) ++romCount;
+        }
+        setStatus(QStringLiteral("%1 NVMe-Geräte am PCIe-Bus (%2 geschützt, %3 ohne NVMe-Funktion).").arg(found.size()).arg(protectedCount).arg(romCount));
+        ai(found.isEmpty() ? QStringLiteral("Keine NVMe-SSD am PCIe-Bus gefunden. SSD im M.2-Steckplatz prüfen.")
+                           : QStringLiteral("%1 NVMe-Geräte am PCIe-Bus erkannt – starte automatische Diagnose.").arg(found.size()));
+        if(romCount>0) ai(QStringLiteral("Achtung: %1 PCIe-Gerät(e) eines SSD-Controllerherstellers ohne funktionsfähiges NVMe – Notmodus-Verdacht.").arg(romCount));
+        for(int i=0;i<m_devices.size();++i) diagnose(i);
 #endif
     }
     Q_INVOKABLE void autoDiagnose(int index) { diagnose(index); }
     // Fully automatic sequence: fresh diagnosis -> rescue plan -> rescue
     // imaging -> verification -> evaluation -> report. Only reads the SSD.
     Q_INVOKABLE void startAutoRecovery(int index, const QString &destination) {
-        if(m_worker) { setStatus(QStringLiteral("Es läuft bereits eine Rettung.")); return; }
+        if(m_worker || m_fwWorker) { setStatus(QStringLiteral("Es läuft bereits eine Rettung oder ein Flashvorgang.")); return; }
         if(!diagnose(index)) return;
         const QVariantMap plan=RecoveryAgent::planRescue(m_aiReport,m_experience);
         if(!plan.value("allowed").toBool()) {
@@ -271,8 +448,14 @@ private:
         }
         const auto device=m_devices.at(index).toMap();
         // Fresh hardware query, not stale inventory data.
+#ifdef Q_OS_WIN
         const auto fresh=UsbBridge::inspect(device.value("devicePath").toString());
-        if(!fresh.value("usbConfirmed").toBool()) {
+        const bool stillThere=fresh.value("usbConfirmed").toBool();
+#else
+        const auto fresh=LinuxNvme::inspect(device);
+        const bool stillThere=fresh.value("present").toBool();
+#endif
+        if(!stillThere) {
             m_aiReport.clear();
             emit aiReportChanged();
             setStatus(QStringLiteral("KI-Diagnose gestoppt: USB-Gerät nicht mehr bestätigt."));
@@ -281,7 +464,9 @@ private:
         QVariantMap verified=device;
         for(auto it=fresh.constBegin();it!=fresh.constEnd();++it)
             verified[it.key()]=it.value();
+#ifdef Q_OS_WIN
         verified["connection"]="USB";
+#endif
         verified["readOnly"]=true;
         // Windows gives no NVMe data through USB bridges: use smartctl with
         // the bridge-specific protocol (learned, from template, or probed).
@@ -438,8 +623,12 @@ private:
             emit toolsChanged();
             ai(QStringLiteral("Werkzeugänderung erkannt – die KI berücksichtigt neue Werkzeuge ab der nächsten Diagnose."));
         }
-        if(m_worker) return;
+        if(m_worker || m_fwWorker || m_stickWorker) return;
+#ifdef Q_OS_WIN
         const QString sig=UsbBridge::usbDiskSignature();
+#else
+        const QString sig=LinuxNvme::signature();
+#endif
         if(sig==m_signature) return;
         ai(QStringLiteral("Änderung an den USB-Laufwerken erkannt – KI untersucht automatisch."));
         refresh();
@@ -501,6 +690,8 @@ signals:
     void recoveryLogChanged();
     void aiMonitorChanged();
     void toolsChanged();
+    void firmwareChanged();
+    void stickChanged();
 private:
     void setStatus(const QString &text){m_status=text;emit statusChanged();}
     QVariantList m_devices;
@@ -521,6 +712,12 @@ private:
     QNetworkAccessManager m_net;
     QVariantMap m_download;
     QString m_toolSig;
+    QThread *m_fwWorker=nullptr;
+    QVariantMap m_fwPlan;
+    QVariantMap m_fwProgress;
+    QVariantMap m_fwDevice;
+    QThread *m_stickWorker=nullptr;
+    QVariantMap m_stick;
     QString m_status=QStringLiteral("Bereit. Keine Schreibzugriffe auf SSDs.");
 };
 int main(int argc,char *argv[]) {
