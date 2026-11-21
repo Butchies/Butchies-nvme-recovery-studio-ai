@@ -84,7 +84,7 @@ class App(tk.Tk):
         self.label(top,("Windows 10/11 | Nur USB-Geräte" if sys.platform=="win32" else "Linux | Alle physischen Laufwerke (intern und extern)") +" | Nur lesende Inventarisierung",11).pack(anchor="w",pady=(6,0))
         bar=tk.Frame(self,bg="#101722",padx=22,pady=12);bar.pack(fill="x")
         buttons=tk.Frame(bar,bg="#101722");buttons.pack(fill="x")
-        actions=[("Geräte aktualisieren",self.refresh),("Rechneranalyse",self.host_info),("SSD-Diagnose",self.diagnose),("NVMe-Controller",self.controller_info),("USB-Verbindung",self.usb_diagnose),("Schutzprüfung",self.safety_check),("Firmwaredatei prüfen",self.inspect_firmware),("Firmwarekatalog",self.catalog_lookup),("Recovery-Leitfaden",self.triage_plan),("Abbild planen",self.plan_image),("Leseprobe 4 KiB",self.read_probe_action),("Image analysieren",self.scan_image_action),("PNG retten",self.export_png_action),("Befund",self.assess),("Vergleich",self.compare_case),("Fallakte speichern",self.save_case),("Fallakten",self.open_cases),("Fallakte exportieren",self.export)]
+        actions=[("Geräte aktualisieren",self.refresh),("Rechneranalyse",self.host_info),("SSD-Diagnose",self.diagnose),("NVMe-Controller",self.controller_info),("USB-Verbindung",self.usb_diagnose),("Schutzprüfung",self.safety_check),("Firmwaredatei prüfen",self.inspect_firmware),("Firmwarekatalog",self.catalog_lookup),("Recovery-Leitfaden",self.triage_plan),("Abbild planen",self.plan_image),("Leseprobe 4 KiB",self.read_probe_action),("Image analysieren",self.scan_image_action),("Dateien retten",self.export_png_action),("Befund",self.assess),("Vergleich",self.compare_case),("Fallakte speichern",self.save_case),("Fallakten",self.open_cases),("Fallakte exportieren",self.export)]
         for i,(name,cb) in enumerate(actions):
             tk.Button(buttons,text=name,command=cb,bg="#22566c",fg="white",relief="flat",padx=9,pady=7).grid(row=i//5,column=i%5,sticky="ew",padx=4,pady=4)
         for i in range(5): buttons.grid_columnconfigure(i,weight=1)
@@ -231,7 +231,7 @@ class App(tk.Tk):
         self.status.config(text="Offline-Image-Analyse beendet. Keine SSD-Zugriffe oder Dateischreibvorgänge.")
     def export_png_action(self):
         if sys.platform=="win32":
-            messagebox.showwarning("PNG retten","Der PNG-Export ist unter Windows noch nicht freigegeben. Die Image-Analyse bleibt lesend verfügbar.")
+            messagebox.showwarning("PNG retten","Der Datei-Export ist unter Windows noch nicht freigegeben. Die Image-Analyse bleibt lesend verfügbar.")
             return
         if self.png_export_cancel is not None:
             self.png_export_cancel.set()
@@ -241,15 +241,15 @@ class App(tk.Tk):
         if not isinstance(previous,dict):
             messagebox.showinfo("PNG retten","Zuerst ein vorhandenes Image mit 'Image analysieren' untersuchen.")
             return
-        findings=[x for x in previous.get("png_inspection",[]) if isinstance(x,dict) and x.get("validated") and x.get("complete")]
+        findings=[x for x in (previous.get("png_inspection",[])+previous.get("jpeg_inspection",[])) if isinstance(x,dict) and x.get("validated") and x.get("complete")]
         if not findings:
-            messagebox.showinfo("PNG retten","Keine vollständig strukturell validierten PNG-Kandidaten vorhanden.")
+            messagebox.showinfo("PNG retten","Keine strukturell plausiblen PNG- oder JPEG-Kandidaten vorhanden.")
             return
         source=previous.get("file")
         destination=filedialog.askdirectory(title="Separates Ziel-Dateisystem für gerettete PNGs auswählen")
         if not destination:return
         if not messagebox.askyesno("PNG-Dateien exportieren",
-            f"{len(findings)} PNG-Kandidaten werden erneut geprüft und als NEUE Dateien in das Ziel geschrieben.\\n"
+            f"{len(findings)} PNG/JPEG-Kandidaten werden erneut geprüft und als NEUE Dateien in das Ziel geschrieben.\\n"
             "Das Quell-Image bleibt unverändert. Bestehende Dateien werden nicht überschrieben. Fortfahren?"):
             return
         cancel=threading.Event()
@@ -258,7 +258,7 @@ class App(tk.Tk):
         def progress(index,copied,total):
             self.post_ui(lambda:self.png_export_progress(cancel,index,copied,total))
         def worker():
-            report=png_carving.export_pngs(source,destination,findings,cancelled=cancel.is_set,progress=progress)
+            report=png_carving.export_files(source,destination,findings,cancelled=cancel.is_set,progress=progress)
             self.post_ui(lambda:self.png_export_done(cancel,report))
         threading.Thread(target=worker,daemon=True).start()
     def png_export_progress(self,cancel,index,copied,total):
