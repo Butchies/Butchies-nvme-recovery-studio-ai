@@ -6,6 +6,7 @@ not recovered files or proof of filesystem integrity.
 import os
 import stat
 import time
+import png_inspection
 
 SIGNATURES=((b"\x89PNG\r\n\x1a\n","PNG"),(b"\xff\xd8\xff","JPEG"),
             (b"%PDF-","PDF"),(b"PK\x03\x04","ZIP"),(b"SQLite format 3\x00","SQLite"))
@@ -56,8 +57,16 @@ def scan(path, progress=None, cancelled=None):
                 if len(result["matches"])>=MAX_RESULTS:
                     result["limit_reached"]=True
                     break
+        if result["matches"] and not result["cancelled"] and not (cancelled and cancelled()):
+            # Reopen only the verified regular image, never a physical device.
+            with os.fdopen(os.open(path,os.O_RDONLY|getattr(os,"O_CLOEXEC",0)|getattr(os,"O_NOFOLLOW",0)),"rb",buffering=0) as verify:
+                again=os.fstat(verify.fileno())
+                if stat.S_ISREG(again.st_mode) and again.st_ino==info.st_ino and again.st_dev==info.st_dev and again.st_size==info.st_size:
+                    result["png_inspection"]=png_inspection.inspect_candidates(verify,result["matches"],info.st_size)
+                else:
+                    result["png_inspection_warning"]="Dateiidentität vor PNG-Prüfung verändert."
         result["elapsed_seconds"]=round(time.monotonic()-started,3)
-        result["warning"]="Signaturtreffer können falsch positiv sein; keine Dateigrenzen oder Dateiintegrität geprüft. Kein Carving und keine Wiederherstellung."
+        result["warning"]="Signaturtreffer können falsch positiv sein. Nur PNG-Kandidaten erhalten eine begrenzte Chunk-/CRC-Prüfung; kein Export und keine Wiederherstellung."
     except OSError as exc:
         result["error"]=str(exc)
     return result
