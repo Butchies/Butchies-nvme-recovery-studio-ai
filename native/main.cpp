@@ -75,6 +75,13 @@ public:
             d["nvmeControllerModel"]=bridge.value("nvmeControllerModel");
             d["nvmeControllerSerial"]=bridge.value("nvmeControllerSerial");
             d["nvmeFirmware"]=bridge.value("nvmeFirmware");
+            d["smartAvailable"]=bridge.value("smartAvailable");
+            d["temperatureCelsius"]=bridge.value("temperatureCelsius");
+            d["criticalWarning"]=bridge.value("criticalWarning");
+            d["availableSparePercent"]=bridge.value("availableSparePercent");
+            d["percentageUsed"]=bridge.value("percentageUsed");
+            d["mediaErrors"]=bridge.value("mediaErrors");
+            d["errorLogEntries"]=bridge.value("errorLogEntries");
             d["nvmePassthrough"]=bridge.value("nvmePassthrough");
             d["nvmeVerified"]=bridge.value("nvmeIdentifyAvailable").toBool(); // USB bridge cannot prove underlying NVMe type.
             d["readOnly"]=true;
@@ -100,6 +107,14 @@ public:
                  device.value("bridgeProductId").toString(),
                  device.value("bridgeFirmware").toString(),
                  device.value("nvmePassthrough").toString()));
+        if(device.value("smartAvailable").toBool()) {
+            setStatus(QStringLiteral("%1 | Temperatur: %2 °C | Reserve: %3 %% | Verschleiß: %4 %% | Medienfehler: %5")
+                .arg(device.value("name").toString(),
+                     device.value("temperatureCelsius").toString(),
+                     device.value("availableSparePercent").toString(),
+                     device.value("percentageUsed").toString(),
+                     device.value("mediaErrors").toString()));
+        }
     }
     Q_INVOKABLE void inspectDestination(const QString &path) {
         const QFileInfo info(path);
