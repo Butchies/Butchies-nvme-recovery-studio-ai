@@ -1,4 +1,4 @@
-# NVMe Recovery Studio AI – Entwicklungsstand 0.23.0 (GitHub)
+# NVMe Recovery Studio AI – Entwicklungsstand 0.24.0 (GitHub)
 
 ## Tatsächlich vorhandene Funktionen
 - Grafische Desktopoberfläche und lesende Laufwerksinventarisierung.
@@ -108,3 +108,8 @@ Ein Hash-Treffer im selbst bereitgestellten Katalog bestätigt weder Echtheit no
 - Der Leitfaden verarbeitet unvollständige oder unerwartete Berichtsstrukturen defensiver.
 - Eine neue Abbildplanung bewahrt den bisherigen Diagnosebefund desselben Geräts, damit SMART-Auswertung und Leitfaden erhalten bleiben.
 - Keine Datenträgeränderungen oder automatischen Reparaturen.
+
+## Wartung 0.24.0
+- Diagnose, Schutzprüfung, USB-Verbindungsbericht und Abbildplanung ergänzen nun eine gemeinsame Fallakte, sofern die Geräteidentität übereinstimmt.
+- Gerätewechsel und erneute Inventarisierung machen ausstehende Hintergrundresultate ungültig; veraltete Befunde werden nicht mehr einem später ausgewählten Laufwerk zugeordnet.
+- Weiterhin ausschließlich lesende Diagnose und Planung, keine Datenträger-Schreiboperationen.
