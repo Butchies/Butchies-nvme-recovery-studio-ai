@@ -1,4 +1,4 @@
-# NVMe Recovery Studio AI – Entwicklungsstand 0.17.0 (GitHub)
+# NVMe Recovery Studio AI – Entwicklungsstand 0.18.0 (GitHub)
 
 ## Tatsächlich vorhandene Funktionen
 - Grafische Desktopoberfläche und lesende Laufwerksinventarisierung.
@@ -77,3 +77,8 @@ Ein Hash-Treffer im selbst bereitgestellten Katalog bestätigt weder Echtheit no
 - Windows-USB-Diagnose akzeptiert nur den kanonischen PHYSICALDRIVE-Pfad mit numerischer Laufwerksnummer.
 - Abbildplanung läuft im Hintergrund, sodass Mount- und Kapazitätsabfragen die Oberfläche nicht blockieren.
 - Ergebnisse werden verworfen, wenn zwischenzeitlich ein anderes Laufwerk ausgewählt wurde.
+
+## Wartung 0.18.0
+- Hintergrundaufgaben übergeben GUI-Ergebnisse jetzt an eine zentrale Warteschlange; Tk-Widgets werden im Hauptthread aktualisiert.
+- Abbildplanung wird auch bei erneuter Inventarisierung verworfen, selbst wenn der Gerätepfad gleich geblieben ist.
+- Es werden weiterhin keine Datenträger beschrieben, keine Firmware geflasht und keine Installer automatisch gebaut.
