@@ -33,6 +33,9 @@
 - `docs/RECHNER_HARDWARE_PROFIL_VERGLEICH_ENTWURF_DE.md` – Rechnerprofile und Anschlussvergleiche.
 
 ## Diagnose, Firmware und Recovery
+- `docs/NETZWERK_WLAN_OFFLINE_PAKETE_ENTWURF_DE.md` – WLAN, Offline-Modus und kontrollierte Paketdownloads.
+- `docs/RETTUNGSFALL_ZWEITMEINUNG_EXPORT_ENTWURF_DE.md` – datensparsamer Export für fachliche Zweitmeinungen.
+- `docs/RETTUNGSZIELE_SPEICHERORT_VERWALTUNG_ENTWURF_DE.md` – Speicherortmanager und Schutz der Rettungsquelle.
 - `docs/LINUX_BOOT_MEDIUM_ERSTELLEN_ENTWURF_DE.md` – geführte und sichere Erstellung des Linux-Rettungssticks.
 - `docs/KI_MODELL_MANAGER_OFFLINE_ENTWURF_DE.md` – Offline-KI-Modelle, Hardwareeignung und Paketverwaltung.
 - `docs/EXPERTEN_ARBEITSPLATZ_ENTWURF_DE.md` – anpassbare Expertenoberfläche für SSD-, Host- und Recovery-Daten.
