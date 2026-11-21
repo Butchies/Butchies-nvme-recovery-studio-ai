@@ -33,6 +33,8 @@
 - `docs/RECHNER_HARDWARE_PROFIL_VERGLEICH_ENTWURF_DE.md` – Rechnerprofile und Anschlussvergleiche.
 
 ## Diagnose, Firmware und Recovery
+- `docs/RECHNER_HARDWARE_BERICHT_ENTWURF_DE.md` – Hardwareberichte und anonymisierter Export.
+- `docs/NOTFALLMODUS_SSD_ENTWURF_DE.md` – vorsichtige Bedienung bei instabilen SSDs.
 - `docs/DATENRETTUNG_ZIELMEDIEN_ENTWURF_DE.md` – Zielmedien und Speicherplanung für gerettete Daten.
 - `docs/DIAGNOSE_ZEITVERLAUF_ENTWURF_DE.md` – Vergleich von Messwerten und Zustandsänderungen.
 - `docs/REPARATURWEGE_ENTSCHEIDUNG_ENTWURF_DE.md` – verständliche Auswahl möglicher weiterer Maßnahmen.
@@ -46,6 +48,7 @@
 - `docs/SICHERHEIT_DE.md`
 
 ## KI und Daten
+- `docs/HILFE_KONTEXTASSISTENT_ENTWURF_DE.md` – kontextbezogene Hilfe und KI-Erklärungen.
 - `docs/OFFLINE_ONLINE_KI_ENTWURF_DE.md`
 - `docs/FALLAKTEN_LERNEN_ENTWURF_DE.md`
 - `docs/KI_LIVE_MONITOR_DETAILS_ENTWURF_DE.md`
