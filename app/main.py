@@ -5,6 +5,8 @@ from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 import cases
 import diagnostics
+import analysis
+import exporter
 
 def cmd(args):
     try:
@@ -40,8 +42,9 @@ class App(tk.Tk):
         self.label(top,"NVMe Recovery Studio AI",22,True).pack(anchor="w")
         self.label(top,("Windows 10/11 | Nur USB-Geräte" if sys.platform=="win32" else "Linux | NVMe und USB") +" | Nur lesende Inventarisierung",11).pack(anchor="w",pady=(6,0))
         bar=tk.Frame(self,bg="#101722",padx=22,pady=12);bar.pack(fill="x")
-        for name,cb in [("Geräte aktualisieren",self.refresh),("Rechneranalyse",self.host_info),("NVMe-Diagnose",self.diagnose),("Fallakte speichern",self.save_case),("Fallakten",self.open_cases),("Fallakte exportieren",self.export)]:
-            tk.Button(bar,text=name,command=cb,bg="#22566c",fg="white",relief="flat",padx=14,pady=8).pack(side="left",padx=(0,10))
+        buttons=tk.Frame(bar,bg="#101722");buttons.pack(fill="x")
+        for name,cb in [("Geräte aktualisieren",self.refresh),("Rechneranalyse",self.host_info),("NVMe-Diagnose",self.diagnose),("Befund",self.assess),("Vergleich",self.compare_case),("Fallakte speichern",self.save_case),("Fallakten",self.open_cases),("Fallakte exportieren",self.export)]:
+            tk.Button(buttons,text=name,command=cb,bg="#22566c",fg="white",relief="flat",padx=9,pady=7).pack(side="left",padx=(0,5))
         main=tk.PanedWindow(self,orient="horizontal",bg="#101722",sashwidth=6,bd=0);main.pack(fill="both",expand=True,padx=22,pady=12)
         left=tk.Frame(main,bg="#192333",padx=12,pady=12);right=tk.Frame(main,bg="#192333",padx=12,pady=12);main.add(left,minsize=350);main.add(right,minsize=280)
         self.label(left,"Erkannte Datenträger",15,True).pack(anchor="w")
@@ -50,6 +53,7 @@ class App(tk.Tk):
         self.detail=tk.Text(right,bg="#192333",fg="#e8eff8",font=("Consolas",11),relief="flat",wrap="word",state="disabled");self.detail.pack(fill="both",expand=True,pady=12)
         self.status=self.label(self,"Keine Schreib-, Lösch- oder Firmwarefunktionen",10);self.status.pack(anchor="w",padx=22,pady=12)
         self.last_report=None
+        self.case_for_compare=None
         self.refresh()
     def label(self,parent,text,size,bold=False):
         return tk.Label(parent,text=text,bg=parent["bg"],fg="#e8eff8",font=("Segoe UI",size,"bold" if bold else "normal"))
@@ -86,8 +90,36 @@ class App(tk.Tk):
         if self.selected is None or self.selected.get("path")!=device.get("path"):
             self.status.config(text="Diagnose abgeschlossen; Geräteauswahl geändert.");return
         self.last_report={"device":device,"diagnostics":report}
+        self.last_report["assessment"]=analysis.assess(self.last_report)
         self.show(json.dumps(self.last_report,ensure_ascii=False,indent=2))
         self.status.config(text="NVMe-Diagnose abgeschlossen. Fehler und fehlende Berechtigungen werden angezeigt.")
+    def assess(self):
+        if not self.last_report:
+            messagebox.showinfo("Befund","Zuerst NVMe-Diagnose durchführen.");return
+        report=self.last_report.get("report",self.last_report)
+        result=analysis.assess(report)
+        self.show(json.dumps(result,ensure_ascii=False,indent=2))
+        self.status.config(text="Regelbasierter Befund angezeigt; kein KI-Modell.")
+    def compare_case(self):
+        if not self.last_report:
+            messagebox.showinfo("Vergleich","Zuerst aktuelle NVMe-Diagnose durchführen.");return
+        try: entries=cases.recent()
+        except Exception as exc:messagebox.showerror("Fallakten",str(exc));return
+        if not entries:
+            messagebox.showinfo("Vergleich","Keine gespeicherten Fallakten vorhanden.");return
+        win=tk.Toplevel(self);win.title("Fallakte für Vergleich auswählen");win.geometry("670x360")
+        lb=tk.Listbox(win);lb.pack(fill="both",expand=True,padx=12,pady=12)
+        for item in entries:lb.insert("end",f"#{item[0]} | {item[1][:19]} | {item[2]}")
+        def choose_case():
+            selected=lb.curselection()
+            if not selected:return
+            old=cases.load(entries[selected[0]][0])
+            old_report=(old or {}).get("report") or {}
+            current=self.last_report.get("report",self.last_report)
+            result=analysis.compare(old_report,current)
+            self.show(json.dumps(result,ensure_ascii=False,indent=2))
+            win.destroy()
+        tk.Button(win,text="Vergleichen",command=choose_case).pack(pady=8)
     def save_case(self):
         if not self.selected and not self.last_report:
             messagebox.showinfo("Fallakte","Bitte zuerst ein Gerät oder die Rechneranalyse öffnen.");return
@@ -96,7 +128,7 @@ class App(tk.Tk):
         try:
             case_id=cases.save(item.get("name","Rechneranalyse"),item.get("path",""),snapshot)
             self.status.config(text=f"Fallakte #{case_id} lokal gespeichert.")
-        except OSError as exc:messagebox.showerror("Speicherfehler",str(exc))
+        except (OSError,ValueError) as exc:messagebox.showerror("Speicherfehler",str(exc))
     def open_cases(self):
         try: entries=cases.recent()
         except OSError as exc:messagebox.showerror("Datenbankfehler",str(exc));return
