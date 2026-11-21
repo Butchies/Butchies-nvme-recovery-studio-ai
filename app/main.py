@@ -61,6 +61,7 @@ class App(tk.Tk):
         self.status=self.label(self,"Keine Schreib-, Lösch- oder Firmwarefunktionen",10);self.status.pack(anchor="w",padx=22,pady=12)
         self.last_report=None
         self.case_for_compare=None
+        self.inventory_epoch=0
         self.ui_queue=queue.Queue()
         self.after(75,self.process_ui_queue)
         self.refresh()
@@ -84,7 +85,7 @@ class App(tk.Tk):
             self.post_ui(lambda:self.loaded(devices))
         threading.Thread(target=worker,daemon=True).start()
     def loaded(self,devices):
-        self.devices=devices;self.selected=None;self.last_report=None;self.tree.delete(*self.tree.get_children())
+        self.devices=devices;self.selected=None;self.last_report=None;self.inventory_epoch+=1;self.tree.delete(*self.tree.get_children())
         for i,x in enumerate(devices):
             self.tree.insert("","end",iid=str(i),text=x["name"],values=(x["bus"],f'{x["size"]/1e9:.1f} GB'))
         self.status.config(text=f"{len(devices)} Datenträger erfasst. Keine Änderungen vorgenommen.")
@@ -119,16 +120,17 @@ class App(tk.Tk):
         destination=filedialog.askdirectory(title="Zielverzeichnis für spätere Datensicherung auswählen")
         if not destination:return
         device=dict(self.selected)
+        epoch=self.inventory_epoch
         self.status.config(text="Ziel-Mount und Speicherkapazität werden lesend geprüft ...")
         def worker():
             try:
                 result=imaging_plan.plan(device,destination)
             except (OSError,ValueError) as exc:
                 result={"error":str(exc),"ready_to_image":False,"device_writes_allowed":False}
-            self.post_ui(lambda:self.plan_image_done(device,result))
+            self.post_ui(lambda:self.plan_image_done(device,result,epoch))
         threading.Thread(target=worker,daemon=True).start()
-    def plan_image_done(self,device,result):
-        if not self.selected or self.selected.get("path")!=device.get("path"):
+    def plan_image_done(self,device,result,epoch):
+        if epoch!=self.inventory_epoch or self.selected!=device:
             self.status.config(text="Geräteauswahl geändert; Abbildplanung verworfen.");return
         self.last_report={"device":device,"imaging_plan":result}
         self.show(json.dumps(self.last_report,ensure_ascii=False,indent=2))
