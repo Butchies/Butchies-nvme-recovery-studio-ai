@@ -11,6 +11,7 @@ import safety
 import firmware
 import firmware_catalog
 import triage
+import imaging_plan
 
 def cmd(args):
     try:
@@ -47,7 +48,7 @@ class App(tk.Tk):
         self.label(top,("Windows 10/11 | Nur USB-Geräte" if sys.platform=="win32" else "Linux | NVMe und USB") +" | Nur lesende Inventarisierung",11).pack(anchor="w",pady=(6,0))
         bar=tk.Frame(self,bg="#101722",padx=22,pady=12);bar.pack(fill="x")
         buttons=tk.Frame(bar,bg="#101722");buttons.pack(fill="x")
-        actions=[("Geräte aktualisieren",self.refresh),("Rechneranalyse",self.host_info),("NVMe-Diagnose",self.diagnose),("USB-Verbindung",self.usb_diagnose),("Schutzprüfung",self.safety_check),("Firmwaredatei prüfen",self.inspect_firmware),("Firmwarekatalog",self.catalog_lookup),("Recovery-Leitfaden",self.triage_plan),("Befund",self.assess),("Vergleich",self.compare_case),("Fallakte speichern",self.save_case),("Fallakten",self.open_cases),("Fallakte exportieren",self.export)]
+        actions=[("Geräte aktualisieren",self.refresh),("Rechneranalyse",self.host_info),("NVMe-Diagnose",self.diagnose),("USB-Verbindung",self.usb_diagnose),("Schutzprüfung",self.safety_check),("Firmwaredatei prüfen",self.inspect_firmware),("Firmwarekatalog",self.catalog_lookup),("Recovery-Leitfaden",self.triage_plan),("Abbild planen",self.plan_image),("Befund",self.assess),("Vergleich",self.compare_case),("Fallakte speichern",self.save_case),("Fallakten",self.open_cases),("Fallakte exportieren",self.export)]
         for i,(name,cb) in enumerate(actions):
             tk.Button(buttons,text=name,command=cb,bg="#22566c",fg="white",relief="flat",padx=9,pady=7).grid(row=i//5,column=i%5,sticky="ew",padx=4,pady=4)
         for i in range(5): buttons.grid_columnconfigure(i,weight=1)
@@ -101,6 +102,15 @@ class App(tk.Tk):
             report=diagnostics.nvme_report(device)
             self.after(0,lambda:self.diagnose_done(device,report))
         threading.Thread(target=worker,daemon=True).start()
+    def plan_image(self):
+        if not self.selected:
+            messagebox.showinfo("Abbild planen","Zuerst einen Datenträger auswählen.");return
+        destination=filedialog.askdirectory(title="Zielverzeichnis für spätere Datensicherung auswählen")
+        if not destination:return
+        result=imaging_plan.plan(dict(self.selected),destination)
+        self.last_report={"device":dict(self.selected),"imaging_plan":result}
+        self.show(json.dumps(self.last_report,ensure_ascii=False,indent=2))
+        self.status.config(text="Kapazitätsplanung abgeschlossen. Kein Datenträger geöffnet, kein Abbild erstellt.")
     def triage_plan(self):
         if not self.last_report:
             messagebox.showinfo("Recovery-Leitfaden","Zuerst eine Diagnose oder Schutzprüfung durchführen.");return
