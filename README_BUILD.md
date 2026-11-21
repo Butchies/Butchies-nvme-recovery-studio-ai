@@ -1,4 +1,4 @@
-# NVMe Recovery Studio AI – Entwicklungsstand 0.2.0 (GitHub)
+# NVMe Recovery Studio AI – Entwicklungsstand 0.3.0 (GitHub)
 
 ## Tatsächlich vorhandene Funktionen
 - Grafische Desktopoberfläche und lesende Laufwerksinventarisierung.
@@ -7,10 +7,10 @@
 - Rechneranalyse mit Betriebssystem-, CPU- und optionalen PCI/USB-Informationen.
 - Linux-NVMe-Diagnose mit `nvme-cli`: SMART, Controller-Identify und Fehlerlog als JSON, sofern Berechtigungen und Gerätezugriff vorhanden sind.
 - Lokale SQLite-Fallakten: speichern, auflisten und öffnen.
-- JSON-Export inklusive vorhandener Diagnosedaten.
+- JSON-Export inklusive vorhandener Diagnosedaten, wahlweise mit Ausblendung von Seriennummern und Gerätepfaden.\n- Regelbasierte Offline-Auswertung von NVMe-SMART-Werten mit Belegen und Unsicherheiten.\n- Vergleich gespeicherter und aktueller SMART-Messwerte nur bei übereinstimmender Geräteidentität.
 
 ## Nicht vorhanden
-Noch keine lokale KI, keine Datenrettung, kein Firmware-Flash, kein Controller-Recovery, kein bootfähiges Linux-Image. Kein fertiger oder verifizierter Installer.
+Noch kein generatives lokales KI-Modell, keine Datenrettung, kein Firmware-Flash, kein Controller-Recovery, kein bootfähiges Linux-Image. Kein fertiger oder verifizierter Installer.
 
 ## Start
 `python app/main.py`
