@@ -1,4 +1,4 @@
-# NVMe Recovery Studio AI – Entwicklungsstand 0.8.0 (GitHub)
+# NVMe Recovery Studio AI – Entwicklungsstand 0.9.0 (GitHub)
 
 ## Tatsächlich vorhandene Funktionen
 - Grafische Desktopoberfläche und lesende Laufwerksinventarisierung.
@@ -6,6 +6,7 @@
 - Linux: direkte NVMe-Namespaces und USB-Laufwerke in der Inventarisierung.
 - Windows: zusätzlicher lesender USB-Verbindungsbericht mit erneuter Geräteidentitätsprüfung. USB-Anbindung ist kein Nachweis für NVMe-Passthrough.
 - Konservative Schutzprüfung für gewählte Datenträger: erneute Identitätsprüfung, Linux-Mountpoints, aktive Boot-/System-Mounts, Swap-Hinweise und ausdrückliche Schreibsperre. Die Prüfung ist kein Freigabeverfahren für Schreibzugriffe.
+- Lokaler Firmware-Metadatenkatalog (JSON, schema 1) mit SHA-256-Abgleich; Katalogeinträge sind nicht authentifiziert und erlauben keine Firmwareinstallation.
 - Offline-Firmwaredatei-Inspektion: Dateigröße, SHA-256 und Header-Vorschau. Keine Ausführung, keine Signatur- oder Kompatibilitätsfreigabe und kein Flash.
 - Rechneranalyse mit Betriebssystem-, CPU- und optionalen PCI/USB-Informationen.
 - Linux-NVMe-Diagnose mit `nvme-cli`: SMART, Controller-Identify und Fehlerlog als JSON, sofern Berechtigungen und Gerätezugriff vorhanden sind.
@@ -32,3 +33,7 @@ Der GitHub-Actions-Workflow `Windows Installer` ist für PyInstaller und Inno Se
 - Der Installer-Workflow begrenzt die Ausgabe auf genau eine EXE mit maximal 250 MB.
 
 **Hinweis zur Schutzprüfung:** Die Erkennung von System- und Boot-Datenträgern ist bewusst konservativ und nicht vollständig (z. B. bei komplexen LVM-/RAID-/verschlüsselten Setups). Sie hebt niemals die Schreibsperre auf.
+
+## Firmwarekatalog (nur Recherche)
+Beispielstruktur: `{"schema":1,"entries":[{"sha256":"<64 Hexzeichen>","pci_vendor_id":"1234","pci_device_id":"abcd","model":"Beispiel","firmware_revision":"1.0","source":"Herstellerquelle dokumentieren"}]}`.
+Ein Hash-Treffer im selbst bereitgestellten Katalog bestätigt weder Echtheit noch Controller-Kompatibilität. Kein automatischer Download und kein Flash.
