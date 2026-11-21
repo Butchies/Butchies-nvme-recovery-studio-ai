@@ -249,8 +249,9 @@ class App(tk.Tk):
         self.show(json.dumps(result,ensure_ascii=False,indent=2))
         self.status.config(text="Regelbasierter Befund angezeigt; kein KI-Modell.")
     def compare_case(self):
-        if not self.last_report or "diagnostics" not in self.last_report:
-            messagebox.showinfo("Vergleich","Zuerst eine aktuelle NVMe-Diagnose durchführen.");return
+        current=self.current_diagnostic()
+        if "diagnostics" not in current:
+            messagebox.showinfo("Vergleich","Zuerst eine aktuelle SSD-Diagnose durchführen.");return
         try: entries=cases.recent()
         except Exception as exc:messagebox.showerror("Fallakten",str(exc));return
         if not entries:
@@ -265,10 +266,20 @@ class App(tk.Tk):
             except (OSError,ValueError,sqlite3.Error) as exc:
                 messagebox.showerror("Fallakten",str(exc));return
             old_report=(old or {}).get("report") or {}
-            current=self.last_report
-            if "diagnostics" not in old_report:
-                messagebox.showinfo("Vergleich","Gespeicherte Fallakte enthält keine NVMe-Diagnose.");return
-            result=analysis.compare(old_report,current)
+            if isinstance(old_report,dict) and isinstance(old_report.get("report"),dict):
+                old_report=old_report["report"]
+            if not isinstance(old_report,dict) or "diagnostics" not in old_report:
+                messagebox.showinfo("Vergleich","Gespeicherte Fallakte enthält keine SSD-Diagnose.");return
+            old_diag=old_report.get("diagnostics") or {}
+            new_diag=current.get("diagnostics") or {}
+            if not isinstance(old_diag,dict) or not isinstance(new_diag,dict):
+                result={"error":"Ungültige Diagnoseformate"}
+            elif "smartctl" in old_diag and "smartctl" in new_diag:
+                result=ata_analysis.compare(old_report,current)
+            elif "smart" in old_diag and "smart" in new_diag:
+                result=analysis.compare(old_report,current)
+            else:
+                result={"error":"Vergleich gesperrt: unterschiedliche Diagnoseverfahren"}
             self.show(json.dumps(result,ensure_ascii=False,indent=2))
             win.destroy()
         tk.Button(win,text="Vergleichen",command=choose_case).pack(pady=8)
