@@ -33,6 +33,9 @@
 - `docs/RECHNER_HARDWARE_PROFIL_VERGLEICH_ENTWURF_DE.md` – Rechnerprofile und Anschlussvergleiche.
 
 ## Diagnose, Firmware und Recovery
+- `docs/DATENRETTUNG_ZIELMEDIEN_ENTWURF_DE.md` – Zielmedien und Speicherplanung für gerettete Daten.
+- `docs/DIAGNOSE_ZEITVERLAUF_ENTWURF_DE.md` – Vergleich von Messwerten und Zustandsänderungen.
+- `docs/REPARATURWEGE_ENTSCHEIDUNG_ENTWURF_DE.md` – verständliche Auswahl möglicher weiterer Maßnahmen.
 - `docs/SSD_ZUSTAND_RISIKO_ANZEIGE_ENTWURF_DE.md` – Zustands- und Risikodarstellung.
 - `docs/RECOVERY_SITZUNG_FORTSETZEN_ENTWURF_DE.md` – Sitzungen speichern und fortsetzen.
 - `docs/CONTROLLER_WISSEN_ENTWURF_DE.md`
