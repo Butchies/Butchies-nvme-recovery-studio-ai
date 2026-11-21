@@ -1,7 +1,11 @@
 # Windows-Edition – Produktentwurf
 
 ## Ziel
-Eine eigenständige Windows-11-Anwendung für die Diagnose und technisch mögliche Recovery von extern per USB angeschlossenen NVMe-SSDs.
+Eine eigenständige Windows-10/11-Anwendung für die Diagnose und technisch mögliche Recovery von extern per USB angeschlossenen NVMe-SSDs.
+
+## Unterstützte Betriebssysteme
+- Windows 10 und Windows 11 (jeweils 64-Bit).
+- Windows 10 ist trotz ausgelaufenem regulären Microsoft-Support als gewünschte Plattform vorgesehen; Sicherheits- und Treibergrenzen sollen in der Anwendung kenntlich sein.
 
 ## Installation und Start
 - Eigenes Windows-Installationspaket.
