@@ -8,6 +8,16 @@ def assess(report):
     if not isinstance(payload,dict) or not payload:
         result["findings"].append("Keine auswertbaren ATA-SMART-Daten.")
         return result
+    exit_status=data.get("smartctl_exit_status")
+    if isinstance(exit_status,int) and exit_status:
+        result["evidence"].append({"field":"smartctl.exit_status","value":exit_status})
+        if exit_status & 0b1100:
+            result["status"]="kritisch"
+            result["findings"].append("smartctl meldet einen SMART-Gerätefehler oder Vorwarnung.")
+        if exit_status & 0b11110000:
+            result["findings"].append("smartctl meldet auffällige SMART-Attribute oder Fehlerhistorie.")
+        if exit_status & 0b11:
+            result["findings"].append("SMART-Abfrage möglicherweise unvollständig wegen Kommando-/Zugriffsfehler.")
     health=payload.get("smart_status")
     passed=health.get("passed") if isinstance(health,dict) else None
     if passed is False:
@@ -15,7 +25,7 @@ def assess(report):
         result["findings"].append("SMART-Gesamtstatus meldet einen Fehler.")
         result["evidence"].append({"field":"smart_status.passed","value":False})
     elif passed is True:
-        result["status"]="SMART-Gesamtstatus bestanden"
+        if result["status"]=="unbekannt": result["status"]="SMART-Gesamtstatus bestanden"
         result["findings"].append("SMART-Gesamtstatus bestanden; kein Beweis für ein gesundes Laufwerk.")
         result["evidence"].append({"field":"smart_status.passed","value":True})
     else:
