@@ -1,4 +1,4 @@
-# NVMe Recovery Studio AI – Entwicklungsstand 0.3.0 (GitHub)
+# NVMe Recovery Studio AI – Entwicklungsstand 0.4.0 (GitHub)
 
 ## Tatsächlich vorhandene Funktionen
 - Grafische Desktopoberfläche und lesende Laufwerksinventarisierung.
@@ -19,3 +19,9 @@ Unter Linux ist für die NVMe-Diagnose zusätzlich `nvme-cli` erforderlich. Fehl
 
 ## Windows-Installer
 Der GitHub-Actions-Workflow `Windows Installer` ist für PyInstaller und Inno Setup vorgesehen. Ein Setup-EXE darf erst nach erfolgreichem Build als verfügbar bezeichnet werden. Die Zielgröße für das spätere einzelne Installationspaket beträgt maximal 250 MB; eine Überschreitung erfordert vorherige Freigabe.
+
+## Aktuelle Ergänzungen
+- Geräteidentität wird vor Linux-NVMe-Abfragen erneut anhand von Seriennummer und Größe verglichen.
+- Rechneranalyse läuft ohne Blockieren der Oberfläche.
+- Bedienelemente sind in zwei Reihen angeordnet.
+- Der Installer-Workflow begrenzt die Ausgabe auf genau eine EXE mit maximal 250 MB.
