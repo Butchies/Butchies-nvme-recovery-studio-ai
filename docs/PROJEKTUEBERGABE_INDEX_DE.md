@@ -33,6 +33,9 @@
 - `docs/RECHNER_HARDWARE_PROFIL_VERGLEICH_ENTWURF_DE.md` – Rechnerprofile und Anschlussvergleiche.
 
 ## Diagnose, Firmware und Recovery
+- `docs/NVME_COMMAND_EFFECTS_SICHERHEIT_ENTWURF_DE.md` – NVMe-Befehlswirkungen und Sicherheitskennzeichnung.
+- `docs/NVME_SUBSYSTEM_CONTROLLER_TOPOLOGIE_ENTWURF_DE.md` – Subsystem-, Controller- und Namespace-Zuordnung.
+- `docs/DIAGNOSE_EVIDENZ_WIDERSPRUECHE_ENTWURF_DE.md` – widersprüchliche Befunde und nachvollziehbare KI-Hypothesen.
 - `docs/NVME_MI_MANAGEMENT_ENTWURF_DE.md` – NVMe-MI-Fähigkeiten und Verwaltungsinformationen.
 - `docs/NVME_ASYNCHRONE_WARNUNGEN_ENTWURF_DE.md` – asynchrone Controllerereignisse und Live-Warnungen.
 - `docs/NVME_SANITIZE_STATUS_NUR_LESEN_ENTWURF_DE.md` – rein lesende Sanitize-Statusanzeige.
