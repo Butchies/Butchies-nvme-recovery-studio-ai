@@ -33,6 +33,9 @@
 - `docs/RECHNER_HARDWARE_PROFIL_VERGLEICH_ENTWURF_DE.md` – Rechnerprofile und Anschlussvergleiche.
 
 ## Diagnose, Firmware und Recovery
+- `docs/NVME_PERSISTENTE_EREIGNISSE_ENTWURF_DE.md` – persistente Controllerereignisse und deren Chronik.
+- `docs/NVME_SELBSTDIAGNOSE_GRENZEN_ENTWURF_DE.md` – Selbstdiagnoseergebnisse und Aussagegrenzen.
+- `docs/SSD_BETRIEBSZUSTAND_SCHREIBSCHUTZ_ENTWURF_DE.md` – Betriebszustand, Read-only und Erreichbarkeit.
 - `docs/DESTRUKTIVE_BEFEHLE_SCHUTZZONE_ENTWURF_DE.md` – Schutzbereich für Format, Erase und Sanitize.
 - `docs/SSD_IDENTITAET_VERWECHSLUNGSSCHUTZ_ENTWURF_DE.md` – sichere Zuordnung von SSDs über Sitzungen hinweg.
 - `docs/LOKALE_DATEN_BACKUP_WIEDERHERSTELLUNG_ENTWURF_DE.md` – Sicherung und Wiederherstellung von Fallakten und Einstellungen.
