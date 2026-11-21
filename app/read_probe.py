@@ -8,6 +8,7 @@ import sys
 import json
 import subprocess
 import time
+import struct
 
 PATH=re.compile(r"/dev/nvme[0-9]+n[0-9]+")
 MAX_SAMPLE=4096
@@ -46,6 +47,7 @@ def probe(device):
         fd=os.open(path,flags)
         chunk=os.pread(fd,result["bytes_requested"],0)
         result["bytes_read"]=len(chunk)
+        result["sector_evidence"]=interpret_header(chunk)
         result["probe_success"]=len(chunk)==result["bytes_requested"]
         result["elapsed_seconds"]=round(time.monotonic()-started,3)
         result["observation"]="Anfang des Datenträgers lesbar." if result["probe_success"] else "Unvollständige Leseantwort."
@@ -55,3 +57,35 @@ def probe(device):
         if fd is not None: os.close(fd)
     result["warning"]="Eine erfolgreiche Einzelprobe beweist nicht, dass andere Sektoren lesbar sind. Bei instabilen SSDs können auch Leseversuche problematisch sein."
     return result
+
+def interpret_header(data):
+    """Read-only interpretation of already sampled bytes; no further I/O."""
+    evidence={"bytes_available":len(data),"partition_table":"unknown",
+              "filesystem":"unknown","metadata_only":True}
+    if len(data)<512:
+        evidence["warning"]="Weniger als ein vollständiger 512-Byte-Sektor gelesen."
+        return evidence
+    signature=data[510:512]==bytes((0x55,0xaa))
+    evidence["mbr_signature_present"]=signature
+    if signature:
+        entries=[]
+        for index in range(4):
+            entry=data[446+index*16:462+index*16]
+            ptype=entry[4]
+            start=struct.unpack_from("<I",entry,8)[0]
+            count=struct.unpack_from("<I",entry,12)[0]
+            if ptype and count:
+                entries.append({"index":index+1,"type_hex":format(ptype,"#04x"),
+                                "start_lba":start,"sectors":count})
+        evidence["partition_entries"]=entries
+        evidence["partition_table"]="protective_mbr" if any(e["type_hex"]=="0xee" for e in entries) else "mbr_possible"
+        if evidence["partition_table"]=="protective_mbr":
+            evidence["warning"]="GPT möglich; der GPT-Header bei LBA 1 wurde nicht separat geprüft."
+    if data[3:11]==b"NTFS    ":
+        evidence["filesystem"]="ntfs_boot_sector_possible"
+    elif data[3:11]==b"EXFAT   ":
+        evidence["filesystem"]="exfat_boot_sector_possible"
+    elif data[54:62] in (b"FAT12   ",b"FAT16   ") or data[82:90]==b"FAT32   ":
+        evidence["filesystem"]="fat_boot_sector_possible"
+    evidence["note"]="Signaturen sind Hinweise, keine Integritätsprüfung."
+    return evidence
