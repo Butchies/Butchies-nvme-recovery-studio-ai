@@ -42,7 +42,7 @@ ApplicationWindow {
                     model: controller.devices
                     clip: true
                     delegate: Rectangle {
-                        width: ListView.view.width; height: 174
+                        width: ListView.view.width; height: 198
                         color: index%2 ? "#1c2939" : "#243346"
                         radius: 6
                         MouseArea {
@@ -77,6 +77,12 @@ ApplicationWindow {
                                 color: "#a5bed3"
                                 elide: Text.ElideRight
                                 width: parent.width
+                            }
+                            Label {
+                                text: modelData.errorLogAvailable
+                                      ? "NVMe-Fehlerprotokoll: " + modelData.recentNvmeErrors.length + " Einträge (maximal 4 gelesen)"
+                                      : "NVMe-Fehlerprotokoll über diese Verbindung nicht verfügbar"
+                                color: "#a5bed3"
                             }
                         }
                     }
