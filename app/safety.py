@@ -49,8 +49,33 @@ def classify(device):
         result["reasons"].append("Geräteidentität hat sich seit Auswahl verändert.")
         return result
     mounts=[]
+    child_paths=[]
     for node in walk([root]):
         mounts.extend(m for m in (node.get("mountpoints") or []) if m)
+        if node.get("path"): child_paths.append(str(node["path"]))
+    findmnt=diagnostics.run(["findmnt","-J","-o","SOURCE,TARGET"])
+    active_mounts=[]
+    if findmnt["ok"]:
+        try:
+            def mounts_walk(items):
+                for entry in items:
+                    yield entry
+                    yield from mounts_walk(entry.get("children") or [])
+            entries=json.loads(findmnt["stdout"]).get("filesystems",[])
+            active_mounts=[{"source":x.get("source"),"target":x.get("target")}
+                           for x in mounts_walk(entries)
+                           if any(str(x.get("source") or "").startswith(p) for p in child_paths)]
+        except (ValueError,TypeError): pass
+    result["observations"].append({"active_mounts":active_mounts})
+    if any(x.get("target") in ("/","/boot","/boot/efi","/efi") for x in active_mounts):
+        result["reasons"].append("Aktives System- oder Boot-Dateisystem erkannt.")
+    swaps=diagnostics.run(["swapon","--noheadings","--raw","--show=NAME"])
+    swap_paths=swaps["stdout"].splitlines() if swaps["ok"] else []
+    active_swaps=[x for x in swap_paths if any(x.startswith(p) for p in child_paths)]
+    if active_swaps: result["reasons"].append("Aktiver Swap auf diesem Laufwerk erkannt.")
+    result["observations"].append({"active_swap":active_swaps})
+    if not findmnt["ok"] or not swaps["ok"]:
+        result["reasons"].append("System-/Swap-Abfrage unvollständig; keine Entwarnung möglich.")
     result["observations"].append({"mountpoints":sorted(set(mounts))})
     if mounts:
         result["reasons"].append("Laufwerk enthält eingehängte Dateisysteme; darunter könnte das System oder Bootmedium sein.")
