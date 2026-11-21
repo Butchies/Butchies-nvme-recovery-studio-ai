@@ -14,7 +14,6 @@ SolidCompression=yes
 ArchitecturesAllowed=x64
 ArchitecturesInstallIn64BitMode=x64
 PrivilegesRequired=lowest
-Output=yes
 [Files]
 Source: "dist\NVMeRecoveryStudioAI.exe"; DestDir: "{app}"; Flags: ignoreversion
 [Icons]
