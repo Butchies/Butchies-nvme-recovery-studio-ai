@@ -18,6 +18,7 @@ import controller_identity
 import nvme_capabilities
 import read_probe
 import image_scan
+import png_carving
 
 def cmd(args):
     try:
@@ -83,7 +84,7 @@ class App(tk.Tk):
         self.label(top,("Windows 10/11 | Nur USB-Geräte" if sys.platform=="win32" else "Linux | Alle physischen Laufwerke (intern und extern)") +" | Nur lesende Inventarisierung",11).pack(anchor="w",pady=(6,0))
         bar=tk.Frame(self,bg="#101722",padx=22,pady=12);bar.pack(fill="x")
         buttons=tk.Frame(bar,bg="#101722");buttons.pack(fill="x")
-        actions=[("Geräte aktualisieren",self.refresh),("Rechneranalyse",self.host_info),("SSD-Diagnose",self.diagnose),("NVMe-Controller",self.controller_info),("USB-Verbindung",self.usb_diagnose),("Schutzprüfung",self.safety_check),("Firmwaredatei prüfen",self.inspect_firmware),("Firmwarekatalog",self.catalog_lookup),("Recovery-Leitfaden",self.triage_plan),("Abbild planen",self.plan_image),("Leseprobe 4 KiB",self.read_probe_action),("Image analysieren",self.scan_image_action),("Befund",self.assess),("Vergleich",self.compare_case),("Fallakte speichern",self.save_case),("Fallakten",self.open_cases),("Fallakte exportieren",self.export)]
+        actions=[("Geräte aktualisieren",self.refresh),("Rechneranalyse",self.host_info),("SSD-Diagnose",self.diagnose),("NVMe-Controller",self.controller_info),("USB-Verbindung",self.usb_diagnose),("Schutzprüfung",self.safety_check),("Firmwaredatei prüfen",self.inspect_firmware),("Firmwarekatalog",self.catalog_lookup),("Recovery-Leitfaden",self.triage_plan),("Abbild planen",self.plan_image),("Leseprobe 4 KiB",self.read_probe_action),("Image analysieren",self.scan_image_action),("PNG retten",self.export_png_action),("Befund",self.assess),("Vergleich",self.compare_case),("Fallakte speichern",self.save_case),("Fallakten",self.open_cases),("Fallakte exportieren",self.export)]
         for i,(name,cb) in enumerate(actions):
             tk.Button(buttons,text=name,command=cb,bg="#22566c",fg="white",relief="flat",padx=9,pady=7).grid(row=i//5,column=i%5,sticky="ew",padx=4,pady=4)
         for i in range(5): buttons.grid_columnconfigure(i,weight=1)
@@ -99,6 +100,7 @@ class App(tk.Tk):
         self.inventory_epoch=0
         self.refresh_request_id=0
         self.image_scan_cancel=None
+        self.png_export_cancel=None
         self.ui_queue=queue.Queue()
         self.after(75,self.process_ui_queue)
         self.refresh()
@@ -227,6 +229,44 @@ class App(tk.Tk):
         self.last_report={"offline_image_scan":{"file":path,**result}}
         self.show(json.dumps(self.last_report,ensure_ascii=False,indent=2))
         self.status.config(text="Offline-Image-Analyse beendet. Keine SSD-Zugriffe oder Dateischreibvorgänge.")
+    def export_png_action(self):
+        if self.png_export_cancel is not None:
+            self.png_export_cancel.set()
+            self.status.config(text="Abbruch des PNG-Exports angefordert ...")
+            return
+        previous=self.last_report.get("offline_image_scan") if isinstance(self.last_report,dict) else None
+        if not isinstance(previous,dict):
+            messagebox.showinfo("PNG retten","Zuerst ein vorhandenes Image mit 'Image analysieren' untersuchen.")
+            return
+        findings=[x for x in previous.get("png_inspection",[]) if isinstance(x,dict) and x.get("validated") and x.get("complete")]
+        if not findings:
+            messagebox.showinfo("PNG retten","Keine vollständig strukturell validierten PNG-Kandidaten vorhanden.")
+            return
+        source=previous.get("file")
+        destination=filedialog.askdirectory(title="Separates Ziel-Dateisystem für gerettete PNGs auswählen")
+        if not destination:return
+        if not messagebox.askyesno("PNG-Dateien exportieren",
+            f"{len(findings)} PNG-Kandidaten werden erneut geprüft und als NEUE Dateien in das Ziel geschrieben.\\n"
+            "Das Quell-Image bleibt unverändert. Bestehende Dateien werden nicht überschrieben. Fortfahren?"):
+            return
+        cancel=threading.Event()
+        self.png_export_cancel=cancel
+        self.status.config(text="PNG-Export läuft. Erneut auf 'PNG retten' klicken zum Abbrechen.")
+        def progress(index,copied,total):
+            self.post_ui(lambda:self.png_export_progress(cancel,index,copied,total))
+        def worker():
+            report=png_carving.export_pngs(source,destination,findings,cancelled=cancel.is_set,progress=progress)
+            self.post_ui(lambda:self.png_export_done(cancel,report))
+        threading.Thread(target=worker,daemon=True).start()
+    def png_export_progress(self,cancel,index,copied,total):
+        if self.png_export_cancel is cancel:
+            self.status.config(text=f"PNG-Export: Datei {index+1}, {100*copied/total:.1f}% | Erneut klicken zum Abbrechen")
+    def png_export_done(self,cancel,report):
+        if self.png_export_cancel is not cancel:return
+        self.png_export_cancel=None
+        self.last_report={"offline_png_carving":report}
+        self.show(json.dumps(self.last_report,ensure_ascii=False,indent=2))
+        self.status.config(text=f"PNG-Export beendet: {len(report.get('exported',[]))} Dateien erstellt. Quell-Image unverändert.")
     def plan_image(self):
         if not self.selected:
             messagebox.showinfo("Abbild planen","Zuerst einen Datenträger auswählen.");return
