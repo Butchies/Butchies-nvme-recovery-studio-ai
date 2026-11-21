@@ -33,6 +33,9 @@
 - `docs/RECHNER_HARDWARE_PROFIL_VERGLEICH_ENTWURF_DE.md` – Rechnerprofile und Anschlussvergleiche.
 
 ## Diagnose, Firmware und Recovery
+- `docs/PCIE_LINK_FEHLER_DIAGNOSE_ENTWURF_DE.md` – PCIe-Link- und Signalfehlerdiagnose der Linux-Edition.
+- `docs/ENERGIEVERWALTUNG_NVME_ENTWURF_DE.md` – NVMe-Energiezustände und Verbindungsstabilität.
+- `docs/GERAETE_FOTOS_BAUTEILE_ENTWURF_DE.md` – Gerätefotos, Bauteilmarkierungen und visuelle Identifikation.
 - `docs/NVME_MEDIENFEHLER_LBA_STATUS_ENTWURF_DE.md` – LBA-Status und bekannte Medienfehlerbereiche.
 - `docs/NVME_VERSCHLEISS_ENDURANCE_ENTWURF_DE.md` – Verschleißindikatoren und Endurance-Trends.
 - `docs/NVME_KOMPATIBILITAET_STANDARDVERSIONEN_ENTWURF_DE.md` – Standardversionen und tatsächlich verfügbare NVMe-Funktionen.
