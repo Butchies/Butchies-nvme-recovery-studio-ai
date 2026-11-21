@@ -12,6 +12,7 @@
 #include <QDir>
 #include <QStorageInfo>
 #include <QStandardPaths>
+#include <QRegularExpression>
 
 class RecoveryController final : public QObject {
     Q_OBJECT
@@ -54,6 +55,16 @@ public:
             d["serial"]=obj.value("SerialNumber").toString();
             d["sizeBytes"]=obj.value("Size").toVariant().toString();
             d["connection"]="USB";
+            d["devicePath"]=path;
+            d["pnpDeviceId"]=pnp;
+            const QRegularExpression vidPattern(QStringLiteral("VID_([0-9A-Fa-f]{4})"));
+            const QRegularExpression pidPattern(QStringLiteral("PID_([0-9A-Fa-f]{4})"));
+            const auto vid=vidPattern.match(pnp);
+            const auto pid=pidPattern.match(pnp);
+            d["bridgeVendorId"]=vid.hasMatch() ? vid.captured(1).toUpper() : QStringLiteral("Unbekannt");
+            d["bridgeProductId"]=pid.hasMatch() ? pid.captured(1).toUpper() : QStringLiteral("Unbekannt");
+            d["bridgeFirmware"]=QStringLiteral("Nicht ermittelt");
+            d["nvmePassthrough"]=QStringLiteral("Nicht nachgewiesen");
             d["nvmeVerified"]=false; // USB bridge cannot prove underlying NVMe type.
             d["readOnly"]=true;
             found.append(d);
@@ -65,6 +76,17 @@ public:
         m_devices.clear();emit devicesChanged();
         setStatus(QStringLiteral("Diese native Edition ist für Windows 10/11 vorgesehen."));
 #endif
+    }
+    Q_INVOKABLE void selectDevice(int index) {
+        if(index<0 || index>=m_devices.size()) {
+            setStatus(QStringLiteral("Keine gültige USB-Geräteauswahl."));
+            return;
+        }
+        const auto device=m_devices.at(index).toMap();
+        setStatus(QStringLiteral("%1 | USB-Bridge VID:%2 PID:%3 | NVMe-Passthrough nicht bestätigt.")
+            .arg(device.value("name").toString(),
+                 device.value("bridgeVendorId").toString(),
+                 device.value("bridgeProductId").toString()));
     }
     Q_INVOKABLE void inspectDestination(const QString &path) {
         const QFileInfo info(path);
