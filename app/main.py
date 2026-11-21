@@ -15,6 +15,7 @@ import firmware_catalog
 import triage
 import imaging_plan
 import controller_identity
+import nvme_capabilities
 
 def cmd(args):
     try:
@@ -282,6 +283,7 @@ class App(tk.Tk):
         self.merge_device_report(device,"diagnostics",report)
         if "smart" in report:
             self.last_report["assessment"]=analysis.assess(self.last_report)
+            self.last_report["nvme_capabilities"]=nvme_capabilities.inspect(report)
         elif "smartctl" in report:
             self.last_report["assessment"]=ata_analysis.assess(self.last_report)
         self.show(json.dumps(self.last_report,ensure_ascii=False,indent=2))
