@@ -33,6 +33,9 @@
 - `docs/RECHNER_HARDWARE_PROFIL_VERGLEICH_ENTWURF_DE.md` – Rechnerprofile und Anschlussvergleiche.
 
 ## Diagnose, Firmware und Recovery
+- `docs/NVME_PROTOKOLL_LOG_EXPLORER_ENTWURF_DE.md` – lesender Explorer für NVMe-Logs und Rohdaten.
+- `docs/FIRMWARE_SLOT_AKTIVIERUNG_ENTWURF_DE.md` – Firmware-Slots und Aktivierungsbedingungen.
+- `docs/WISSENSQUELLEN_VERTRAUEN_ENTWURF_DE.md` – Quellen und Belege für KI-Empfehlungen.
 - `docs/USB_BRIDGE_FAeHIGKEITEN_ENTWURF_DE.md` – Fähigkeitsmatrix und Befehlsgrenzen von USB-NVMe-Bridges.
 - `docs/EXTERNE_MESSWERTE_HARDWARE_ENTWURF_DE.md` – manuelle und externe Elektronikmesswerte für KI-Befunde.
 - `docs/ERSTSTART_ASSISTENT_ENTWURF_DE.md` – Ersteinrichtung, Editionsauswahl und lokale KI-Ressourcen.
