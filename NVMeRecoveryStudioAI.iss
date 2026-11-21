@@ -1,5 +1,5 @@
 #define MyAppName "NVMe Recovery Studio AI"
-#define MyAppVersion "0.1.0"
+#define MyAppVersion "0.4.0"
 #define MyAppExeName "NVMeRecoveryStudioAI.exe"
 [Setup]
 AppId={{9C7F76BC-65D0-4C8B-B88B-EA720D09C8AA}
@@ -14,6 +14,7 @@ SolidCompression=yes
 ArchitecturesAllowed=x64
 ArchitecturesInstallIn64BitMode=x64
 PrivilegesRequired=lowest
+Output=yes
 [Files]
 Source: "dist\NVMeRecoveryStudioAI.exe"; DestDir: "{app}"; Flags: ignoreversion
 [Icons]
