@@ -9,6 +9,7 @@ import analysis
 import exporter
 import safety
 import firmware
+import firmware_catalog
 
 def cmd(args):
     try:
@@ -45,7 +46,7 @@ class App(tk.Tk):
         self.label(top,("Windows 10/11 | Nur USB-Geräte" if sys.platform=="win32" else "Linux | NVMe und USB") +" | Nur lesende Inventarisierung",11).pack(anchor="w",pady=(6,0))
         bar=tk.Frame(self,bg="#101722",padx=22,pady=12);bar.pack(fill="x")
         buttons=tk.Frame(bar,bg="#101722");buttons.pack(fill="x")
-        actions=[("Geräte aktualisieren",self.refresh),("Rechneranalyse",self.host_info),("NVMe-Diagnose",self.diagnose),("USB-Verbindung",self.usb_diagnose),("Schutzprüfung",self.safety_check),("Firmwaredatei prüfen",self.inspect_firmware),("Befund",self.assess),("Vergleich",self.compare_case),("Fallakte speichern",self.save_case),("Fallakten",self.open_cases),("Fallakte exportieren",self.export)]
+        actions=[("Geräte aktualisieren",self.refresh),("Rechneranalyse",self.host_info),("NVMe-Diagnose",self.diagnose),("USB-Verbindung",self.usb_diagnose),("Schutzprüfung",self.safety_check),("Firmwaredatei prüfen",self.inspect_firmware),("Firmwarekatalog",self.catalog_lookup),("Befund",self.assess),("Vergleich",self.compare_case),("Fallakte speichern",self.save_case),("Fallakten",self.open_cases),("Fallakte exportieren",self.export)]
         for i,(name,cb) in enumerate(actions):
             tk.Button(buttons,text=name,command=cb,bg="#22566c",fg="white",relief="flat",padx=9,pady=7).grid(row=i//5,column=i%5,sticky="ew",padx=4,pady=4)
         for i in range(5): buttons.grid_columnconfigure(i,weight=1)
@@ -99,6 +100,22 @@ class App(tk.Tk):
             report=diagnostics.nvme_report(device)
             self.after(0,lambda:self.diagnose_done(device,report))
         threading.Thread(target=worker,daemon=True).start()
+    def catalog_lookup(self):
+        report=(self.last_report or {}).get("firmware_file") or {}
+        if not report.get("sha256"):
+            messagebox.showinfo("Firmwarekatalog","Zuerst eine Firmwaredatei prüfen.");return
+        path=filedialog.askopenfilename(title="Lokalen Firmwarekatalog auswählen",filetypes=[("JSON","*.json")])
+        if not path:return
+        self.status.config(text="Lokaler Katalog wird verglichen ...")
+        def worker():
+            catalog=firmware_catalog.load(path)
+            result=firmware_catalog.lookup(catalog,report)
+            self.after(0,lambda:self.catalog_done(report,result))
+        threading.Thread(target=worker,daemon=True).start()
+    def catalog_done(self,firmware_report,result):
+        self.last_report={"firmware_file":firmware_report,"catalog_lookup":result}
+        self.show(json.dumps(self.last_report,ensure_ascii=False,indent=2))
+        self.status.config(text="Hash-Abgleich abgeschlossen. Keine Firmwarefreigabe.")
     def inspect_firmware(self):
         path=filedialog.askopenfilename(title="Firmwaredatei nur lesend untersuchen")
         if not path:return
