@@ -33,6 +33,9 @@
 - `docs/RECHNER_HARDWARE_PROFIL_VERGLEICH_ENTWURF_DE.md` – Rechnerprofile und Anschlussvergleiche.
 
 ## Diagnose, Firmware und Recovery
+- `docs/NVME_READ_RECOVERY_LEVELS_ENTWURF_DE.md` – optionale Read-Recovery-Level und Datenrettungsabwägungen.
+- `docs/NVME_ZONED_NAMESPACES_ENTWURF_DE.md` – Erkennung und Darstellung von Zoned Namespaces.
+- `docs/NVME_BOOT_PARTITION_INFORMATION_ENTWURF_DE.md` – spezielle NVMe-Boot-Partitionen und Zugriffsgrenzen.
 - `docs/PCIE_LINK_FEHLER_DIAGNOSE_ENTWURF_DE.md` – PCIe-Link- und Signalfehlerdiagnose der Linux-Edition.
 - `docs/ENERGIEVERWALTUNG_NVME_ENTWURF_DE.md` – NVMe-Energiezustände und Verbindungsstabilität.
 - `docs/GERAETE_FOTOS_BAUTEILE_ENTWURF_DE.md` – Gerätefotos, Bauteilmarkierungen und visuelle Identifikation.
