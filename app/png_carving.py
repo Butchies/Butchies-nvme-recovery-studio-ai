@@ -81,6 +81,21 @@ def export_pngs(image_path,destination_directory,findings,cancelled=None,progres
                             copied+=len(block)
                             if progress and (copied==length or copied%(8*COPY_CHUNK)==0):
                                 progress(len(result["exported"]),copied,length)
+                        # Re-read the same source extent before accepting the export.
+                        # This catches content changes even when the image size is stable.
+                        source_check=hashlib.sha256()
+                        source_checked=0
+                        while source_checked<length:
+                            if cancelled and cancelled():
+                                result["cancelled"]=True
+                                raise InterruptedError("Quellprüfung abgebrochen.")
+                            block=os.pread(source_fd,min(COPY_CHUNK,length-source_checked),offset+source_checked)
+                            if not block:
+                                raise OSError("Quell-Image bei Nachprüfung abgeschnitten.")
+                            source_check.update(block)
+                            source_checked+=len(block)
+                        if source_check.digest()!=digest.digest():
+                            raise OSError("Quell-Image-Inhalt hat sich während des Exports verändert.")
                         os.fsync(output_fd)
                         # Verify the exact bytes persisted in the output file.
                         check_fd=os.open(filename,os.O_RDONLY|getattr(os,"O_NOFOLLOW",0),dir_fd=target_fd)
