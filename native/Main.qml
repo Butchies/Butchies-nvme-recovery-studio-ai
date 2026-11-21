@@ -150,6 +150,9 @@ ApplicationWindow {
                 }
             }
         }
+        RowLayout {
+        Layout.fillWidth: true; Layout.fillHeight: true
+        spacing: 16
         Rectangle {
             Layout.fillWidth: true; Layout.fillHeight: true
             color: "#192333"; radius: 12
@@ -161,7 +164,7 @@ ApplicationWindow {
                     model: controller.devices
                     clip: true
                     delegate: Rectangle {
-                        width: ListView.view.width; height: 198
+                        width: ListView.view.width; height: 222
                         color: index%2 ? "#1c2939" : "#243346"
                         radius: 6
                         MouseArea {
@@ -184,6 +187,13 @@ ApplicationWindow {
                                     enabled: !controller.recoveryRunning
                                     onClicked: controller.startAutoRecovery(index, destination.text)
                                 }
+                            }
+                            Label {
+                                visible: !!modelData.aiDiagnosis
+                                width: parent.width
+                                text: "KI: " + (modelData.aiDiagnosis || "") + " [" + (modelData.aiSeverity || "") + "]"
+                                color: modelData.aiSeverity === "Kritisch" ? "#ffb4a2" : "#b8f2c8"
+                                elide: Text.ElideRight
                             }
                             Label {
                                 text: "USB · VID " + modelData.bridgeVendorId + " · PID " + modelData.bridgeProductId
@@ -220,6 +230,41 @@ ApplicationWindow {
                     }
                 }
             }
+        }
+        Rectangle {
+            Layout.preferredWidth: 420; Layout.fillHeight: true
+            color: "#1a1f36"; radius: 12
+            ColumnLayout {
+                anchors.fill: parent; anchors.margins: 14
+                spacing: 6
+                Label { text: "KI-Live-Monitor"; font.bold: true; font.pixelSize: 18; color: "white" }
+                Label {
+                    Layout.fillWidth: true
+                    text: "Wissensbasis: " + (controller.knowledge.cases || 0) + " Einträge · "
+                          + (controller.knowledge.devices || 0) + " Geräte · "
+                          + (controller.knowledge.bridges || 0) + " Bridges · "
+                          + (controller.knowledge.controllers || 0) + " Controller"
+                    color: "#a9b4e6"; font.pixelSize: 12; wrapMode: Text.WordWrap
+                }
+                ListView {
+                    id: aiView
+                    Layout.fillWidth: true; Layout.fillHeight: true
+                    clip: true
+                    spacing: 3
+                    model: controller.aiMonitor
+                    delegate: Label {
+                        width: ListView.view.width
+                        text: modelData
+                        wrapMode: Text.WordWrap
+                        font.pixelSize: 12
+                        color: modelData.indexOf("Warnung:") >= 0 ? "#ffb4a2"
+                             : modelData.indexOf("Gelernt") >= 0 || modelData.indexOf("Erfahrung") >= 0 ? "#b8f2c8"
+                             : modelData.indexOf("Entscheidung:") >= 0 ? "#ffe8a3" : "#cdd5ff"
+                    }
+                    onCountChanged: positionViewAtEnd()
+                }
+            }
+        }
         }
         Label { text: controller.status; color: "#c6e2f2"; wrapMode: Text.WordWrap }
     }

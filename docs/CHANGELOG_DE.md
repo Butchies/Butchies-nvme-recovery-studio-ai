@@ -1,5 +1,13 @@
 # Änderungsprotokoll
 
+## 2026-11-21 – Lernende KI ab Programmstart
+- KI-Agent startet mit dem Programm, überwacht USB-Anschlüsse (alle 4 s) und diagnostiziert neu angeschlossene SSDs automatisch.
+- `native/knowledge_base.h`: lokale Wissensbasis (`ki-wissen.json` im AppData-Ordner) mit allen Diagnosen, Rettungen und Benutzeraktionen; Erfahrung je Gerät (Seriennummer nur als Hash), USB-Bridge und Controller-Modell.
+- Diagnose nutzt Erfahrung: SMART-Verlauf (steigende Medienfehler, sinkende Reserve, wachsendes Fehlerprotokoll), bekannte Bridge-Grenzen, Vergleich mit früheren Fällen desselben Controllers.
+- Rettungsplan passt sich an frühere Versuche an (Blockgröße, Zeitlimits, Wartezeit beim Neuverbinden, Fehlerbehandlung) und begründet jede Anpassung.
+- KI-Live-Monitor in der Oberfläche: Erkennung, Belege, Warnungen, Entscheidungen, Ergebnisse und Gelerntes.
+- Nicht gebaut und nicht auf Hardware getestet.
+
 ## 2026-11-21 – Automatische Rettung (Windows, Qt)
 - Neue Schaltfläche „Automatisch retten“: frische Diagnose → Rettungsplan des Agenten → Rettungsabbild → Prüfung → Bewertung → Bericht, ohne weitere Benutzerentscheidungen.
 - `native/rescue_imager.h`: Rettungsabbild in mehreren Durchgängen (Schnellkopie mit Sprüngen über Fehlerzonen, übersprungene Bereiche, Eingrenzen, Einzelsektoren, Wiederholungen). Zeitlimit je Lesebefehl, Pause bei wiederholten Zeitüberschreitungen, Neuverbindung bei kurzzeitiger Trennung.

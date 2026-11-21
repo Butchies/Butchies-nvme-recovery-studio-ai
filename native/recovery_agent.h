@@ -7,7 +7,13 @@
 // Deterministic local decision engine. This is the autonomous diagnostic
 // baseline, not an LLM and not a firmware-flashing implementation.
 namespace RecoveryAgent {
-inline QVariantMap analyze(const QVariantMap &device) {
+inline bool number(const QVariant &v, double &out) {
+    bool ok=false; out=v.toString().toDouble(&ok); return ok;
+}
+
+// Diagnosis from current measurements plus learned experience
+// (KnowledgeBase::Store::experience) of earlier cases.
+inline QVariantMap analyze(const QVariantMap &device, const QVariantMap &experience=QVariantMap()) {
     QVariantMap result;
     QVariantList evidence;
     QVariantList actions;
@@ -80,6 +86,72 @@ inline QVariantMap analyze(const QVariantMap &device) {
             }
         }
     }
+    // --- Learned experience ---------------------------------------------------
+    int learned=0;
+    if(canRead && !experience.isEmpty()) {
+        const auto dev=experience.value("device").toMap();
+        const auto bridge=experience.value("bridge").toMap();
+        const auto ctrl=experience.value("controller").toMap();
+        const QString bridgeKey=experience.value("bridgeKey").toString();
+        if(dev.value("diagnosen").toInt()>0) {
+            ++learned;
+            evidence.append(QStringLiteral("Gerät bekannt: %1 frühere Diagnosen, zuletzt %2 (Bewertung: %3).")
+                .arg(dev.value("diagnosen").toInt()).arg(dev.value("letzteUntersuchung").toString(),dev.value("letzteBewertung").toString()));
+        }
+        // Trend: compare with the SMART snapshot of the previous examination.
+        const auto prev=dev.value("letzterSmart").toMap();
+        if(!prev.isEmpty() && device.value("smartAvailable").toBool()) {
+            double a=0,b=0;
+            if(number(prev.value("medienfehler"),a) && number(device.value("mediaErrors"),b) && b>a) {
+                ++learned;
+                warnings << QStringLiteral("Medienfehler seit der letzten Untersuchung gestiegen (%1 → %2): Die SSD verschlechtert sich aktiv.").arg(a,0,'f',0).arg(b,0,'f',0);
+                diagnosis+=QStringLiteral(" Verlauf: Medienfehler steigen – fortschreitender Defekt.");
+                severity="Kritisch";
+                actions.prepend("Sofort sichern: Die SSD verschlechtert sich zwischen den Untersuchungen.");
+            }
+            if(number(prev.value("reserve"),a) && number(device.value("availableSparePercent"),b) && a-b>=5) {
+                ++learned;
+                warnings << QStringLiteral("Ersatzblock-Reserve gesunken (%1 % → %2 %).").arg(a,0,'f',0).arg(b,0,'f',0);
+                if(severity!="Kritisch") severity="Auffällig";
+            }
+            if(number(prev.value("fehlerprotokoll"),a) && number(device.value("errorLogEntries"),b) && b>a) {
+                ++learned;
+                evidence.append(QStringLiteral("Controller-Fehlerprotokoll seit letzter Untersuchung um %1 Einträge gewachsen.").arg(b-a,0,'f',0));
+                if(severity!="Kritisch") severity="Auffällig";
+            }
+        }
+        const auto last=dev.value("letzteRettung").toMap();
+        if(!last.isEmpty()) {
+            ++learned;
+            evidence.append(QStringLiteral("Letzte Rettung dieser SSD: %1, %2 % gesichert, %3 Zeitüberschreitungen.")
+                .arg(last.value("status").toString()).arg(last.value("prozent").toDouble(),0,'f',2).arg(last.value("zeitueberschreitungen").toInt()));
+        }
+        const int bCases=bridge.value("faelle").toInt();
+        if(bCases>0) {
+            ++learned;
+            const int idOk=bridge.value("identifyOk").toInt();
+            const bool idNow=device.value("nvmeIdentifyAvailable").toBool();
+            if(!idNow && idOk==0) {
+                evidence.append(QStringLiteral("USB-Bridge %1 hat in allen %2 bisherigen Fällen keine NVMe-Daten durchgereicht: Die fehlende Controllerdiagnose liegt sehr wahrscheinlich an der Bridge, nicht an der SSD.").arg(bridgeKey).arg(bCases));
+                confidence="Hoch (Bridge-Einschränkung, aus Erfahrung)";
+                actions.append("Für Controllerdiagnose ein Gehäuse mit NVMe-Passthrough oder die Linux-Boot-Edition verwenden.");
+            } else if(!idNow && idOk>0) {
+                warnings << QStringLiteral("Diese USB-Bridge lieferte in %1 früheren Fällen NVMe-Daten, jetzt nicht: Hinweis auf ein Problem der SSD bzw. ihres Controllers.").arg(idOk);
+                if(severity!="Kritisch") severity="Auffällig";
+                diagnosis+=QStringLiteral(" Erfahrung: Die Bridge kann NVMe durchreichen – der Controller antwortet vermutlich nicht korrekt.");
+            }
+            if(bridge.value("verbindungsverluste").toInt()>0)
+                warnings << QStringLiteral("Mit dieser USB-Bridge gab es bisher %1 Verbindungsabbrüche während Rettungen.").arg(bridge.value("verbindungsverluste").toInt());
+        }
+        if(ctrl.value("faelle").toInt()>1) {
+            ++learned;
+            const int r=ctrl.value("rettungen").toInt();
+            evidence.append(QStringLiteral("Controller %1: %2 bekannte Fälle, davon %3 kritisch%4.")
+                .arg(experience.value("controllerKey").toString()).arg(ctrl.value("faelle").toInt()).arg(ctrl.value("kritisch").toInt())
+                .arg(r>0 ? QStringLiteral("; Ø %1 % gerettet in %2 Rettungen").arg(ctrl.value("prozentSumme").toDouble()/r,0,'f',1).arg(r) : QString()));
+        }
+    }
+    result["learnedFindings"]=learned;
     result["diagnosis"]=diagnosis;
     result["severity"]=severity;
     result["confidence"]=confidence;
@@ -101,7 +173,7 @@ inline QVariantMap analyze(const QVariantMap &device) {
 // Chooses the rescue strategy from the diagnosis. The rescue only reads the
 // source SSD; it writes exclusively to a separate destination. No approval
 // for destructive actions is required because none are issued.
-inline QVariantMap planRescue(const QVariantMap &diagnosis) {
+inline QVariantMap planRescue(const QVariantMap &diagnosis, const QVariantMap &experience=QVariantMap()) {
     QVariantMap plan;
     QVariantList decisions;
     const QString severity=diagnosis.value("severity").toString();
@@ -148,6 +220,42 @@ inline QVariantMap planRescue(const QVariantMap &diagnosis) {
         plan["maxConsecutiveTimeouts"]=3;
         decisions.append(QStringLiteral("Keine akute SMART-Warnung: vollständiges Abbild mit großen Blöcken."));
     }
+    // --- Adaptation from experience -------------------------------------------
+    int adjustments=0;
+    const auto last=experience.value("device").toMap().value("letzteRettung").toMap();
+    const auto bridge=experience.value("bridge").toMap();
+    const auto ctrl=experience.value("controller").toMap();
+    if(last.value("status").toString()=="unterbrochen" && last.value("zeitueberschreitungen").toInt()>0) {
+        const qint64 chunk=qMax<qint64>(128*1024,plan.value("chunkBytes").toLongLong()/2);
+        const int timeout=qMax(8000,plan.value("readTimeoutMs").toInt()*6/10);
+        plan["chunkBytes"]=chunk; plan["readTimeoutMs"]=timeout;
+        decisions.append(QStringLiteral("Gelernt: Die letzte Rettung dieser SSD wurde durch Zeitüberschreitungen unterbrochen → kleinere Blöcke (%1 KiB) und kürzeres Zeitlimit (%2 s).").arg(chunk/1024).arg(timeout/1000));
+        ++adjustments;
+    }
+    if(last.value("status").toString()=="abgeschlossen") {
+        decisions.append(QStringLiteral("Gelernt: Für diese SSD gibt es bereits eine abgeschlossene Rettung (%1 %). Mit demselben Zielordner werden nur noch defekte Bereiche erneut versucht.").arg(last.value("prozent").toDouble(),0,'f',2));
+        ++adjustments;
+    }
+    if(bridge.value("verbindungsverluste").toInt()>0) {
+        plan["reconnectWaitSeconds"]=10;
+        decisions.append(QStringLiteral("Gelernt: Diese USB-Bridge hat bei früheren Rettungen %1-mal die Verbindung verloren → längere Wartezeit vor dem Neuverbinden.").arg(bridge.value("verbindungsverluste").toInt()));
+        ++adjustments;
+    }
+    const int rateSamples=bridge.value("rateMessungen").toInt();
+    if(severity=="Keine akute SMART-Warnung" && rateSamples>0 && bridge.value("zeitueberschreitungen").toInt()==0
+       && bridge.value("verbindungsverluste").toInt()==0) {
+        plan["chunkBytes"]=4*1024*1024;
+        decisions.append(QStringLiteral("Gelernt: Diese USB-Bridge lief bisher stabil (Ø %1 MiB/s) → größere Blöcke für eine schnellere Sicherung.")
+            .arg(bridge.value("rateSumme").toDouble()/rateSamples/1048576.0,0,'f',1));
+        ++adjustments;
+    }
+    if(ctrl.value("unterbrochen").toInt()>=2 && ctrl.value("unterbrochen").toInt()>ctrl.value("vollstaendig").toInt()) {
+        plan["maxConsecutiveTimeouts"]=qMin(plan.value("maxConsecutiveTimeouts").toInt(),2);
+        plan["retryPasses"]=qMin(plan.value("retryPasses").toInt(),1);
+        decisions.append(QStringLiteral("Gelernt: Rettungen mit diesem Controller-Modell brechen häufig ab (%1-mal) → schonendere Fehlerbehandlung.").arg(ctrl.value("unterbrochen").toInt()));
+        ++adjustments;
+    }
+    plan["learnedAdjustments"]=adjustments;
     decisions.append(QStringLiteral("Lesekarte wird laufend gespeichert; nach Abbruch oder Trennung setzt die Rettung an derselben Stelle fort."));
     decisions.append(QStringLiteral("Nach Abschluss: Abdeckungsprüfung, SHA-256-Prüfsumme und Bericht."));
     plan["decisions"]=decisions;

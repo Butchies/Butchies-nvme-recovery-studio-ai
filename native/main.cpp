@@ -19,6 +19,9 @@
 #include "usb_bridge.h"
 #include "recovery_agent.h"
 #include "rescue_imager.h"
+#include "knowledge_base.h"
+#include <QTimer>
+#include <QTime>
 
 class RecoveryController final : public QObject {
     Q_OBJECT
@@ -29,8 +32,19 @@ class RecoveryController final : public QObject {
     Q_PROPERTY(QVariantMap recoveryProgress READ recoveryProgress NOTIFY recoveryChanged)
     Q_PROPERTY(QVariantMap recoveryResult READ recoveryResult NOTIFY recoveryChanged)
     Q_PROPERTY(QStringList recoveryLog READ recoveryLog NOTIFY recoveryLogChanged)
+    Q_PROPERTY(QStringList aiMonitor READ aiMonitor NOTIFY aiMonitorChanged)
+    Q_PROPERTY(QVariantMap knowledge READ knowledge NOTIFY aiMonitorChanged)
 public:
-    explicit RecoveryController(QObject *parent=nullptr):QObject(parent) {}
+    explicit RecoveryController(QObject *parent=nullptr):QObject(parent) {
+        const auto k=m_kb.summary();
+        ai(QStringLiteral("KI-Agent aktiv. Wissensbasis: %1 Einträge, %2 Geräte, %3 USB-Bridges, %4 Controller-Modelle.")
+            .arg(k.value("cases").toInt()).arg(k.value("devices").toInt()).arg(k.value("bridges").toInt()).arg(k.value("controllers").toInt()));
+        ai(QStringLiteral("Überwache USB-Anschlüsse: neue SSDs werden automatisch erkannt und untersucht."));
+        connect(&m_watch,&QTimer::timeout,this,&RecoveryController::checkDevices);
+        m_watch.start(4000);
+    }
+    QStringList aiMonitor() const { return m_aiLog; }
+    QVariantMap knowledge() const { return m_kb.summary(); }
     ~RecoveryController() override {
         m_cancel=true;
         if(m_worker) { m_worker->wait(); }
@@ -113,7 +127,12 @@ public:
         m_aiReport.clear();
         emit aiReportChanged();
         emit devicesChanged();
+        m_signature=UsbBridge::usbDiskSignature();
         setStatus(QStringLiteral("%1 externe USB-Geräte erkannt. Interne Laufwerke ausgeschlossen.").arg(found.size()));
+        ai(found.isEmpty() ? QStringLiteral("Keine externe USB-SSD angeschlossen. Warte auf Gerät …")
+                           : QStringLiteral("%1 externe USB-Geräte erkannt – starte automatische Diagnose.").arg(found.size()));
+        // The agent examines every detected device on its own.
+        for(int i=0;i<m_devices.size();++i) diagnose(i);
 #else
         m_devices.clear();emit devicesChanged();
         setStatus(QStringLiteral("Diese native Edition ist für Windows 10/11 vorgesehen."));
@@ -125,14 +144,19 @@ public:
     Q_INVOKABLE void startAutoRecovery(int index, const QString &destination) {
         if(m_worker) { setStatus(QStringLiteral("Es läuft bereits eine Rettung.")); return; }
         if(!diagnose(index)) return;
-        const QVariantMap plan=RecoveryAgent::planRescue(m_aiReport);
+        const QVariantMap plan=RecoveryAgent::planRescue(m_aiReport,m_experience);
         if(!plan.value("allowed").toBool()) {
             setStatus(plan.value("reason").toString()); return;
         }
         if(destination.trimmed().isEmpty()) {
             setStatus(QStringLiteral("Diagnose fertig. Für die automatische Rettung bitte einen Zielordner auf einem anderen Laufwerk angeben."));
+            ai(QStringLiteral("Rettung vorbereitet, aber kein Zielordner angegeben."));
             return;
         }
+        for(const auto &d:plan.value("decisions").toList()) ai(QStringLiteral("Entscheidung: %1").arg(d.toString()));
+        if(plan.value("learnedAdjustments").toInt()>0)
+            ai(QStringLiteral("%1 Anpassungen des Rettungsplans aus früheren Versuchen übernommen.").arg(plan.value("learnedAdjustments").toInt()));
+        m_kb.recordAction(QStringLiteral("rettung_gestartet"),m_verified,{{"severity",m_aiReport.value("severity")},{"blockBytes",plan.value("chunkBytes")}});
         RescueImager::Config cfg;
         cfg.sourcePath=m_verified.value("devicePath").toString();
         cfg.destinationDir=QDir::fromNativeSeparators(destination.trimmed());
@@ -158,6 +182,8 @@ public:
     Q_INVOKABLE void cancelRecovery() {
         if(!m_worker) return;
         m_cancel=true;
+        m_kb.recordAction(QStringLiteral("rettung_angehalten_vom_benutzer"),m_verified);
+        ai(QStringLiteral("Benutzer hält die Rettung an; Fortschritt wird gespeichert."));
         setStatus(QStringLiteral("Rettung wird angehalten; Fortschritt wird gespeichert …"));
     }
 private:
@@ -183,7 +209,22 @@ private:
         verified["connection"]="USB";
         verified["readOnly"]=true;
         m_verified=verified;
-        m_aiReport=RecoveryAgent::analyze(verified);
+        m_experience=m_kb.experience(verified);
+        m_aiReport=RecoveryAgent::analyze(verified,m_experience);
+        m_kb.recordDiagnosis(verified,m_aiReport);
+        {
+            auto entry=m_devices[index].toMap();
+            entry["aiDiagnosis"]=m_aiReport.value("diagnosis");
+            entry["aiSeverity"]=m_aiReport.value("severity");
+            m_devices[index]=entry;
+            emit devicesChanged();
+        }
+        ai(QStringLiteral("Diagnose %1: %2 [%3]").arg(verified.value("name").toString(),
+            m_aiReport.value("diagnosis").toString(),m_aiReport.value("severity").toString()));
+        for(const auto &e:m_aiReport.value("evidence").toList()) ai(QStringLiteral("Beleg: %1").arg(e.toString()));
+        for(const auto &w:m_aiReport.value("warnings").toList()) ai(QStringLiteral("Warnung: %1").arg(w.toString()));
+        if(m_aiReport.value("learnedFindings").toInt()>0)
+            ai(QStringLiteral("Erfahrung genutzt: %1 Erkenntnisse aus früheren Fällen.").arg(m_aiReport.value("learnedFindings").toInt()));
         emit aiReportChanged();
         setStatus(QStringLiteral("Automatische Diagnose abgeschlossen: %1")
             .arg(m_aiReport.value("diagnosis").toString()));
@@ -209,9 +250,32 @@ private:
         const QString report=RescueImager::writeReport(result.value("folder").toString(),
             m_verified,m_aiReport,m_plan,result,evaluation);
         m_result["reportPath"]=QDir::toNativeSeparators(report);
+        m_kb.recordRescue(m_verified,m_plan,result);
+        ai(QStringLiteral("Ergebnis: %1").arg(evaluation.value("summary").toString()));
+        for(const auto &n:evaluation.value("nextSteps").toList()) ai(QStringLiteral("Empfehlung: %1").arg(n.toString()));
+        {
+            const auto exp=m_kb.experience(m_verified);
+            const auto br=exp.value("bridge").toMap();
+            ai(QStringLiteral("Gelernt und gespeichert: Bridge %1 jetzt %2 Rettungen (%3 Zeitüberschreitungen, %4 Verbindungsabbrüche). Wird bei der nächsten Rettung berücksichtigt.")
+                .arg(exp.value("bridgeKey").toString()).arg(br.value("rettungen").toInt())
+                .arg(br.value("zeitueberschreitungen").toInt()).arg(br.value("verbindungsverluste").toInt()));
+        }
         emit recoveryChanged();
         setStatus(report.isEmpty() ? evaluation.value("summary").toString()
             : QStringLiteral("%1 Bericht: %2").arg(evaluation.value("summary").toString(),QDir::toNativeSeparators(report)));
+    }
+    void checkDevices() {
+        if(m_worker) return;
+        const QString sig=UsbBridge::usbDiskSignature();
+        if(sig==m_signature) return;
+        ai(QStringLiteral("Änderung an den USB-Laufwerken erkannt – KI untersucht automatisch."));
+        refresh();
+        m_signature=sig;
+    }
+    void ai(const QString &text) {
+        m_aiLog.append(QStringLiteral("%1  %2").arg(QTime::currentTime().toString(QStringLiteral("HH:mm:ss")),text));
+        while(m_aiLog.size()>400) m_aiLog.removeFirst();
+        emit aiMonitorChanged();
     }
 public:
     Q_INVOKABLE void selectDevice(int index) {
@@ -252,6 +316,7 @@ public:
         if(!volume.isValid() || !volume.isReady() || volume.isReadOnly()) {
             setStatus(QStringLiteral("Ziellaufwerk nicht beschreibbar."));return;
         }
+        m_kb.recordAction(QStringLiteral("ziel_geprueft"));
         setStatus(QStringLiteral("Ziel verfügbar: %1 GiB frei. Noch keine Recovery gestartet.")
             .arg(volume.bytesAvailable()/1024/1024/1024));
     }
@@ -261,6 +326,7 @@ signals:
     void aiReportChanged();
     void recoveryChanged();
     void recoveryLogChanged();
+    void aiMonitorChanged();
 private:
     void setStatus(const QString &text){m_status=text;emit statusChanged();}
     QVariantList m_devices;
@@ -272,6 +338,11 @@ private:
     QStringList m_log;
     QThread *m_worker=nullptr;
     std::atomic_bool m_cancel{false};
+    KnowledgeBase::Store m_kb;
+    QVariantMap m_experience;
+    QStringList m_aiLog;
+    QTimer m_watch;
+    QString m_signature;
     QString m_status=QStringLiteral("Bereit. Keine Schreibzugriffe auf SSDs.");
 };
 int main(int argc,char *argv[]) {

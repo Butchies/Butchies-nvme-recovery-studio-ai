@@ -10,6 +10,42 @@
 #endif
 
 namespace UsbBridge {
+// Cheap signature of all attached USB disks (bus type + identity strings via
+// STORAGE_DEVICE_DESCRIPTOR only). Used to detect plug/unplug events without
+// running full diagnostics. Opens devices with zero access rights.
+inline QString usbDiskSignature() {
+    QString signature;
+#ifdef Q_OS_WIN
+    for(int n=0;n<64;++n) {
+        const QString path=QStringLiteral("\\\\.\\PHYSICALDRIVE%1").arg(n);
+        const HANDLE h=CreateFileW(reinterpret_cast<LPCWSTR>(path.utf16()),0,
+            FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr);
+        if(h==INVALID_HANDLE_VALUE) continue;
+        STORAGE_PROPERTY_QUERY query{};
+        query.PropertyId=StorageDeviceProperty;
+        query.QueryType=PropertyStandardQuery;
+        unsigned char buffer[1024]{};
+        DWORD received=0;
+        if(DeviceIoControl(h,IOCTL_STORAGE_QUERY_PROPERTY,&query,sizeof(query),buffer,sizeof(buffer),&received,nullptr)
+           && received>=sizeof(STORAGE_DEVICE_DESCRIPTOR)) {
+            const auto *desc=reinterpret_cast<const STORAGE_DEVICE_DESCRIPTOR*>(buffer);
+            if(desc->BusType==BusTypeUsb) {
+                const auto text=[&](DWORD off)->QString {
+                    if(off==0 || off>=received) return {};
+                    const char *start=reinterpret_cast<const char*>(buffer+off);
+                    const char *end=static_cast<const char*>(memchr(start,0,received-off));
+                    return end ? QString::fromLatin1(start,qsizetype(end-start)).trimmed() : QString();
+                };
+                signature+=QStringLiteral("%1:%2:%3:%4;").arg(n).arg(text(desc->VendorIdOffset),
+                    text(desc->ProductIdOffset),text(desc->SerialNumberOffset));
+            }
+        }
+        CloseHandle(h);
+    }
+#endif
+    return signature;
+}
+
 inline QVariantMap inspect(const QString &path) {
     QVariantMap report;
     report["storageBus"]="Nicht ermittelt";

@@ -418,6 +418,7 @@ inline QVariantMap run(const Config &cfg, std::atomic_bool &cancel, const Progre
     const DWORD timeoutMs=DWORD(plan.value("readTimeoutMs",30000).toUInt());
     const int retryPasses=qBound(0,plan.value("retryPasses",1).toInt(),5);
     const int maxConsecutiveTimeouts=qBound(1,plan.value("maxConsecutiveTimeouts",3).toInt(),20);
+    const unsigned long reconnectWait=qBound(1,plan.value("reconnectWaitSeconds",3).toInt(),60);
 
     void *buffer=VirtualAlloc(nullptr,SIZE_T(chunk),MEM_COMMIT|MEM_RESERVE,PAGE_READWRITE);
     if(!buffer) return fail(QStringLiteral("Lesepuffer kann nicht angelegt werden."));
@@ -433,6 +434,7 @@ inline QVariantMap run(const Config &cfg, std::atomic_bool &cancel, const Progre
     QElapsedTimer saveTimer; saveTimer.start();
     const quint64 finishedAtStart=map.bytes(Finished);
     int pass=0; QString phase; quint64 currentPos=0; int readErrors=0; int consecutiveTimeouts=0;
+    int timeouts=0; int deviceLost=0;
     const auto saveMap=[&](char st)->bool {
         FlushFileBuffers(image);
         QSaveFile f(mapPath);
@@ -469,12 +471,14 @@ inline QVariantMap run(const Config &cfg, std::atomic_bool &cancel, const Progre
         currentPos=pos;
         DWORD e=src.read(pos,buffer,DWORD(len),timeoutMs);
         if(e==ReadHung) {
+            ++timeouts;
             fatalMessage=QStringLiteral("Die SSD reagiert nicht mehr auf Lesebefehle. Fortschritt ist gespeichert. USB trennen, SSD abkühlen lassen, neu verbinden und Rettung fortsetzen.");
             return Fatal;
         }
         if(isDeviceLost(e)) {
             event(QStringLiteral("Verbindung zur SSD verloren (Fehler %1); neuer Verbindungsversuch.").arg(e));
-            QThread::sleep(3);
+            ++deviceLost;
+            QThread::sleep(reconnectWait);
             if(!src.reopen() || src.size()!=total || src.sectorSize()!=sector) {
                 fatalMessage=QStringLiteral("SSD nicht mehr erreichbar. Fortschritt ist gespeichert; nach dem Neuverbinden kann die Rettung fortgesetzt werden.");
                 return Fatal;
@@ -491,6 +495,7 @@ inline QVariantMap run(const Config &cfg, std::atomic_bool &cancel, const Progre
         }
         readFailed=true; ++readErrors;
         if(e==WAIT_TIMEOUT) {
+            ++timeouts;
             if(++consecutiveTimeouts>=maxConsecutiveTimeouts) {
                 fatalMessage=QStringLiteral("%1 Zeitüberschreitungen in Folge: Die SSD wird geschont und die Rettung pausiert. Fortschritt ist gespeichert; später fortsetzen.").arg(consecutiveTimeouts);
                 return Fatal;
@@ -586,6 +591,9 @@ inline QVariantMap run(const Config &cfg, std::atomic_bool &cancel, const Progre
     result["badRegions"]=map.count(BadSector);
     result["rescuedPercent"]=100.0*double(done)/double(total);
     result["readErrors"]=readErrors;
+    result["timeouts"]=timeouts;
+    result["deviceLost"]=deviceLost;
+    result["rateBytesPerSec"]=double(done-finishedAtStart)/qMax(0.001,sessionTimer.elapsed()/1000.0);
     result["sectorSize"]=int(sector);
     QVariantList badList;
     for(const auto &r:map.all(BadSector)) {
