@@ -23,6 +23,14 @@ jobs:
       - name: Build setup installer
         shell: pwsh
         run: '& "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" NVMeRecoveryStudioAI.iss'
+      - name: Enforce 250 MB installer limit
+        shell: pwsh
+        run: |
+          $items = @(Get-ChildItem installer -Filter *.exe)
+          if ($items.Count -ne 1) { throw "Exactly one installer EXE is required." }
+          $limit = 250MB
+          if ($items[0].Length -gt $limit) { throw "Installer exceeds 250 MB. Approval required before distribution." }
+          Write-Host "Installer size: $($items[0].Length) bytes"
       - uses: actions/upload-artifact@v4
         with:
           name: NVMeRecoveryStudioAI-Windows-Installer
