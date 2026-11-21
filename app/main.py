@@ -120,10 +120,11 @@ class App(tk.Tk):
         if not self.selected:
             messagebox.showinfo("SSD-Diagnose","Bitte zuerst ein Laufwerk auswählen.");return
         device=dict(self.selected)
+        epoch=self.inventory_epoch
         self.status.config(text="Lesende SSD-Diagnose läuft ...")
         def worker():
             report=(ata_diagnostics.report(device) if sys.platform.startswith("linux") and device.get("bus") in ("SATA","ATA") else diagnostics.nvme_report(device))
-            self.post_ui(lambda:self.diagnose_done(device,report))
+            self.post_ui(lambda:self.diagnose_done(device,report,epoch))
         threading.Thread(target=worker,daemon=True).start()
     def plan_image(self):
         if not self.selected:
@@ -151,6 +152,15 @@ class App(tk.Tk):
         self.last_report["imaging_plan"]=result
         self.show(json.dumps(self.last_report,ensure_ascii=False,indent=2))
         self.status.config(text="Abbildplanung beendet. Kein Gerät geöffnet, kein Abbild erstellt.")
+    def merge_device_report(self,device,key,value):
+        """Retain evidence for the same selection without mixing different disks."""
+        previous=self.current_diagnostic()
+        merged=dict(previous) if previous.get("device")==device else {"device":device}
+        merged[key]=value
+        self.last_report=merged
+        return merged
+    def selection_is_current(self,device,epoch):
+        return epoch==self.inventory_epoch and self.selected==device
     def current_diagnostic(self):
         report=self.last_report if isinstance(self.last_report,dict) else {}
         if isinstance(report.get("report"),dict):
@@ -196,36 +206,38 @@ class App(tk.Tk):
         if not self.selected:
             messagebox.showinfo("Schutzprüfung","Bitte zuerst einen Datenträger auswählen.");return
         device=dict(self.selected)
+        epoch=self.inventory_epoch
         self.status.config(text="Schutzprüfung läuft ...")
         def worker():
             report=safety.classify(device)
-            self.post_ui(lambda:self.safety_done(device,report))
+            self.post_ui(lambda:self.safety_done(device,report,epoch))
         threading.Thread(target=worker,daemon=True).start()
-    def safety_done(self,device,report):
-        if not self.selected or self.selected.get("path")!=device.get("path"):
+    def safety_done(self,device,report,epoch):
+        if not self.selection_is_current(device,epoch):
             self.status.config(text="Auswahl geändert; Schutzprüfung verworfen.");return
-        self.last_report={"device":device,"safety":report}
+        self.merge_device_report(device,"safety",report)
         self.show(json.dumps(self.last_report,ensure_ascii=False,indent=2))
         self.status.config(text="Schutzprüfung abgeschlossen: Schreibzugriffe gesperrt.")
     def usb_diagnose(self):
         if not self.selected:
             messagebox.showinfo("USB-Verbindung","Bitte zuerst ein USB-Gerät auswählen.");return
         device=dict(self.selected)
+        epoch=self.inventory_epoch
         self.status.config(text="USB-Verbindung wird lesend analysiert ...")
         def worker():
             report=diagnostics.usb_report(device)
-            self.post_ui(lambda:self.usb_done(device,report))
+            self.post_ui(lambda:self.usb_done(device,report,epoch))
         threading.Thread(target=worker,daemon=True).start()
-    def usb_done(self,device,report):
-        if not self.selected or self.selected.get("path")!=device.get("path"):
+    def usb_done(self,device,report,epoch):
+        if not self.selection_is_current(device,epoch):
             self.status.config(text="Geräteauswahl geändert; Bericht verworfen.");return
-        self.last_report={"device":device,"usb_diagnostics":report}
+        self.merge_device_report(device,"usb_diagnostics",report)
         self.show(json.dumps(self.last_report,ensure_ascii=False,indent=2))
         self.status.config(text="USB-Bericht abgeschlossen. NVMe-Passthrough nicht bestätigt.")
-    def diagnose_done(self,device,report):
-        if self.selected is None or self.selected.get("path")!=device.get("path"):
+    def diagnose_done(self,device,report,epoch):
+        if not self.selection_is_current(device,epoch):
             self.status.config(text="Diagnose abgeschlossen; Geräteauswahl geändert.");return
-        self.last_report={"device":device,"diagnostics":report}
+        self.merge_device_report(device,"diagnostics",report)
         if "smart" in report:
             self.last_report["assessment"]=analysis.assess(self.last_report)
         elif "smartctl" in report:
