@@ -33,6 +33,9 @@
 - `docs/RECHNER_HARDWARE_PROFIL_VERGLEICH_ENTWURF_DE.md` – Rechnerprofile und Anschlussvergleiche.
 
 ## Diagnose, Firmware und Recovery
+- `docs/ABBILD_SEKTORENKARTE_ENTWURF_DE.md` – Abbildfortschritt und grafische Sektorenkarte.
+- `docs/RETTUNGSERGEBNIS_INTEGRITAET_ENTWURF_DE.md` – Qualität und Vollständigkeit geretteter Daten.
+- `docs/STROMAUSFALL_UNTERBRECHUNG_ENTWURF_DE.md` – unterbrochene Sitzungen und Wiederaufnahme.
 - `docs/DATEISYSTEM_PARTITION_ANALYSE_ENTWURF_DE.md` – Partitionen, Dateisysteme und logische Schäden.
 - `docs/VERSCHLUESSELUNG_ZUGRIFF_ENTWURF_DE.md` – Verschlüsselungsstatus und legitimer Datenzugriff.
 - `docs/DATENRETTUNG_DATEI_VORSCHAU_ENTWURF_DE.md` – Dateivorschau und priorisierte Rettung.
