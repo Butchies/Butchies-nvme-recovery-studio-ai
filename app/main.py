@@ -27,7 +27,21 @@ def discover():
         try: data=json.loads(cmd(["powershell.exe","-NoProfile","-NonInteractive","-Command",script]))
         except (ValueError,TypeError): return []
         if isinstance(data,dict): data=[data]
-        return [{"name":str(x.get("Model") or "USB-Laufwerk"),"path":str(x.get("DeviceID") or ""),"serial":str(x.get("SerialNumber") or ""),"size":int(x.get("Size") or 0),"bus":"USB","nvme":False} for x in data]
+        if not isinstance(data,list):return []
+        out=[]
+        prefix=chr(92)*2+"."+chr(92)+"PHYSICALDRIVE"
+        for x in data:
+            if not isinstance(x,dict):continue
+            path=str(x.get("DeviceID") or "")
+            if not path.upper().startswith(prefix) or not path[len(prefix):].isdigit():continue
+            try: size=int(x.get("Size") or 0)
+            except (ValueError,TypeError,OverflowError):continue
+            if size<=0:continue
+            out.append({"name":str(x.get("Model") or "USB-Laufwerk"),
+                        "path":path,"serial":str(x.get("SerialNumber") or ""),
+                        "size":size,"bus":"USB","nvme":False,
+                        "connection":"extern (USB)","m2_form_factor_verified":False})
+        return out
     if sys.platform.startswith("linux"):
         try: data=json.loads(cmd(["lsblk","-J","-b","-d","-o","NAME,MODEL,SERIAL,SIZE,TRAN,TYPE,PATH,ROTA"]))
         except (ValueError,TypeError): return []
