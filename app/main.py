@@ -84,7 +84,7 @@ class App(tk.Tk):
         self.label(top,("Windows 10/11 | Nur USB-Geräte" if sys.platform=="win32" else "Linux | Alle physischen Laufwerke (intern und extern)") +" | Nur lesende Inventarisierung",11).pack(anchor="w",pady=(6,0))
         bar=tk.Frame(self,bg="#101722",padx=22,pady=12);bar.pack(fill="x")
         buttons=tk.Frame(bar,bg="#101722");buttons.pack(fill="x")
-        actions=[("Geräte aktualisieren",self.refresh),("Rechneranalyse",self.host_info),("SSD-Diagnose",self.diagnose),("NVMe-Controller",self.controller_info),("USB-Verbindung",self.usb_diagnose),("Schutzprüfung",self.safety_check),("Firmwaredatei prüfen",self.inspect_firmware),("Firmwarekatalog",self.catalog_lookup),("Recovery-Leitfaden",self.triage_plan),("Abbild planen",self.plan_image),("Leseprobe 4 KiB",self.read_probe_action),("Image analysieren",self.scan_image_action),("Dateien retten",self.export_png_action),("Befund",self.assess),("Vergleich",self.compare_case),("Fallakte speichern",self.save_case),("Fallakten",self.open_cases),("Fallakte exportieren",self.export)]
+        actions=[("Geräte aktualisieren",self.refresh),("Rechneranalyse",self.host_info),("SSD-Diagnose",self.diagnose),("NVMe-Controller",self.controller_info),("USB-Verbindung",self.usb_diagnose),("Schutzprüfung",self.safety_check),("Firmwaredatei prüfen",self.inspect_firmware),("Firmwarekatalog",self.catalog_lookup),("Recovery-Leitfaden",self.triage_plan),("Abbild planen",self.plan_image),("Leseprobe 4 KiB",self.read_probe_action),("Auto-Recovery",self.auto_recovery_action),("Image analysieren",self.scan_image_action),("Dateien retten",self.export_png_action),("Befund",self.assess),("Vergleich",self.compare_case),("Fallakte speichern",self.save_case),("Fallakten",self.open_cases),("Fallakte exportieren",self.export)]
         for i,(name,cb) in enumerate(actions):
             tk.Button(buttons,text=name,command=cb,bg="#22566c",fg="white",relief="flat",padx=9,pady=7).grid(row=i//5,column=i%5,sticky="ew",padx=4,pady=4)
         for i in range(5): buttons.grid_columnconfigure(i,weight=1)
@@ -202,6 +202,50 @@ class App(tk.Tk):
         self.merge_device_report(device,"read_probe",report)
         self.show(json.dumps(self.last_report,ensure_ascii=False,indent=2))
         self.status.config(text="Leseprobe beendet; kein Abbild und keine Schreiboperation.")
+    def auto_recovery_action(self):
+        """One action: inspect an existing image and export validated candidates."""
+        if self.png_export_cancel is not None:
+            self.png_export_cancel.set()
+            self.status.config(text="Auto-Recovery: Abbruch angefordert ...")
+            return
+        if sys.platform=="win32":
+            messagebox.showwarning("Auto-Recovery","Der sichere Dateiexport ist für Windows noch nicht implementiert.")
+            return
+        source=filedialog.askopenfilename(title="Quell-Image auswählen (wird nur gelesen)",
+            filetypes=[("Rohabbilder","*.img *.raw *.dd *.bin"),("Alle Dateien","*.*")])
+        if not source:return
+        destination=filedialog.askdirectory(title="Separates Ziellaufwerk für gerettete Dateien auswählen")
+        if not destination:return
+        cancel=threading.Event()
+        self.png_export_cancel=cancel
+        self.status.config(text="Auto-Recovery: Dateierkennung und Rettung laufen automatisch ...")
+        def worker():
+            scan=image_scan.scan(source,cancelled=cancel.is_set)
+            findings=[]
+            if scan.get("completed") and not scan.get("error") and not scan.get("cancelled"):
+                findings=[x for x in (scan.get("png_inspection",[])+scan.get("jpeg_inspection",[]))
+                          if isinstance(x,dict) and x.get("validated") and x.get("complete")]
+                recovery=png_carving.export_files(source,destination,findings,cancelled=cancel.is_set)
+            else:
+                recovery={"exported":[],"skipped":[],"error":"Analyse unvollständig oder abgebrochen; kein Export."}
+            report={"offline_image_scan":{"file":source,**scan},
+                    "offline_file_recovery":recovery,
+                    "automatic":True,
+                    "limitations":"Nur PNG/JPEG aus bestehenden Images, kein direkter SSD-Zugriff."}
+            self.post_ui(lambda:self.auto_recovery_done(cancel,report))
+        threading.Thread(target=worker,daemon=True).start()
+    def auto_recovery_done(self,cancel,report):
+        if self.png_export_cancel is not cancel:return
+        self.png_export_cancel=None
+        self.last_report=report
+        self.show(json.dumps(report,ensure_ascii=False,indent=2))
+        recovery=report["offline_file_recovery"]
+        if recovery.get("error"):
+            self.status.config(text="Auto-Recovery: "+str(recovery["error"]))
+        elif recovery.get("cancelled"):
+            self.status.config(text="Auto-Recovery abgebrochen.")
+        else:
+            self.status.config(text=f"Auto-Recovery abgeschlossen: {len(recovery.get('exported',[]))} Dateien exportiert.")
     def scan_image_action(self):
         if self.image_scan_cancel is not None:
             self.image_scan_cancel.set()
