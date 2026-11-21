@@ -1,4 +1,4 @@
-# NVMe Recovery Studio AI – Entwicklungsstand 0.15.0 (GitHub)
+# NVMe Recovery Studio AI – Entwicklungsstand 0.16.0 (GitHub)
 
 ## Tatsächlich vorhandene Funktionen
 - Grafische Desktopoberfläche und lesende Laufwerksinventarisierung.
@@ -67,3 +67,8 @@ Ein Hash-Treffer im selbst bereitgestellten Katalog bestätigt weder Echtheit no
 - Linux-Zielzuordnung ermittelt Elternbeziehungen aus dem lsblk-Gerätebaum statt aus möglicherweise fehlenden PKNAME-Feldern.
 - Mehrfach-Elternbeziehungen werden berücksichtigt; Gerätepfade werden kanonisiert.
 - Das Ergebnis ist weiterhin ausschließlich ein Warnhinweis und keine Imaging-Freigabe.
+
+## Wartung 0.16.0
+- Firmwaredateien werden über einen lesenden Dateideskriptor geöffnet, als reguläre Datei geprüft und auf 256 MiB begrenzt.
+- Firmwarekataloge werden begrenzt auf 2 MiB eingelesen; Symlinks und Änderungen während des Lesens werden soweit durch das Betriebssystem unterstützt abgewehrt.
+- Kein Firmware-Flash und keine Echtheits- oder Kompatibilitätsfreigabe.
