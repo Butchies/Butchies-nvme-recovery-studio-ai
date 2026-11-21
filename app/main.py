@@ -1,5 +1,5 @@
 """NVMe Recovery Studio AI - read-only desktop application."""
-import json, platform, subprocess, sys, threading, tkinter as tk
+import json, platform, sqlite3, subprocess, sys, threading, tkinter as tk
 from datetime import datetime
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
@@ -186,7 +186,9 @@ class App(tk.Tk):
         def choose_case():
             selected=lb.curselection()
             if not selected:return
-            old=cases.load(entries[selected[0]][0])
+            try: old=cases.load(entries[selected[0]][0])
+            except (OSError,ValueError,sqlite3.Error) as exc:
+                messagebox.showerror("Fallakten",str(exc));return
             old_report=(old or {}).get("report") or {}
             current=self.last_report.get("report",self.last_report)
             result=analysis.compare(old_report,current)
@@ -201,7 +203,7 @@ class App(tk.Tk):
         try:
             case_id=cases.save(item.get("name","Rechneranalyse"),item.get("path",""),snapshot)
             self.status.config(text=f"Fallakte #{case_id} lokal gespeichert.")
-        except (OSError,ValueError) as exc:messagebox.showerror("Speicherfehler",str(exc))
+        except (OSError,ValueError,sqlite3.Error) as exc:messagebox.showerror("Speicherfehler",str(exc))
     def open_cases(self):
         try: entries=cases.recent()
         except Exception as exc:messagebox.showerror("Datenbankfehler",str(exc));return
@@ -211,7 +213,9 @@ class App(tk.Tk):
         def open_selected():
             chosen=listing.curselection()
             if not chosen:return
-            record=cases.load(entries[chosen[0]][0])
+            try: record=cases.load(entries[chosen[0]][0])
+            except (OSError,ValueError,sqlite3.Error) as exc:
+                messagebox.showerror("Fallakten",str(exc));return
             self.show(json.dumps(record,ensure_ascii=False,indent=2))
             self.last_report=record
             window.destroy()
@@ -219,7 +223,7 @@ class App(tk.Tk):
     def export(self):
         path=filedialog.asksaveasfilename(defaultextension=".json",filetypes=[("JSON","*.json")])
         if not path:return
-        anonymize=messagebox.askyesno("Datenschutz","Seriennummern und Gerätepfade ausblenden? (Empfohlen)")
+        anonymize=messagebox.askyesno("Datenschutz","Bekannte Gerätekennungen und rohe Diagnoseinformationen ausblenden? (Empfohlen; vollständige Anonymität nicht garantiert)")
         try:
             exporter.export_json(path,{"app":"NVMe Recovery Studio AI","created":datetime.now().astimezone().isoformat(),"edition":platform.system(),"inventory":self.devices,"selected":self.selected,"report":self.last_report,"notice":"Keine validierte Recovery-Diagnose."},anonymize=anonymize)
             self.status.config(text="Fallakte exportiert.")
