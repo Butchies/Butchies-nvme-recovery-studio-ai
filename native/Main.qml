@@ -42,7 +42,7 @@ ApplicationWindow {
                     model: controller.devices
                     clip: true
                     delegate: Rectangle {
-                        width: ListView.view.width; height: 146
+                        width: ListView.view.width; height: 174
                         color: index%2 ? "#1c2939" : "#243346"
                         radius: 6
                         MouseArea {
@@ -66,6 +66,14 @@ ApplicationWindow {
                                 text: modelData.nvmeIdentifyAvailable
                                       ? "Controller: " + modelData.nvmeControllerModel + " · Firmware: " + modelData.nvmeFirmware
                                       : "NVMe-Controllerdaten nicht verfügbar"
+                                color: "#a5bed3"
+                                elide: Text.ElideRight
+                                width: parent.width
+                            }
+                            Label {
+                                text: modelData.smartAvailable
+                                      ? "SMART: " + modelData.temperatureCelsius + " °C · Reserve " + modelData.availableSparePercent + "% · Verschleiß " + modelData.percentageUsed + "% · Medienfehler " + modelData.mediaErrors
+                                      : "SMART/Health über diese Verbindung nicht verfügbar"
                                 color: "#a5bed3"
                                 elide: Text.ElideRight
                                 width: parent.width
