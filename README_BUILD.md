@@ -1,4 +1,4 @@
-# NVMe Recovery Studio AI – Entwicklungsstand 0.25.0 (GitHub)
+# NVMe Recovery Studio AI – Entwicklungsstand 0.26.0 (GitHub)
 
 ## Tatsächlich vorhandene Funktionen
 - Grafische Desktopoberfläche und lesende Laufwerksinventarisierung.
@@ -119,3 +119,9 @@ Ein Hash-Treffer im selbst bereitgestellten Katalog bestätigt weder Echtheit no
 - Ein Vergleich setzt übereinstimmende Seriennummer, Modell und Kapazität voraus; SATA- und NVMe-Befunde werden nicht miteinander vermischt.
 - Gespeicherte verschachtelte Fallakten werden für den Vergleich entpackt; sinkende Rohzähler werden als mögliche Rücksetzung markiert, nicht als Heilung interpretiert.
 - Keine Tests oder Datenträger-Schreiboperationen ausgeführt.
+
+## Wartung 0.26.0
+- Linux-SATA-SMART: smartctl-Rückgabebits werden als Diagnosehinweise erfasst, statt einen nicht-null Exitstatus pauschal als unbrauchbar zu behandeln.
+- ATA-Befunde berücksichtigen SMART-Warnbits; ein bestandener Gesamtstatus überstimmt keine andere kritische Warnung.
+- Geräteliste zeigt Bus und Anschlussklassifikation getrennt. Direkte Verbindungen können ohne weitere Hardwarebelege nicht sicher als intern oder M.2 identifiziert werden.
+- Keine Tests, kein Installer, kein ZIP, keine Datenträger-Schreibzugriffe.
