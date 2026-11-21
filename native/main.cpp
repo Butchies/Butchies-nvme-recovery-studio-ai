@@ -20,6 +20,7 @@
 #include "recovery_agent.h"
 #include "rescue_imager.h"
 #include "knowledge_base.h"
+#include "controller_catalog.h"
 #include <QTimer>
 #include <QTime>
 
@@ -34,17 +35,23 @@ class RecoveryController final : public QObject {
     Q_PROPERTY(QStringList recoveryLog READ recoveryLog NOTIFY recoveryLogChanged)
     Q_PROPERTY(QStringList aiMonitor READ aiMonitor NOTIFY aiMonitorChanged)
     Q_PROPERTY(QVariantMap knowledge READ knowledge NOTIFY aiMonitorChanged)
+    Q_PROPERTY(QVariantMap catalog READ catalog CONSTANT)
 public:
     explicit RecoveryController(QObject *parent=nullptr):QObject(parent) {
         const auto k=m_kb.summary();
         ai(QStringLiteral("KI-Agent aktiv. Wissensbasis: %1 Einträge, %2 Geräte, %3 USB-Bridges, %4 Controller-Modelle.")
             .arg(k.value("cases").toInt()).arg(k.value("devices").toInt()).arg(k.value("bridges").toInt()).arg(k.value("controllers").toInt()));
+        const auto c=ControllerCatalog::totals();
+        ai(QStringLiteral("Vorlagen geladen: %1 Hersteller, %2 NVMe-Controller/-Produkte (pci.ids %3), %4 Controllerfamilien, %5 bekannte Firmwarefehler, %6 USB-Bridges.")
+            .arg(c.value("vendors").toInt()).arg(c.value("devices").toInt()).arg(c.value("pciVersion").toString())
+            .arg(c.value("families").toInt()).arg(c.value("firmwareIssues").toInt()).arg(c.value("bridges").toInt()));
         ai(QStringLiteral("Überwache USB-Anschlüsse: neue SSDs werden automatisch erkannt und untersucht."));
         connect(&m_watch,&QTimer::timeout,this,&RecoveryController::checkDevices);
         m_watch.start(4000);
     }
     QStringList aiMonitor() const { return m_aiLog; }
     QVariantMap knowledge() const { return m_kb.summary(); }
+    QVariantMap catalog() const { return ControllerCatalog::totals(); }
     ~RecoveryController() override {
         m_cancel=true;
         if(m_worker) { m_worker->wait(); }
@@ -223,6 +230,10 @@ private:
             m_aiReport.value("diagnosis").toString(),m_aiReport.value("severity").toString()));
         for(const auto &e:m_aiReport.value("evidence").toList()) ai(QStringLiteral("Beleg: %1").arg(e.toString()));
         for(const auto &w:m_aiReport.value("warnings").toList()) ai(QStringLiteral("Warnung: %1").arg(w.toString()));
+        for(const auto &p:m_aiReport.value("repairPaths").toList()) {
+            const auto m=p.toMap();
+            ai(QStringLiteral("Reparaturweg %1: %2").arg(m.value("typ").toString(),m.value("status").toString()));
+        }
         if(m_aiReport.value("learnedFindings").toInt()>0)
             ai(QStringLiteral("Erfahrung genutzt: %1 Erkenntnisse aus früheren Fällen.").arg(m_aiReport.value("learnedFindings").toInt()));
         emit aiReportChanged();

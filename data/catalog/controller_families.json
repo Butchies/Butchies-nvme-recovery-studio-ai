@@ -1,0 +1,202 @@
+{
+  "version": "2026-11-21",
+  "hinweis": "Fachwissen je Controllerhersteller. 'vertrauen' unterscheidet: 'bestaetigt' (offizielle Datenbank/Hersteller), 'dokumentiert' (allgemein veröffentlicht, mehrere Quellen), 'unbestaetigt' (Praxiswissen, nicht verifiziert). Die KI darf aus 'unbestaetigt' keine Schreibfreigabe ableiten. Controllerlisten mit PCI-IDs stehen vollständig in pci_nvme_ids.json.",
+  "reparaturwegTypen": {
+    "datenrettung": "Rettungsabbild auf separates Ziel, nur lesend. Immer zuerst.",
+    "nvme_firmware_update": "Standard-NVMe Firmware Image Download (Opcode 0x11) + Firmware Commit (0x10). Nur wenn der Controller auf Admin-Befehle antwortet. Nutzerdaten bleiben normalerweise erhalten.",
+    "firmware_slot_aktivieren": "Andere vorhandene Firmware-Slot-Version per Firmware Commit aktivieren (falls Controller mehrere Slots meldet).",
+    "notmodus_hersteller_werkzeug": "Controller im ROM-/Safe-Mode per Produktionswerkzeug (MPTool) des Herstellers neu initialisieren. Setzt Firmware und Verwaltungstabellen neu auf: Nutzerdaten gehen in der Regel verloren.",
+    "labor": "Professionelle Hardware-Datenrettung (Techmode-Lader, Chip-Off, Platinenreparatur). Nicht per Software dieses Programms möglich.",
+    "hardware_pruefung": "Spannungsversorgung, Kontakte, Adapter, Temperatur prüfen; oft Ursache scheinbar toter SSDs."
+  },
+  "familien": [
+    {
+      "id": "phison",
+      "hersteller": "Phison Electronics",
+      "pciVendor": ["1987"],
+      "verwandtePciVendor": {"1bb1": "Seagate FireCuda/BarraCuda: Geräte-IDs entsprechen Phison-Nummern (5012, 5016, 5018, 5026, 5027) – vermutlich Phison-Controller", "2646": "Kingston: viele Modelle mit Phison- oder Silicon-Motion-Controller, je nach Serie/Charge"},
+      "eigenerController": false,
+      "verbreitung": "Sehr verbreitet in Markenprodukten (Corsair, Sabrent, Kingston, Seagate, Gigabyte, MSI, Crucial u. a.).",
+      "notmodus": {"vorhanden": "ja", "vertrauen": "dokumentiert", "beschreibung": "Phison-Controller besitzen einen ROM-/Safe-Mode, der bei fehlender oder beschädigter Firmware aktiv wird oder über Testpunkte erzwungen werden kann. Im Notmodus antwortet der Controller nicht als normales NVMe-Laufwerk.", "erkennung": "Linux-Boot-Edition: PCI-Gerät mit Hersteller 1987 vorhanden, aber kein funktionsfähiger NVMe-Namespace bzw. Identify schlägt fehl. Hinter USB-Bridges nicht sichtbar."},
+      "reparaturwege": [
+        {"typ": "datenrettung", "voraussetzung": "SSD liefert noch Daten"},
+        {"typ": "nvme_firmware_update", "voraussetzung": "Controller antwortet; offizielle Firmware des Markenherstellers (nicht Phison-generisch) für exakt dieses Modell", "werkzeug": "Herstellertool der Marke oder Standard-NVMe-Update dieses Programms"},
+        {"typ": "notmodus_hersteller_werkzeug", "voraussetzung": "Direkter PCIe-Zugang (Linux-Boot-Edition), passendes Phison-MPTool und Konfiguration für Controller+NAND", "datenverlust": "ja", "werkzeug": "Phison MPTool (nicht frei verteilbar, muss vom Nutzer bereitgestellt werden)"},
+        {"typ": "labor"}
+      ],
+      "typischeFehler": ["Kapazität 0 oder falsche Kapazität", "Generischer Modellname statt Markenname (Hinweis auf Notmodus/zurückgesetzte Konfiguration)", "Plötzliches Verschwinden nach Stromausfall", "Thermische Drosselung bei PCIe-4.0/5.0-Modellen ohne Kühlung"],
+      "vertrauen": "dokumentiert",
+      "quellen": ["pci.ids (pciutils)"]
+    },
+    {
+      "id": "siliconmotion",
+      "hersteller": "Silicon Motion (SMI)",
+      "pciVendor": ["126f"],
+      "eigenerController": false,
+      "verbreitung": "Verbreitet in preisgünstigen und Mittelklasse-SSDs (u. a. Crucial P1, Intel 660p-Familie, ADATA, Kingston, Transcend, HP).",
+      "notmodus": {"vorhanden": "ja", "vertrauen": "dokumentiert", "beschreibung": "SMI-Controller besitzen einen ROM-Modus (meist über Jumper/Testpunkte auf der Platine), in dem sie per Produktionswerkzeug neu geladen werden können.", "erkennung": "Linux-Boot-Edition: PCI-Hersteller 126f ohne funktionsfähiges NVMe."},
+      "reparaturwege": [
+        {"typ": "datenrettung"},
+        {"typ": "nvme_firmware_update", "voraussetzung": "Controller antwortet; offizielle Firmware der Marke"},
+        {"typ": "notmodus_hersteller_werkzeug", "datenverlust": "ja", "werkzeug": "SMI MPTool passend zu Controller (z. B. SM2262/SM2263) und NAND (nicht frei verteilbar)"},
+        {"typ": "labor"}
+      ],
+      "typischeFehler": ["DRAM-lose Modelle (XT): starke Abhängigkeit von HMB, Probleme bei Host-Speicherzuteilung", "Plötzlich nur lesbar (Schreibschutz durch Controller bei Reserve-Erschöpfung)"],
+      "vertrauen": "dokumentiert",
+      "quellen": ["pci.ids (pciutils)"]
+    },
+    {
+      "id": "realtek",
+      "hersteller": "Realtek",
+      "pciVendor": ["10ec"],
+      "eigenerController": false,
+      "verbreitung": "DRAM-lose Einsteiger-SSDs (RTS5762/5763DL/5765DL/5770DL/5771/5772DL).",
+      "notmodus": {"vorhanden": "ja", "vertrauen": "unbestaetigt", "beschreibung": "Realtek-SSD-Controller lassen sich laut Praxisberichten im ROM-Modus mit Realtek-Produktionswerkzeugen neu initialisieren.", "erkennung": "Linux-Boot-Edition: PCI-Hersteller 10ec, Geräte-ID 57xx ohne funktionsfähiges NVMe."},
+      "reparaturwege": [
+        {"typ": "datenrettung"},
+        {"typ": "nvme_firmware_update", "voraussetzung": "Controller antwortet; offizielle Firmware der Marke"},
+        {"typ": "notmodus_hersteller_werkzeug", "datenverlust": "ja", "werkzeug": "Realtek MPTool (nicht frei verteilbar)"},
+        {"typ": "labor"}
+      ],
+      "typischeFehler": ["Leistungseinbruch bei vollem Laufwerk (DRAM-los)"],
+      "vertrauen": "unbestaetigt",
+      "quellen": ["pci.ids (pciutils)"]
+    },
+    {
+      "id": "maxio",
+      "hersteller": "MAXIO Technology",
+      "pciVendor": ["1e4b"],
+      "eigenerController": false,
+      "verbreitung": "Zunehmend in Marken wie Lexar, Netac, Fanxiang, Acer/Predator u. a. (MAP1001/1002/1202/1602/1608).",
+      "notmodus": {"vorhanden": "ja", "vertrauen": "unbestaetigt", "beschreibung": "Laut Praxisberichten Neuinitialisierung per Maxio-Produktionswerkzeug möglich.", "erkennung": "Linux-Boot-Edition: PCI-Hersteller 1e4b ohne funktionsfähiges NVMe."},
+      "reparaturwege": [
+        {"typ": "datenrettung"},
+        {"typ": "nvme_firmware_update"},
+        {"typ": "notmodus_hersteller_werkzeug", "datenverlust": "ja", "werkzeug": "Maxio MPTool (nicht frei verteilbar)"},
+        {"typ": "labor"}
+      ],
+      "vertrauen": "unbestaetigt",
+      "quellen": ["pci.ids (pciutils)"]
+    },
+    {
+      "id": "innogrit",
+      "hersteller": "InnoGrit",
+      "pciVendor": ["1dbe"],
+      "eigenerController": false,
+      "verbreitung": "Einsteiger bis High-End (IG5208/5216/5220/5236) und Rechenzentrum.",
+      "notmodus": {"vorhanden": "unbekannt", "vertrauen": "unbestaetigt", "beschreibung": "Keine verlässlichen öffentlichen Informationen zu Recovery-Werkzeugen."},
+      "reparaturwege": [{"typ": "datenrettung"}, {"typ": "nvme_firmware_update"}, {"typ": "labor"}],
+      "vertrauen": "unbestaetigt",
+      "quellen": ["pci.ids (pciutils)"]
+    },
+    {
+      "id": "samsung",
+      "hersteller": "Samsung",
+      "pciVendor": ["144d"],
+      "eigenerController": true,
+      "verbreitung": "Eigene Controller (u. a. 960/970/980/990/9100-Serien, PM-OEM-Modelle).",
+      "notmodus": {"vorhanden": "kein öffentlicher Zugang", "vertrauen": "dokumentiert", "beschreibung": "Kein öffentlich verfügbares Notmodus-Werkzeug. Recovery toter Controller praktisch nur im Labor."},
+      "reparaturwege": [
+        {"typ": "datenrettung"},
+        {"typ": "nvme_firmware_update", "voraussetzung": "Controller antwortet; offizielle Samsung-Firmware", "werkzeug": "Samsung Magician oder Samsung Firmware-ISO; Standard-NVMe-Update dieses Programms mit offizieller Datei"},
+        {"typ": "labor"}
+      ],
+      "typischeFehler": ["Bekannte Firmwarefehler mit Gesundheitsverlust bzw. Ausfall (siehe firmware_issues.json)", "Wechsel in Nur-Lese-Modus bei kritischem Zustand"],
+      "werkzeugQuelle": "https://semiconductor.samsung.com/consumer-storage/support/tools/",
+      "vertrauen": "dokumentiert",
+      "quellen": ["pci.ids (pciutils)", "Samsung Support-Tools-Seite"]
+    },
+    {
+      "id": "wd_sandisk",
+      "hersteller": "Western Digital / SanDisk",
+      "pciVendor": ["15b7", "1b96"],
+      "eigenerController": true,
+      "verbreitung": "Eigene Controller in WD Blue/Black/Green, SanDisk und OEM-Modellen (PC SNxxx).",
+      "notmodus": {"vorhanden": "kein öffentlicher Zugang", "vertrauen": "dokumentiert", "beschreibung": "Kein öffentliches Recovery-Werkzeug für tote Controller."},
+      "reparaturwege": [
+        {"typ": "datenrettung"},
+        {"typ": "nvme_firmware_update", "werkzeug": "WD Dashboard / SanDisk Dashboard; Standard-NVMe-Update mit offizieller Datei"},
+        {"typ": "labor"}
+      ],
+      "typischeFehler": ["HMB-bedingte Abstürze unter Windows 11 24H2 bei bestimmten DRAM-losen Modellen (siehe firmware_issues.json)"],
+      "vertrauen": "dokumentiert",
+      "quellen": ["pci.ids (pciutils)"]
+    },
+    {
+      "id": "kioxia",
+      "hersteller": "Kioxia / Toshiba",
+      "pciVendor": ["1e0f", "1179"],
+      "eigenerController": true,
+      "verbreitung": "Eigene Controller (BG/XG-OEM-Serien, Exceria, Rechenzentrum).",
+      "notmodus": {"vorhanden": "kein öffentlicher Zugang", "vertrauen": "dokumentiert"},
+      "reparaturwege": [{"typ": "datenrettung"}, {"typ": "nvme_firmware_update", "werkzeug": "Kioxia SSD Utility"}, {"typ": "labor"}],
+      "vertrauen": "dokumentiert",
+      "quellen": ["pci.ids (pciutils)"]
+    },
+    {
+      "id": "skhynix_solidigm",
+      "hersteller": "SK hynix / Solidigm",
+      "pciVendor": ["1c5c", "025e"],
+      "eigenerController": true,
+      "verbreitung": "Eigene Controller (Gold P31, Platinum P41, Solidigm P44 Pro, OEM PCxxx/BCxxx).",
+      "notmodus": {"vorhanden": "kein öffentlicher Zugang", "vertrauen": "dokumentiert"},
+      "reparaturwege": [{"typ": "datenrettung"}, {"typ": "nvme_firmware_update", "werkzeug": "SK hynix Drive Manager / Solidigm Storage Tool"}, {"typ": "labor"}],
+      "vertrauen": "dokumentiert",
+      "quellen": ["pci.ids (pciutils)"]
+    },
+    {
+      "id": "micron_crucial",
+      "hersteller": "Micron / Crucial",
+      "pciVendor": ["1344", "c0a9"],
+      "eigenerController": "teilweise",
+      "verbreitung": "Micron-eigene Controller in einigen Modellen; Crucial-Endkundenserien nutzen je nach Serie auch Phison- oder Silicon-Motion-Controller. Zuordnung über PCI-ID bzw. Modellname.",
+      "notmodus": {"vorhanden": "abhängig vom Controller", "vertrauen": "unbestaetigt", "beschreibung": "Bei Phison-/SMI-basierten Modellen gelten deren Wege; bei Micron-eigenen Controllern kein öffentlicher Zugang."},
+      "reparaturwege": [{"typ": "datenrettung"}, {"typ": "nvme_firmware_update", "werkzeug": "Crucial Storage Executive"}, {"typ": "labor"}],
+      "vertrauen": "unbestaetigt",
+      "quellen": ["pci.ids (pciutils)"]
+    },
+    {
+      "id": "intel",
+      "hersteller": "Intel (Client-SSDs heute Solidigm)",
+      "pciVendor": ["8086"],
+      "eigenerController": "teilweise",
+      "verbreitung": "600p/660p/665p/670p-Familie (Silicon-Motion-basiert), Optane, Rechenzentrum.",
+      "notmodus": {"vorhanden": "unbekannt", "vertrauen": "unbestaetigt"},
+      "reparaturwege": [{"typ": "datenrettung"}, {"typ": "nvme_firmware_update", "werkzeug": "Solidigm Storage Tool / Intel MAS"}, {"typ": "labor"}],
+      "vertrauen": "unbestaetigt",
+      "quellen": ["pci.ids (pciutils)"]
+    },
+    {
+      "id": "marvell",
+      "hersteller": "Marvell",
+      "pciVendor": ["1b4b"],
+      "eigenerController": false,
+      "verbreitung": "Ältere NVMe-SSDs (88SS1092/1093, 88NV1160) und RAID-Controller.",
+      "notmodus": {"vorhanden": "unbekannt", "vertrauen": "unbestaetigt"},
+      "reparaturwege": [{"typ": "datenrettung"}, {"typ": "nvme_firmware_update"}, {"typ": "labor"}],
+      "vertrauen": "unbestaetigt",
+      "quellen": ["pci.ids (pciutils)"]
+    },
+    {
+      "id": "china_controller",
+      "hersteller": "Weitere Controllerhersteller (u. a. YMTC, Unionmemory, Starblaze, YEESTOR, TenaFe, FADU, DapuStor, Techwinsemi)",
+      "pciVendor": ["1e49", "1cc4", "9d32", "1d89", "fe19", "1dc5", "1e3b", "1f99"],
+      "eigenerController": "unterschiedlich",
+      "notmodus": {"vorhanden": "unbekannt", "vertrauen": "unbestaetigt", "beschreibung": "Kaum öffentliche Recovery-Informationen. Die KI sammelt Erfahrungen aus eigenen Fällen."},
+      "reparaturwege": [{"typ": "datenrettung"}, {"typ": "nvme_firmware_update"}, {"typ": "labor"}],
+      "vertrauen": "unbestaetigt",
+      "quellen": ["pci.ids (pciutils)"]
+    },
+    {
+      "id": "marken_ohne_controllerangabe",
+      "hersteller": "Markenhersteller, die fremde Controller verbauen (u. a. Kingston, ADATA, Lexar/Longsys, Transcend, Netac, Biwin, Apacer, Teamgroup, Patriot, Corsair, Sabrent)",
+      "pciVendor": ["2646", "1cc1", "1d97", "1d79", "1f40", "1dee", "1bcd"],
+      "eigenerController": false,
+      "verbreitung": "Der Controller ist aus der Marken-PCI-ID nicht direkt ablesbar und kann je nach Charge wechseln.",
+      "notmodus": {"vorhanden": "abhängig vom tatsächlichen Controller", "vertrauen": "unbestaetigt", "beschreibung": "Erst Controller bestimmen (Linux-Boot-Edition, Platinenfoto, Firmwarekennung), dann Wege der jeweiligen Controllerfamilie."},
+      "reparaturwege": [{"typ": "datenrettung"}, {"typ": "nvme_firmware_update", "voraussetzung": "Firmware der Marke für exakt dieses Modell und diese Hardware-Revision"}, {"typ": "labor"}],
+      "vertrauen": "unbestaetigt",
+      "quellen": ["pci.ids (pciutils)"]
+    }
+  ]
+}

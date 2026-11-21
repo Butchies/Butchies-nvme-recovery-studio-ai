@@ -148,6 +148,20 @@ ApplicationWindow {
                     model: controller.aiReport.actions || []
                     Label { Layout.fillWidth: true; text: "• " + modelData; color: "#b5d0e6"; wrapMode: Text.WordWrap }
                 }
+                Label {
+                    visible: (controller.aiReport.repairPaths || []).length > 0
+                    text: "Reparaturwege (Vorlage: " + ((controller.aiReport.catalog && controller.aiReport.catalog.family) ? controller.aiReport.catalog.family.hersteller : "allgemein") + ")"
+                    font.bold: true; color: "white"
+                }
+                Repeater {
+                    model: controller.aiReport.repairPaths || []
+                    Label {
+                        Layout.fillWidth: true
+                        text: "◆ " + modelData.typ + (modelData.datenverlust === "ja" ? " (Datenverlust!)" : "") + " – " + modelData.status
+                        color: modelData.datenverlust === "ja" ? "#ffb4a2" : "#d8e8ff"
+                        wrapMode: Text.WordWrap
+                    }
+                }
             }
         }
         RowLayout {
@@ -243,7 +257,10 @@ ApplicationWindow {
                     text: "Wissensbasis: " + (controller.knowledge.cases || 0) + " Einträge · "
                           + (controller.knowledge.devices || 0) + " Geräte · "
                           + (controller.knowledge.bridges || 0) + " Bridges · "
-                          + (controller.knowledge.controllers || 0) + " Controller"
+                          + (controller.knowledge.controllers || 0) + " Controller · "
+                          + (controller.knowledge.proposals || 0) + " Vorlagen-Vorschläge\nVorlagen: "
+                          + (controller.catalog.vendors || 0) + " Hersteller · " + (controller.catalog.devices || 0) + " Controller/Produkte · "
+                          + (controller.catalog.firmwareIssues || 0) + " Firmwarefehler"
                     color: "#a9b4e6"; font.pixelSize: 12; wrapMode: Text.WordWrap
                 }
                 ListView {

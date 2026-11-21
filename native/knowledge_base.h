@@ -75,6 +75,7 @@ public:
             {"devices",m_root.value("devices").toObject().size()},
             {"bridges",m_root.value("bridges").toObject().size()},
             {"controllers",m_root.value("controllers").toObject().size()},
+            {"proposals",m_root.value("vorlagenVorschlaege").toObject().size()},
         };
     }
 
@@ -142,6 +143,23 @@ public:
             c["firmware"]=fw;
             controllers[ck]=c;
             m_root["controllers"]=controllers;
+        }
+        // Template gaps: unknown vendor or controller become proposals in
+        // quarantine. They never unlock write operations by themselves.
+        const auto cat=report.value("catalog").toMap();
+        if(d.value("nvmeIdentifyAvailable").toBool() && (cat.value("unknownVendor").toBool() || !cat.contains("controllerName"))) {
+            auto proposals=m_root.value("vorlagenVorschlaege").toObject();
+            const QString key=QStringLiteral("%1|%2").arg(cat.value("vendorId").toString(),d.value("nvmeControllerModel").toString());
+            auto prop=proposals.value(key).toObject();
+            prop["status"]="quarantaene";
+            prop["pciVendor"]=cat.value("vendorId").toString();
+            prop["modell"]=d.value("nvmeControllerModel").toString();
+            prop["firmware"]=d.value("nvmeFirmware").toString();
+            prop["bridge"]=bridgeKey(d);
+            prop["beobachtungen"]=prop.value("beobachtungen").toInt()+1;
+            if(!prop.contains("erstmals")) prop["erstmals"]=now();
+            proposals[key]=prop;
+            m_root["vorlagenVorschlaege"]=proposals;
         }
         recordAction(QStringLiteral("diagnose"),d,{{"bewertung",report.value("severity")},{"diagnose",report.value("diagnosis")}});
     }

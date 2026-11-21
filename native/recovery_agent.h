@@ -3,9 +3,12 @@
 #include <QVariantList>
 #include <QString>
 #include <QStringList>
+#include "controller_catalog.h"
 
-// Deterministic local decision engine. This is the autonomous diagnostic
-// baseline, not an LLM and not a firmware-flashing implementation.
+// Deterministic local decision engine (not an LLM). Combines measurements,
+// controller templates (ControllerCatalog) and learned experience
+// (KnowledgeBase) into a diagnosis, repair paths and a rescue plan.
+// It never issues write commands to the SSD itself.
 namespace RecoveryAgent {
 inline bool number(const QVariant &v, double &out) {
     bool ok=false; out=v.toString().toDouble(&ok); return ok;
@@ -36,7 +39,17 @@ inline QVariantMap analyze(const QVariantMap &device, const QVariantMap &experie
     }
     evidence.append("Windows bestätigt USB-Speicherbus; nur lesende Analyse.");
     canRead=true;
-    if(!device.value("nvmeIdentifyAvailable").toBool()) {
+    const QString sizeText=device.value("sizeBytes").toString().trimmed();
+    const bool noMedium=sizeText.isEmpty() || sizeText=="0";
+    if(noMedium) {
+        diagnosis="SSD meldet sich nicht: Die USB-Bridge ist vorhanden, liefert aber kein Speichermedium. Der SSD-Controller startet nicht normal (Notmodus, Firmware- oder Flash-Defekt, Stromversorgung oder Kontakt).";
+        severity="Kritisch";
+        confidence="Mittel";
+        canRead=false;
+        warnings << "Kein Datenzugriff über USB möglich; ein Rettungsabbild kann nicht erstellt werden.";
+        actions.append("Hardware prüfen: anderes Gehäuse/Kabel, direkter USB-Anschluss ohne Hub, SSD-Kontakte und Temperatur.");
+        actions.append("SSD direkt in einen M.2-Steckplatz setzen und mit der Linux-Boot-Edition auf Notmodus prüfen (Controller-Identifikation über PCIe).");
+    } else if(!device.value("nvmeIdentifyAvailable").toBool()) {
         diagnosis="NVMe-Controller über die USB-Bridge nicht identifizierbar.";
         severity="Diagnose eingeschränkt";
         confidence="Hoch (Zugriffsproblem), niedrig (Fehlerursache)";
@@ -151,6 +164,46 @@ inline QVariantMap analyze(const QVariantMap &device, const QVariantMap &experie
                 .arg(r>0 ? QStringLiteral("; Ø %1 % gerettet in %2 Rettungen").arg(ctrl.value("prozentSumme").toDouble()/r,0,'f',1).arg(r) : QString()));
         }
     }
+    // --- Controller templates ---------------------------------------------
+    const QVariantMap cat=ControllerCatalog::identify(device);
+    for(const auto &e:cat.value("evidence").toList()) evidence.append(e);
+    if(cat.value("bridgeIsSata").toBool())
+        warnings << "Das Gehäuse ist laut Vorlagen eine SATA-Bridge: NVMe-SSDs funktionieren darin nicht, nur M.2-SATA-SSDs.";
+    const auto issues=cat.value("firmwareIssues").toList();
+    for(const auto &i:issues) {
+        const auto m=i.toMap();
+        warnings << QStringLiteral("Bekannter Firmwarefehler (%1): Firmware %2 → Update auf %3.")
+            .arg(m.value("schwere").toString(),m.value("aktuelleFirmware").toString(),m.value("korrigierteFirmware").toString());
+        actions.prepend(QStringLiteral("Firmware-Update auf %1 aus offizieller Quelle (%2) – erst nach Datensicherung und nur mit Ihrer Freigabe.")
+            .arg(m.value("korrigierteFirmware").toString(),m.value("quelleFirmware").toString()));
+        if(m.value("schwere").toString()=="kritisch" && severity!="Kritisch") severity="Auffällig";
+    }
+    // Repair paths from the family template, rated for the current situation.
+    QVariantList paths;
+    const auto types=cat.value("pathTypes").toMap();
+    const auto family=cat.value("family").toMap();
+    QVariantList familyPaths=family.value("reparaturwege").toList();
+    if(familyPaths.isEmpty())
+        familyPaths={QVariantMap{{"typ","datenrettung"}},QVariantMap{{"typ","nvme_firmware_update"}},QVariantMap{{"typ","labor"}}};
+    if(noMedium) familyPaths.prepend(QVariantMap{{"typ","hardware_pruefung"}});
+    for(const auto &fp:familyPaths) {
+        auto p=fp.toMap();
+        const QString typ=p.value("typ").toString();
+        p["beschreibung"]=types.value(typ).toString();
+        QString status;
+        if(typ=="datenrettung") status=canRead ? "Jetzt automatisch möglich" : "Über diese Verbindung nicht möglich";
+        else if(typ=="hardware_pruefung") status="Jetzt durch Sie möglich";
+        else if(typ=="nvme_firmware_update")
+            status=issues.isEmpty() ? "Kein bekannter Firmwarefehler; nur bei Bedarf"
+                 : "Empfohlen – Firmware-Manager mit Freigabe (über USB-Bridge meist nicht durchführbar, dann direkter M.2-Anschluss)";
+        else if(typ=="notmodus_hersteller_werkzeug") status="Nur mit Linux-Boot-Edition und vom Nutzer bereitgestelltem Herstellerwerkzeug; Datenverlust";
+        else if(typ=="labor") status="Immer möglich (extern)";
+        p["status"]=status;
+        paths.append(p);
+    }
+    result["catalog"]=cat;
+    result["repairPaths"]=paths;
+    result["firmwareIssues"]=issues;
     result["learnedFindings"]=learned;
     result["diagnosis"]=diagnosis;
     result["severity"]=severity;

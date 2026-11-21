@@ -144,6 +144,8 @@ inline QVariantMap inspect(const QString &path) {
                 const auto firmware=QString::fromLatin1(reinterpret_cast<const char*>(data+64),8).trimmed();
                 if(vendor!=0 && vendor!=0xffff && !model.isEmpty() && !serial.isEmpty()) {
                     report["nvmeIdentifyAvailable"]=true;
+                    report["nvmeVendorId"]=QStringLiteral("%1").arg(vendor,4,16,QLatin1Char('0'));
+                    report["nvmeSubsystemVendorId"]=QStringLiteral("%1").arg(unsigned(data[2])|(unsigned(data[3])<<8),4,16,QLatin1Char('0'));
                     report["nvmePassthrough"]="NVMe Identify Controller lesend verfügbar";
                     report["nvmeControllerModel"]=model;
                     report["nvmeControllerSerial"]=serial;

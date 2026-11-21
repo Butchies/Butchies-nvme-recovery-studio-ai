@@ -1,0 +1,47 @@
+{
+  "version": "2026-11-21",
+  "hinweis": "Bekannte fehlerhafte Firmwarestände mit offiziell veröffentlichter Korrektur. 'modellMuster' wird ohne Groß-/Kleinschreibung und ohne Leerzeichen/Unterstriche mit dem NVMe-Modellnamen verglichen. Firmwaredateien werden nicht mitgeliefert, sondern nur aus der genannten offiziellen Quelle bezogen.",
+  "eintraege": [
+    {
+      "id": "samsung-980pro-3B2QGXA7",
+      "hersteller": "Samsung",
+      "modellMuster": ["SAMSUNGSSD980PRO"],
+      "betroffeneFirmware": ["3B2QGXA7"],
+      "korrigierteFirmware": "5B2QGXA7",
+      "nichtBetroffen": ["4B2QGXA7", "5B2QGXA7"],
+      "schwere": "kritisch",
+      "beschreibung": "Fehler in Firmware 3B2QGXA7 führte zu raschem Gesundheitsverlust und Ausfall (vor allem 2-TB-Modelle). Samsung empfiehlt das Update auf 5B2QGXA7 für alle 980 PRO.",
+      "wirkung": "Das Update verhindert den Fehler bei noch funktionierenden SSDs. Bereits ausgefallene SSDs werden dadurch nicht wiederhergestellt.",
+      "quelleFirmware": "https://semiconductor.samsung.com/consumer-storage/support/tools/",
+      "belege": ["https://www.pugetsystems.com/support/guides/critical-samsung-ssd-firmware-update/", "https://www.tomshardware.com/news/samsung-980-pro-ssd-failures-firmware-update"],
+      "vertrauen": "bestaetigt"
+    },
+    {
+      "id": "samsung-990pro-0B2QJXD7",
+      "hersteller": "Samsung",
+      "modellMuster": ["SAMSUNGSSD990PRO"],
+      "betroffeneFirmware": ["0B2QJXD7"],
+      "korrigierteFirmware": "1B2QJXD7 oder neuer (aktuellen Stand über Samsung beziehen)",
+      "schwere": "hoch",
+      "beschreibung": "Erstfirmware 0B2QJXD7 verursachte beschleunigten Gesundheitsverlust (SMART Percentage Used). Ab 1B2QJXD7 behoben; bereits verlorene Gesundheit wird nicht zurückgesetzt.",
+      "wirkung": "Stoppt den weiteren beschleunigten Verschleiß.",
+      "quelleFirmware": "https://semiconductor.samsung.com/consumer-storage/support/tools/",
+      "belege": ["https://www.tomshardware.com/news/samsung-990-pro-firmware-update-released-ssd-health"],
+      "vertrauen": "bestaetigt"
+    },
+    {
+      "id": "wd-hmb-24h2",
+      "hersteller": "Western Digital / SanDisk",
+      "modellMuster": ["WDBLACKSN770", "WDBLACKSN770M", "WDBLUESN580", "WDBLUESN5000", "SANDISKEXTREME"],
+      "betroffeneFirmware": [],
+      "korrigierteFirmware": {"WDBLACKSN770": "731130WD", "WDBLACKSN770M": "731130WD", "WDBLUESN580": "281050WD", "WDBLUESN5000": "291020WD", "SANDISKEXTREME": "731130WD"},
+      "schwere": "hoch",
+      "beschreibung": "Abstürze (Bluescreen) unter Windows 11 24H2 wegen geänderter Host-Memory-Buffer-Zuteilung. Offiziell betroffen sind vor allem die 2-TB-Varianten; Windows blockiert 24H2 teils bis zum Update.",
+      "wirkung": "Behebt die HMB-bedingten Abstürze. Vor dem Update Daten sichern.",
+      "quelleFirmware": "WD Dashboard / SanDisk Dashboard (offizielle Herstellersoftware)",
+      "belege": ["https://heise.de/-9984513", "https://www.tomshardware.com/pc-components/ssds/western-digital-releases-fix-for-windows-11-24h2-bsods-users-are-strongly-advised-to-update-their-ssd-firmware"],
+      "vergleich": "kleiner_als_korrigiert",
+      "vertrauen": "bestaetigt"
+    }
+  ]
+}

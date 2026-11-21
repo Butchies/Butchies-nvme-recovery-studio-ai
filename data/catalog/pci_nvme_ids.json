@@ -1,0 +1,6091 @@
+{
+ "hinweis": "Alle Geräte mit NVMe/SSD-Bezug; Subsysteme ordnen Endkundenprodukte dem Controller zu.",
+ "lizenz": "GPL-2.0-or-later oder BSD-3-Clause",
+ "quelle": "pci.ids (pciutils/pciids)",
+ "vendors": {
+  "01de": {
+   "devices": {
+    "0000": {
+     "name": "Propolis NVMe Controller",
+     "subsystems": {}
+    }
+   },
+   "name": "Oxide Computer Company"
+  },
+  "025e": {
+   "devices": {
+    "0b60": {
+     "name": "NVMe DC SSD [Sentinel Rock Plus controller]",
+     "subsystems": {
+      "025e:8008": "NVMe DC SSD U.2 15mm [D7-P5510]",
+      "025e:8208": "NVMe DC SSD U.2 15mm [D7-P5810]",
+      "025e:821d": "NVMe DC SSD E1.L 9.5mm [D7-P5810]",
+      "025e:8d1d": "NVMe DC SSD E1.L 9.5mm [D5-P5316]",
+      "025e:9008": "NVMe DC SSD U.2 15mm [D7-P5520]",
+      "025e:900c": "NVMe DC SSD E1.S 9.5mm [D7-P5520]",
+      "025e:900d": "NVMe DC SSD E1.S 15mm [D7-P5520]",
+      "025e:901c": "NVMe DC SSD E1.L 9.5mm [D7-P5520]",
+      "025e:9108": "NVMe DC SSD U.2 15mm [D7-P5620]",
+      "025e:c008": "NVMe DC SSD U.2 15mm [D5-P5530]",
+      "025e:d408": "NVMe DC SSD U.2 15mm [D5-P5430]",
+      "025e:d40c": "NVMe DC SSD E1.S 9.5mm [D5-P5430]",
+      "025e:d419": "NVMe DC SSD E3.S 7.5mm [D5-P5430]",
+      "025e:d808": "NVMe DC SSD U.2 15mm [D5-P5336]",
+      "025e:d819": "NVMe DC SSD E3.S 7.5mm [D5-P5336]",
+      "025e:d81c": "NVMe DC SSD E1.L 18mm [D5-P5336]",
+      "025e:d81d": "NVMe DC SSD E1.L 9.5mm [D5-P5336]"
+     }
+    },
+    "0b70": {
+     "name": "NVMe DC SSD [Yorktown controller]",
+     "subsystems": {}
+    },
+    "2b59": {
+     "name": "NVMe DC SSD [Atomos Prime]",
+     "subsystems": {
+      "025e:0008": "NVMe DC SSD U.2-SFF 15mm [D7-PS1010]",
+      "025e:000c": "NVMe DC SSD E1.S 9.5mm [D7-PS1010]",
+      "025e:000d": "NVMe DC SSD E1.S 15mm [D7-PS1010]",
+      "025e:0019": "NVMe DC SSD E3.S-1T 7.5mm [D7-PS1010]",
+      "025e:0108": "NVMe DC SSD U.2-SFF 15mm [D7-PS1030]",
+      "025e:0119": "NVMe DC SSD E3.S-1T 7.5mm [D7-PS1030]",
+      "108e:48a0": "NVMe DC SSD U.2-SFF 15mm 3.84TB [D7-PS1010 Custom]",
+      "108e:48a1": "NVMe DC SSD U.2-SFF 15mm 7.68TB [D7-PS1010 Custom]",
+      "108e:48a2": "NVMe DC SSD U.2-SFF 15mm 15.36TB [D7-PS1010 Custom]",
+      "108e:48a3": "NVMe DC SSD Add-In-Card [D7-PS1030 Custom]",
+      "108e:48a4": "NVMe DC SSD E3.S-1T 7.5mm 3.84TB [D7-PS1010 Custom]",
+      "108e:48a5": "NVMe DC SSD E3.S-1T 7.5mm 7.68TB [D7-PS1010 Custom]",
+      "108e:48a6": "NVMe DC SSD E3.S-1T 7.5mm 15.36TB [D7-PS1010 Custom]"
+     }
+    },
+    "f1ab": {
+     "name": "P41 Plus NVMe SSD (DRAM-less) [Echo Harbor]",
+     "subsystems": {}
+    },
+    "f1ac": {
+     "name": "P44 Pro NVMe SSD [Hollywood Beach]",
+     "subsystems": {}
+    }
+   },
+   "name": "Solidigm"
+  },
+  "1000": {
+   "devices": {
+    "0072": {
+     "name": "SAS2008 PCI-Express Fusion-MPT SAS-2 [Falcon]",
+     "subsystems": {
+      "1000:3020": "9211-8i",
+      "1000:3040": "9210-8i",
+      "1000:3060": "9212-4i4e",
+      "1000:3080": "9200-8e [LSI SAS 6Gb/s SAS/SATA PCIe x8 External HBA]",
+      "1000:30b0": "9200-8e [LSI SAS 6Gb/s SAS/SATA PCIe x8 External HBA]",
+      "1000:30e0": "9202-16e",
+      "1014:03ca": "IBM 6Gb SAS HBA [9212-4i4e]",
+      "1028:1f1c": "6Gbps SAS HBA Adapter",
+      "1028:1f1d": "PERC H200 Adapter",
+      "1028:1f1e": "PERC H200 Integrated",
+      "1028:1f1f": "PERC H200 Modular",
+      "1028:1f20": "PERC H200 Embedded",
+      "1028:1f22": "PERC H200 Internal Tape Adapter",
+      "1734:1177": "HBA Ctrl SAS 6G 0/1 [D2607]",
+      "1bd4:000d": "6G SAS2008IT",
+      "1bd4:000e": "6G SAS2008IR",
+      "1bd4:000f": "6G SAS2008IT SA5248",
+      "1bd4:0010": "6G SAS2008IR SA5248",
+      "4c52:96c8": "LRSA96C8 8-Port SATA3 (6Gb/s) Exchange Adapter (with RAID)",
+      "8086:350f": "RMS2LL040 RAID Controller",
+      "8086:3700": "SSD 910 Series"
+     }
+    },
+    "007e": {
+     "name": "SSS6200 PCI-Express Flash SSD",
+     "subsystems": {
+      "1000:0504": "Nytro NWD-BLP4-800",
+      "1000:0507": "Nytro NWD-BLP4-1600",
+      "1000:0581": "Nytro NWD-BLP4-400",
+      "1000:100d": "Nytro NWD-BFH6-1200",
+      "1000:100e": "Nytro NWD-BFH8-1600",
+      "1000:107e": "Nytro NWD-BFH8-3200",
+      "1000:1310": "Nytro XP6302-8B1536",
+      "1000:1311": "Nytro XP6302-8B2048",
+      "1000:1314": "Nytro XP6302-8B4096",
+      "1000:150c": "Nytro XP6210-4A2048",
+      "1000:150f": "Nytro XP6210-4B2048",
+      "1000:160b": "Nytro XP6209-4A1024",
+      "1000:1613": "Nytro XP6209-4B2048",
+      "108e:050a": "Nytro ELP4x200_4d_n",
+      "108e:0581": "Nytro ELP4x100_4d_n"
+     }
+    },
+    "00b2": {
+     "name": "PCIe Switch management endpoint",
+     "subsystems": {
+      "15d9:1d24": "AOM-PCIE5-418P",
+      "1d49:0003": "ThinkSystem 1611-8P PCIe Gen4 NVMe Switch Adapter"
+     }
+    },
+    "02b0": {
+     "name": "Virtual Endpoint on PCIe Switch",
+     "subsystems": {
+      "1d49:0001": "ThinkSystem 1610-4P NVMe Switch Adapter",
+      "1d49:0002": "ThinkSystem 810-4P NVMe Switch Adapter"
+     }
+    },
+    "02b1": {
+     "name": "Virtual Endpoint on PCIe Switch (9749)",
+     "subsystems": {
+      "1d49:0004": "ThinkSystem 1610-8P NVMe Switch Adapter"
+     }
+    },
+    "10e6": {
+     "name": "MegaRAID 12GSAS/PCIe Secure SAS38xx",
+     "subsystems": {
+      "1000:04d9": "3808N iMR ROMB",
+      "1000:04da": "3808N iMR ROMB",
+      "1000:04db": "3808N iMR ROMB",
+      "1000:04dc": "3808N iMR ROMB",
+      "1000:04dd": "3808N iMR ROMB",
+      "1000:40d5": "MegaRAID 9540-8i",
+      "1000:40d6": "MegaRAID 9520-8i",
+      "1000:40d8": "MegaRAID 9524-8i",
+      "1000:40e0": "MegaRAID 9540-2M2",
+      "1028:1a3d": "BOSS-MR1",
+      "1028:2172": "PERC H355 Adapter",
+      "1028:2173": "PERC H355 Front",
+      "1028:2174": "PERC H350 Mini",
+      "1028:2177": "PERC H350 Adapter",
+      "1028:2199": "PERC H350 Mini LP",
+      "15d9:1b9d": "AOC-S3816L-L16IR Storage Adapter",
+      "15d9:1b9f": "AOC-S3816L-L8IR Storage Adapter",
+      "15d9:1c6d": "AOC-S3808L-L8IR Storage Adapter",
+      "15d9:1c6e": "AOC-SLG4-2H8M2 Storage Adapter",
+      "1d49:0505": "ThinkSystem RAID 540-8i PCIe Gen4 12Gb Adapter",
+      "1d49:0506": "ThinkSystem RAID 540-16i PCIe Gen4 12Gb Adapter",
+      "1d49:0507": "ThinkSystem RAID 545-8i PCIe Gen4 12Gb Adapter",
+      "1d49:0508": "ThinkSystem RAID 545-8i PCIe Gen4 12Gb Internal Adapter",
+      "1d49:0700": "ThinkSystem M.2 RAID B540i-2i SATA/NVMe Enablement Kit",
+      "1d49:0701": "ThinkSystem 7mm RAID B540p-2HS SATA/NVMe Enablement Kit",
+      "1d49:0702": "ThinkSystem M.2 RAID B540p-2HS SATA/NVMe Enablement Kit",
+      "1d49:0703": "ThinkSystem M.2 RAID B540d-2HS SATA/NVMe Enablement Kit",
+      "1d49:0704": "ThinkSystem M.2 RAID B545i-2i SATA/NVMe Enablement Kit",
+      "1d49:0705": "ThinkSystem M.2 RAID B550p-2HS SATA/NVMe Enablement Kit",
+      "1d49:0706": "ThinkSystem M.2 RAID B550d-2HS SATA/NVMe Enablement Kit",
+      "1d49:0707": "ThinkSystem M.2 RAID B550i-2i SATA/NVMe Enablement Kit"
+     }
+    },
+    "c010": {
+     "name": "PEX880xx PCIe Gen 4 Switch",
+     "subsystems": {
+      "1000:100b": "PEX88000 PCIe Gen 4 Virtual Upstream/Downstream Port",
+      "1000:2004": "PEX88000 Virtual PCIe TWC/NT2 Endpoint",
+      "1000:2005": "PEX88000 Virtual PCIe gDMA Endpoint",
+      "1000:a024": "PEX88024 24 lane/port PCIe Gen 4.0 Switch",
+      "1000:a032": "PEX88032 32 lane/port PCIe Gen 4 Switch",
+      "1000:a048": "PEX88048 50 lane/port PCIe Gen 4.0 Switch",
+      "1000:a064": "PEX88064 64 lane/port PCIe Gen 4 Switch",
+      "1000:a080": "PEX88080 80 lane/port PCIe Gen 4 Switch",
+      "1000:a096": "PEX88096 98 lane/port PCIe Gen 4.0 Switch",
+      "4c52:9f48": "LRNV9F48 4-port Built-in 8654 NVMe Switching Adapter"
+     }
+    },
+    "c012": {
+     "name": "PEX880xx PCIe Gen 4 Switch",
+     "subsystems": {
+      "1000:100b": "PEX88000 PCIe Gen 4 Virtual Upstream/Downstream Port",
+      "1000:2004": "PEX88000 Virtual PCIe TWC/NT2 Endpoint",
+      "1000:2005": "PEX88000 Virtual PCIe gDMA Endpoint",
+      "1000:a024": "PEX88024 24 lane/port PCIe Gen 4.0 Switch",
+      "1000:a032": "PEX88032 32 lane/port PCIe Gen 4.0 Switch",
+      "1000:a048": "PEX88048 48 lane/port PCIe Gen 4.0 Switch",
+      "1000:a064": "PEX88064 64 lane/port PCIe Gen 4.0 Switch",
+      "1000:a080": "PEX88080 80 lane/port PCIe Gen 4.0 Switch",
+      "1000:a096": "PEX88096 96 lane/port PCIe Gen 4.0 Switch",
+      "1d49:0003": "ThinkSystem 1611-8P PCIe Gen4 NVMe Switch Adapter"
+     }
+    }
+   },
+   "name": "Broadcom / LSI"
+  },
+  "1014": {
+   "devices": {
+    "033d": {
+     "name": "PCI-E IPR SAS Adapter (FPGA)",
+     "subsystems": {
+      "1014:033c": "PCIe2 1.8GB Cache 6Gb SAS RAID Adapter Tri-port (57B5)",
+      "1014:0353": "PCIe2 3.1GB Cache 6Gb SAS RAID Enclosure (57C3)",
+      "1014:0354": "PCIe2 6Gb SAS Adapter Dual-port (57C4)",
+      "1014:0356": "PCIe2 1.8GB Cache 6Gb SAS RAID & SSD Adapter (574D)",
+      "1014:035f": "PCIe2 6Gb SAS Adapter Quad-port (57B2)"
+     }
+    }
+   },
+   "name": "IBM"
+  },
+  "1022": {
+   "devices": {
+    "1499": {
+     "name": "Starship/Matisse NVMe",
+     "subsystems": {}
+    }
+   },
+   "name": "Advanced Micro Devices, Inc. [AMD]"
+  },
+  "1028": {
+   "devices": {
+    "2600": {
+     "name": "ENT NVMe RT1",
+     "subsystems": {
+      "1028:215e": "ENT NVMe RT1 RI 3.84TB",
+      "1028:215f": "ENT NVMe RT1 RI 7.68TB",
+      "1028:2160": "ENT NVMe RT1 FIPS RI 3.84TB",
+      "1028:2161": "ENT NVMe RT1 FIPS RI 7.68TB"
+     }
+    }
+   },
+   "name": "Dell"
+  },
+  "104d": {
+   "devices": {
+    "9121": {
+     "name": "Nextorage NEM-PA NVMe SSD for PlayStation",
+     "subsystems": {}
+    }
+   },
+   "name": "Sony Corporation"
+  },
+  "106b": {
+   "devices": {
+    "2001": {
+     "name": "S1X NVMe Controller",
+     "subsystems": {}
+    },
+    "2002": {
+     "name": "S3ELab NVMe Controller",
+     "subsystems": {}
+    },
+    "2003": {
+     "name": "S3X NVMe Controller",
+     "subsystems": {}
+    },
+    "2005": {
+     "name": "ANS2 NVMe Controller",
+     "subsystems": {}
+    }
+   },
+   "name": "Apple Inc."
+  },
+  "10b5": {
+   "devices": {
+    "8724": {
+     "name": "PEX 8724 24-Lane, 6-Port PCI Express Gen 3 (8 GT/s) Switch, 19 x 19mm FCBGA",
+     "subsystems": {
+      "4c52:9234": "LRNV9324 2-port Built-in 8643 NVMe Exchange Adapter",
+      "4c52:9524": "LRNV9524 2-port M.2 NVMe SSD Exchange Adapter"
+     }
+    },
+    "8747": {
+     "name": "PEX 8747 48-Lane, 5-Port PCI Express Gen 3 (8.0 GT/s) Switch",
+     "subsystems": {
+      "4c52:9347": "LRNV9347L 2-port Built-in 8643 NVMe Switching Adapter",
+      "4c52:9547": "LRNV9547 4-port M.2 NVMe SSD Exchange Adapter"
+     }
+    },
+    "8749": {
+     "name": "PEX 8749 48-Lane, 18-Port PCI Express Gen 3 (8.0 GT/s) Multi-Root Switch with DMA",
+     "subsystems": {
+      "4c52:9349": "LRNV9349 8-port SFF-8643 NVMe SSD Exchange Adapter"
+     }
+    },
+    "9733": {
+     "name": "PEX 9733 33-lane, 9-port PCI Express Gen 3 (8.0 GT/s) Switch",
+     "subsystems": {
+      "1028:1fc7": "UCEA-200 0235NK NVMe PCIe Extender Adapter with Full-Height Bracket",
+      "1028:1fc8": "UCEA-200 0CDC7W NVMe PCIe Extender Adapter with Half-Height Bracket",
+      "1d49:0001": "ThinkSystem 1610-4P NVMe Switch Adapter",
+      "1d49:0002": "ThinkSystem 810-4P NVMe Switch Adapter"
+     }
+    },
+    "9749": {
+     "name": "PEX 9749 49-lane, 13-port PCI Express Gen 3 (8.0 GT/s) Switch",
+     "subsystems": {
+      "1d49:0004": "ThinkSystem 1610-8P NVMe Switch Adapter"
+     }
+    }
+   },
+   "name": "PLX Technology, Inc."
+  },
+  "10ec": {
+   "devices": {
+    "5760": {
+     "name": "RTS5763DL x2 NVMe SSD Controller",
+     "subsystems": {}
+    },
+    "5762": {
+     "name": "RTS5762 NVMe SSD Controller",
+     "subsystems": {}
+    },
+    "5763": {
+     "name": "RTS5763DL NVMe SSD Controller (DRAM-less)",
+     "subsystems": {}
+    },
+    "5765": {
+     "name": "RTS5765DL NVMe SSD Controller (DRAM-less)",
+     "subsystems": {}
+    },
+    "5770": {
+     "name": "RTS5770DL NVMe SSD Controller (DRAM-less)",
+     "subsystems": {}
+    },
+    "5771": {
+     "name": "RTS5771 NVMe SSD Controller (DRAM-less)",
+     "subsystems": {}
+    },
+    "5772": {
+     "name": "RTS5772DL NVMe SSD Controller (DRAM-less)",
+     "subsystems": {}
+    }
+   },
+   "name": "Realtek Semiconductor Co., Ltd."
+  },
+  "10ee": {
+   "devices": {
+    "6987": {
+     "name": "SmartSSD",
+     "subsystems": {}
+    },
+    "6988": {
+     "name": "SmartSSD",
+     "subsystems": {}
+    },
+    "9134": {
+     "name": "SmartSSD",
+     "subsystems": {}
+    },
+    "9234": {
+     "name": "SmartSSD",
+     "subsystems": {}
+    },
+    "9434": {
+     "name": "SmartSSD",
+     "subsystems": {}
+    }
+   },
+   "name": "Xilinx Corporation"
+  },
+  "1103": {
+   "devices": {
+    "7103": {
+     "name": "SSD7103 PCIe Gen3 x16 4-Port M.2 NVMe RAID Controller",
+     "subsystems": {}
+    },
+    "7105": {
+     "name": "SSD7105 PCIe Gen3 x16 4-Port M.2 NVMe RAID Controller",
+     "subsystems": {}
+    },
+    "7110": {
+     "name": "SSD7110 PCIe Gen3 x16 NVMe RAID Controller",
+     "subsystems": {}
+    },
+    "7505": {
+     "name": "SSD7505 PCIe Gen4 x16 4-Port M.2 NVMe RAID Controller",
+     "subsystems": {}
+    },
+    "7540": {
+     "name": "SSD7540 PCIe Gen4 x16 8-Port M.2 NVMe RAID Controller",
+     "subsystems": {}
+    },
+    "7580": {
+     "name": "SSD7580 PCIe Gen4 x16 8-Port M.2 NVMe RAID Controller",
+     "subsystems": {}
+    }
+   },
+   "name": "HighPoint Technologies, Inc."
+  },
+  "111d": {
+   "devices": {
+    "80d2": {
+     "name": "F32P08xG3 NVMe controller",
+     "subsystems": {}
+    }
+   },
+   "name": "Microsemi / PMC / IDT"
+  },
+  "1131": {
+   "devices": {
+    "7130": {
+     "name": "SAA7130 Video Broadcast Decoder",
+     "subsystems": {
+      "0000:4016": "Behold TV 401",
+      "0000:4051": "Behold TV 405 FM",
+      "0000:5051": "Behold TV 505 RDS",
+      "0000:505b": "Behold TV 505 RDS",
+      "102b:48d0": "Matrox CronosPlus",
+      "1048:226b": "ELSA EX-VISION 300TV",
+      "107d:6655": "WinFast DTV1000S",
+      "1131:0000": "SAA7130-based TV tuner card",
+      "1131:2001": "10MOONS PCI TV CAPTURE CARD",
+      "1131:2005": "Techcom (India) TV Tuner Card (SSD-TV-670)",
+      "1458:9006": "GT-PS700 DVB-S tuner",
+      "1461:050c": "Nagase Sangyo TransGear 3000TV",
+      "1461:10ff": "AVerMedia DVD EZMaker",
+      "1461:2108": "AverMedia AverTV/305",
+      "1461:2115": "AverMedia AverTV Studio 305",
+      "153b:1152": "Terratec Cinergy 200 TV",
+      "185b:c100": "Compro VideoMate TV PVR/FM",
+      "185b:c901": "Videomate DVB-T200",
+      "5168:0138": "LifeView FlyVIDEO2000",
+      "5ace:5010": "Behold TV 501",
+      "5ace:5050": "Behold TV 505 FM"
+     }
+    }
+   },
+   "name": "NXP Semiconductors"
+  },
+  "1179": {
+   "devices": {
+    "010e": {
+     "name": "PXP04 NVMe SSD",
+     "subsystems": {}
+    },
+    "010f": {
+     "name": "XG3 NVMe SSD Controller",
+     "subsystems": {}
+    },
+    "0110": {
+     "name": "Cx5 NVMe SSD Controller",
+     "subsystems": {
+      "1028:1ffb": "Express Flash NVMe 960G (RI) U.2 (CD5)",
+      "1028:1ffc": "Express Flash NVMe 1.92T (RI) U.2 (CD5)",
+      "1028:1ffd": "Express Flash NVMe 3.84T (RI) U.2 (CD5)",
+      "1028:1ffe": "Express Flash NVMe 7.68T (RI) U.2 (CD5)",
+      "1179:0001": "KIOXIA CM5-R series SSD",
+      "1179:0021": "KIOXIA CD5 series SSD",
+      "1d49:4039": "Thinksystem U.2 CM5 NVMe SSD",
+      "1d49:403a": "Thinksystem AIC CM5 NVMe SSD"
+     }
+    },
+    "0113": {
+     "name": "BG3 x2 NVMe SSD Controller (DRAM-less)",
+     "subsystems": {
+      "1179:0001": "Toshiba KBG30ZMS128G 128GB NVMe SSD"
+     }
+    },
+    "0115": {
+     "name": "XG4 NVMe SSD Controller",
+     "subsystems": {}
+    },
+    "0116": {
+     "name": "XG5 NVMe SSD Controller",
+     "subsystems": {
+      "1179:0001": "XG5 NVMe SSD Controller"
+     }
+    },
+    "0119": {
+     "name": "XD5 NVMe SSD Controller",
+     "subsystems": {}
+    },
+    "011a": {
+     "name": "XG6 NVMe SSD Controller",
+     "subsystems": {}
+    }
+   },
+   "name": "Toshiba Corporation"
+  },
+  "117c": {
+   "devices": {
+    "00c5": {
+     "name": "ExpressNVM PCIe Gen4 Switch",
+     "subsystems": {
+      "117c:00c6": "ExpressNVM S48F PCIe Gen4",
+      "117c:00cb": "ExpressNVM S4FF PCIe Gen4"
+     }
+    }
+   },
+   "name": "ATTO Technology, Inc."
+  },
+  "1217": {
+   "devices": {
+    "8760": {
+     "name": "FORESEE E2M2 NVMe SSD",
+     "subsystems": {}
+    }
+   },
+   "name": "O2 Micro, Inc."
+  },
+  "1235": {
+   "devices": {
+    "5820": {
+     "name": "DC5820 NVMe SSD",
+     "subsystems": {}
+    }
+   },
+   "name": "SMART Modular Technologies"
+  },
+  "126f": {
+   "devices": {
+    "2260": {
+     "name": "SM2260 NVMe SSD Controller",
+     "subsystems": {}
+    },
+    "2261": {
+     "name": "SM2261XT x2 NVMe SSD Controller (DRAM-less)",
+     "subsystems": {}
+    },
+    "2262": {
+     "name": "SM2262/SM2262EN SSD Controller",
+     "subsystems": {}
+    },
+    "2263": {
+     "name": "SM2263EN/SM2263XT (DRAM-less) NVMe SSD Controllers",
+     "subsystems": {}
+    },
+    "2268": {
+     "name": "SM2268XT (DRAM-less) NVMe SSD Controller",
+     "subsystems": {}
+    },
+    "2269": {
+     "name": "SM2269XT (DRAM-less) NVMe SSD Controller",
+     "subsystems": {}
+    },
+    "2504": {
+     "name": "SM2504XT NVMe 2.0 SSD Controller (DRAM-less)",
+     "subsystems": {}
+    },
+    "2508": {
+     "name": "SM2508 NVMe 2.0 SSD Controller",
+     "subsystems": {}
+    },
+    "2708": {
+     "name": "SM2708 x2 NVMe SD Express SSD Controller (DRAM-less)",
+     "subsystems": {}
+    },
+    "8366": {
+     "name": "SM8366 NVMe SSD Controller [MonTitan]",
+     "subsystems": {}
+    },
+    "8388": {
+     "name": "SM8388 NVMe SSD Controller [MonTitan]",
+     "subsystems": {}
+    }
+   },
+   "name": "Silicon Motion, Inc."
+  },
+  "12af": {
+   "devices": {
+    "5831": {
+     "name": "GBDriver GX1 x2 NVMe SSD Controller (DRAM-less)",
+     "subsystems": {}
+    }
+   },
+   "name": "TDK Corporation"
+  },
+  "1344": {
+   "devices": {
+    "5150": {
+     "name": "RealSSD P320h",
+     "subsystems": {}
+    },
+    "5151": {
+     "name": "RealSSD P320m",
+     "subsystems": {}
+    },
+    "5152": {
+     "name": "RealSSD P320s",
+     "subsystems": {}
+    },
+    "5153": {
+     "name": "RealSSD P325m",
+     "subsystems": {}
+    },
+    "5160": {
+     "name": "RealSSD P420h",
+     "subsystems": {}
+    },
+    "5161": {
+     "name": "RealSSD P420m",
+     "subsystems": {}
+    },
+    "5163": {
+     "name": "RealSSD P425m",
+     "subsystems": {}
+    },
+    "5180": {
+     "name": "9100 PRO NVMe SSD",
+     "subsystems": {}
+    },
+    "5181": {
+     "name": "9100 MAX NVMe SSD",
+     "subsystems": {}
+    },
+    "5188": {
+     "name": "7100 ECO NVMe SSD",
+     "subsystems": {}
+    },
+    "5189": {
+     "name": "7100 MAX NVMe SSD",
+     "subsystems": {}
+    },
+    "5190": {
+     "name": "9200 ECO NVMe SSD",
+     "subsystems": {}
+    },
+    "5191": {
+     "name": "9200 PRO NVMe SSD",
+     "subsystems": {}
+    },
+    "5192": {
+     "name": "9200 MAX NVMe SSD",
+     "subsystems": {}
+    },
+    "5196": {
+     "name": "9400 PRO NVMe SSD",
+     "subsystems": {}
+    },
+    "5197": {
+     "name": "9400 MAX NVMe SSD",
+     "subsystems": {}
+    },
+    "51a2": {
+     "name": "7300 PRO NVMe SSD",
+     "subsystems": {
+      "1344:2000": "960GB U.2",
+      "1344:3000": "1920GB U.2",
+      "1344:4000": "3480GB U.2",
+      "1344:5000": "7680GB U.2"
+     }
+    },
+    "51a3": {
+     "name": "7300 MAX NVMe SSD",
+     "subsystems": {
+      "1344:1100": "400GB M.2",
+      "1344:2000": "800GB U.2",
+      "1344:2100": "800GB M.2",
+      "1344:3000": "1600GB U.2",
+      "1344:4000": "3200GB U.2",
+      "1344:5000": "6400GB U.2"
+     }
+    },
+    "51b1": {
+     "name": "9300 PRO NVMe SSD",
+     "subsystems": {
+      "1344:4000": "3.84TB U.2",
+      "1344:5000": "7.68TB U.2",
+      "1344:6000": "15.36TB U.2"
+     }
+    },
+    "51b2": {
+     "name": "9300 MAX NVMe SSD",
+     "subsystems": {
+      "1344:4000": "3.2TB U.2",
+      "1344:5000": "6.4 TB U.2",
+      "1344:6000": "12.8TB U.2"
+     }
+    },
+    "51b7": {
+     "name": "7500 PRO NVMe SSD",
+     "subsystems": {
+      "1028:22e7": "DC NVMe 7500 U.2 SED RI 15.36TB",
+      "1028:22e8": "DC NVMe 7500 U.2 SED RI 7.68TB",
+      "1028:22e9": "DC NVMe 7500 U.2 SED RI 3.84TB",
+      "1028:22ea": "DC NVMe 7500 U.2 SED RI 1.92TB",
+      "1028:22eb": "DC NVMe 7500 U.2 SED RI 960GB",
+      "1028:22ec": "DC NVMe 7500 U.2 ISE RI 15.36TB",
+      "1028:22ed": "DC NVMe 7500 U.2 ISE RI 7.68TB",
+      "1028:22ee": "DC NVMe 7500 U.2 ISE RI 3.84TB",
+      "1028:22ef": "DC NVMe 7500 U.2 ISE RI 1.92TB",
+      "1028:22f0": "DC NVMe 7500 U.2 ISE RI 960GB"
+     }
+    },
+    "51b8": {
+     "name": "7500 MAX NVMe SSD",
+     "subsystems": {
+      "1028:22f1": "DC NVMe 7500 U.2 ISE MU 12.8TB",
+      "1028:22f2": "DC NVMe 7500 U.2 ISE MU 6.4TB",
+      "1028:22f3": "DC NVMe 7500 U.2 ISE MU 3.2TB",
+      "1028:22f4": "DC NVMe 7500 U.2 ISE MU 1.6TB",
+      "1028:22f5": "DC NVMe 7500 U.2 ISE MU 800GB"
+     }
+    },
+    "51b9": {
+     "name": "6500 ION NVMe SSD",
+     "subsystems": {
+      "1028:22e6": "Ent NVMe 6500 RI 30.72TB",
+      "1028:22f6": "Ent NVMe 6500 RI FIPS 30.72TB"
+     }
+    },
+    "51bb": {
+     "name": "9550 PRO NVMe SSD",
+     "subsystems": {
+      "1028:2318": "MTFDLBQ30T7THA-1BK1JABDA",
+      "1028:2319": "MTFDLBQ15T3THA-1BK1JABDA",
+      "1028:231a": "MTFDLBQ7T6THA-1BK1JABDA",
+      "1028:231b": "MTFDLBQ3T8THA-1BK1JABDA",
+      "1028:2320": "MTFDLAL30T7THA-1BK1JABDA",
+      "1028:2321": "MTFDLAL15T3THA-1BK1JABDA",
+      "1028:2322": "MTFDLAL7T6THA-1BK1JABDA",
+      "1028:2323": "MTFDLAL3T8THA-1BK1JABDA",
+      "1028:2328": "MTFDLAL30T7THA-1BK1DFCDA",
+      "1028:2329": "MTFDLAL15T3THA-1BK1DFCDA",
+      "1028:232a": "MTFDLAL7T6THA-1BK1DFCDA",
+      "1028:232b": "MTFDLAL3T8THA-1BK1DFCDA",
+      "1028:235c": "MTFDLBQ30T7THA-1BK1DFCDA",
+      "1028:235d": "MTFDLBQ15T3THA-1BK1DFCDA",
+      "1028:235e": "MTFDLBQ7T6THA-1BK1DFCDA",
+      "1028:235f": "MTFDLBQ3T8THA-1BK1DFCDA"
+     }
+    },
+    "51bd": {
+     "name": "9550 MAX NVMe SSD",
+     "subsystems": {
+      "1028:231c": "MTFDLBQ25T6THB-1BK1JABDA",
+      "1028:231d": "MTFDLBQ12T8THB-1BK1JABDA",
+      "1028:231e": "MTFDLBQ6T4THB-1BK1JABDA",
+      "1028:231f": "MTFDLBQ3T2THB-1BK1JABDA",
+      "1028:2324": "MTFDLAL25T6THB-1BK1JABDA",
+      "1028:2325": "MTFDLAL12T8THB-1BK1JABDA",
+      "1028:2326": "MTFDLAL6T4THB-1BK1JABDA",
+      "1028:2327": "MTFDLAL3T2THB-1BK1JABDA",
+      "1028:232c": "MTFDLAL25T6THB-1BK1DFCDA",
+      "1028:232d": "MTFDLAL12T8THB-1BK1DFCDA",
+      "1028:232e": "MTFDLAL6T4THB-1BK1DFCDA",
+      "1028:232f": "MTFDLAL3T2THB-1BK1DFCDA",
+      "1028:2360": "MTFDLBQ25T6THB-1BK1DFCDA",
+      "1028:2361": "MTFDLBQ12T8THB-1BK1DFCDA",
+      "1028:2362": "MTFDLBQ6T4THB-1BK1DFCDA",
+      "1028:2363": "MTFDLBQ3T2THB-1BK1DFCDA"
+     }
+    },
+    "51c0": {
+     "name": "7400 PRO NVMe SSD",
+     "subsystems": {
+      "1028:2162": "EC NVMe OPAL 7400 RI M.2 480GB",
+      "1028:2163": "EC NVMe OPAL 7400 RI M.2 960GB",
+      "1028:2164": "EC NVMe ISE 7400 RI M.2 480GB",
+      "1028:2165": "EC NVMe ISE 7400 RI M.2 960GB",
+      "1028:216c": "EC NVMe ISE 7400 RI M.2 110 1.92TB",
+      "1028:216d": "EC NVMe ISE 7400 RI M.2 110 3.84TB",
+      "1028:216e": "EC NVMe OPAL 7400 RI M.2 110 1.92TB",
+      "1028:216f": "EC NVMe OPAL 7400 RI M.2 110 3.84TB",
+      "1028:2197": "EC NVMe OPAL 7400 RI M.2 110 960GB",
+      "1028:224d": "EC NVMe ISE 7400 RI M.2 110 960GB",
+      "1344:1100": "M.2 480GB",
+      "1344:2000": "U.3 960GB",
+      "1344:2100": "M.2 960GB",
+      "1344:2600": "E1.S 960GB",
+      "1344:2b00": "M.2 1920GB",
+      "1344:2d00": "E1.2 1920GB",
+      "1344:3000": "U.3 1920GB",
+      "1344:3e00": "M.2 3840GB",
+      "1344:3f00": "E1.S 3840GB",
+      "1344:4000": "U.3 3840GB",
+      "1344:5000": "U.3 7680GB"
+     }
+    },
+    "51c1": {
+     "name": "7400 MAX NVMe SSD",
+     "subsystems": {
+      "1028:216a": "EC NVMe ISE 7400 MU M.2 80 800GB",
+      "1028:216b": "EC NVMe OPAL 7400 MU M.2 80 800GB",
+      "1344:1100": "M.2 400GB",
+      "1344:2000": "U.3 800GB",
+      "1344:2100": "M.2 800GB",
+      "1344:2600": "E1.S 800GB",
+      "1344:2b00": "M.2 1600GB",
+      "1344:2d00": "E1.S 1600GB",
+      "1344:3000": "U.3 1600GB",
+      "1344:3e00": "M.2 3200GB",
+      "1344:3f00": "E1.S 3200GB",
+      "1344:4000": "U.3 3200GB",
+      "1344:5000": "U.3 6400GB"
+     }
+    },
+    "51c3": {
+     "name": "7450 PRO NVMe SSD",
+     "subsystems": {
+      "1028:226b": "EC NVMe FIPS 7450 RI M.2 110 960GB",
+      "1028:226c": "EC NVMe ISE 7450 RI M.2 80 480GB",
+      "1028:226d": "EC NVMe ISE 7450 RI M.2 80 960GB",
+      "1028:226e": "EC NVMe SED 7450 RI M.2 80 480GB",
+      "1028:226f": "EC NVMe SED 7450 RI M.2 80 960GB",
+      "1028:2270": "EC NVMe FIPS 7450 RI M.2 80 480GB",
+      "1028:2271": "EC NVMe FIPS 7450 RI M.2 80 960GB",
+      "1028:2273": "EC NVMe ISE 7450 RI M.2 110 960GB",
+      "1028:2274": "EC NVMe ISE 7450 RI M.2 110 1920GB",
+      "1028:2275": "EC NVMe ISE 7450 RI M.2 110 3840GB",
+      "1028:2278": "DC NVMe ISE 7450 RI U.2 960GB",
+      "1028:2279": "DC NVMe ISE 7450 RI U.2 1.92TB",
+      "1028:227a": "DC NVMe ISE 7450 RI U.2 3.84TB",
+      "1028:227b": "DC NVMe ISE 7450 RI U.2 7.68TB",
+      "1028:227c": "DC NVMe ISE 7450 RI U.2 15.36TB",
+      "1028:227d": "DC NVMe SED 7450 RI U.2 960GB",
+      "1028:227e": "DC NVMe SED 7450 RI U.2 1.92TB",
+      "1028:227f": "DC NVMe SED 7450 RI U.2 3.84TB",
+      "1028:2280": "DC NVMe SED 7450 RI U.2 7.68TB",
+      "1028:2281": "DC NVMe SED 7450 RI U.2 15.36TB"
+     }
+    },
+    "51c4": {
+     "name": "7450 MAX NVMe SSD",
+     "subsystems": {
+      "1028:2272": "EC NVMe ISE 7450 MU M.2 80 800GB",
+      "1028:228b": "DC NVMe SED 7450 MU U.2 800GB",
+      "1028:228c": "DC NVMe ISE 7450 MU U.2 800GB",
+      "1028:228d": "DC NVMe SED 7450 MU U.2 1.6TB",
+      "1028:228e": "DC NVMe ISE 7450 MU U.2 1.6TB",
+      "1028:228f": "DC NVMe SED 7450 MU U.2 3.2TB",
+      "1028:2290": "DC NVMe ISE 7450 MU U.2 3.2TB",
+      "1028:2291": "DC NVMe SED 7450 MU U.2 6.4TB",
+      "1028:2292": "DC NVMe ISE 7450 MU U.2 6.4TB",
+      "1028:2293": "DC NVMe SED 7450 MU U.2 12.8TB",
+      "1028:2294": "DC NVMe ISE 7450 MU U.2 12.8TB",
+      "1344:3000": "U.3 1600GB [MTFDKCB1T6TFS/MTFDKCC1T6TFS]"
+     }
+    },
+    "51c9": {
+     "name": "7600 PRO NVMe SSD",
+     "subsystems": {
+      "1028:2421": "MTFDLBQ1T9THG-1BP1DFCDA",
+      "1028:2422": "MTFDLBQ3T8THG-1BP1DFCDA",
+      "1028:2423": "MTFDLBQ7T6THG-1BP1DFCDA",
+      "1028:2424": "MTFDLBQ15T3THG-1BP1DFCDA",
+      "1028:2429": "MTFDLBQ1T9THG-1BP1JABDA",
+      "1028:242a": "MTFDLBQ3T8THG-1BP1JABDA",
+      "1028:242b": "MTFDLBQ7T6THG-1BP1JABDA",
+      "1028:242c": "MTFDLBQ15T3THG-1BP1JABDA",
+      "1028:2431": "MTFDLAL1T9THG-1BP1DFCDA",
+      "1028:2432": "MTFDLAL3T8THG-1BP1DFCDA",
+      "1028:2433": "MTFDLAL7T6THG-1BP1DFCDA",
+      "1028:2434": "MTFDLAL15T3THG-1BP1DFCDA",
+      "1028:2439": "MTFDLAL1T9THG-1BP1JABDA",
+      "1028:243a": "MTFDLAL3T8THG-1BP1JABDA",
+      "1028:243b": "MTFDLAL7T6THG-1BP1JABDA",
+      "1028:243c": "MTFDLAL15T3THG-1BP1JABDA"
+     }
+    },
+    "51ca": {
+     "name": "7600 MAX NVMe SSD",
+     "subsystems": {
+      "1028:2425": "MTFDLBQ1T6THS-1BP1DFCDA",
+      "1028:2426": "MTFDLBQ3T2THS-1BP1DFCDA",
+      "1028:2427": "MTFDLBQ6T4THS-1BP1DFCDA",
+      "1028:2428": "MTFDLBQ12T8THS-1BP1DFCDA",
+      "1028:242d": "MTFDLBQ1T6THS-1BP1JABDA",
+      "1028:242e": "MTFDLBQ3T2THS-1BP1JABDA",
+      "1028:242f": "MTFDLBQ6T4THS-1BP1JABDA",
+      "1028:2430": "MTFDLBQ12T8THS-1BP1JABDA",
+      "1028:2435": "MTFDLAL1T6THS-1BP1DFCDA",
+      "1028:2436": "MTFDLAL3T2THS-1BP1DFCDA",
+      "1028:2437": "MTFDLAL6T4THS-1BP1DFCDA",
+      "1028:2438": "MTFDLAL12T8THS-1BP1DFCDA",
+      "1028:243d": "MTFDLAL1T6THS-1BP1JABDA",
+      "1028:243e": "MTFDLAL3T2THS-1BP1JABDA",
+      "1028:243f": "MTFDLAL6T4THS-1BP1JABDA",
+      "1028:2440": "MTFDLAL12T8THS-1BP1JABDA"
+     }
+    },
+    "51cb": {
+     "name": "6550 ION NVMe SSD",
+     "subsystems": {
+      "1028:2379": "MTFDLBQ61T4THL-1BK1JABDA",
+      "1028:23a6": "MTFDLBQ30T7THL-1BK1JABDA",
+      "1028:23a7": "MTFDLAL61T4THL-1BK1JABDA",
+      "1028:23a8": "MTFDLAL30T7THL-1BK1JABDA"
+     }
+    },
+    "51cc": {
+     "name": "6600 ION NVMe SSD",
+     "subsystems": {
+      "1028:2453": "MTFDLBQ122T8QHF-1BQ1JABDA",
+      "1028:2483": "MTFDLBQ61T4QHF-1BQ1JABDA",
+      "1028:2484": "MTFDLBQ30T7QHF-1BQ1JABDA",
+      "1028:2485": "MTFDLBQ122T8QHF-1BQ1DFCDA",
+      "1028:2486": "MTFDLBQ61T4QHF-1BQ1DFCDA",
+      "1028:2487": "MTFDLBQ30T7QHF-1BQ1DFCDA",
+      "1028:2488": "MTFDLAL245T7QHF-1BQ1JABDA",
+      "1028:2489": "MTFDLAL122T8QHF-1BQ1JABDA",
+      "1028:248a": "MTFDLAL61T4QHF-1BQ1JABDA",
+      "1028:248b": "MTFDLAL30T7QHF-1BQ1JABDA",
+      "1028:248c": "MTFDLAL245T7QHF-1BQ1DFCDA",
+      "1028:248d": "MTFDLAL122T8QHF-1BQ1DFCDA",
+      "1028:248e": "MTFDLAL61T4QHF-1BQ1DFCDA",
+      "1028:248f": "MTFDLAL30T7QHF-1BQ1DFCDA",
+      "1028:2490": "MTFDLBX245T7QHF-1BQ1JABDA",
+      "1028:2491": "MTFDLBX245T7QHF-1BQ1DFCDA"
+     }
+    },
+    "51cd": {
+     "name": "9650 PRO NVMe SSD",
+     "subsystems": {
+      "1028:2498": "MTFDMBQ7T6THM-2BP1DFCDA",
+      "1028:2499": "MTFDMBQ15T3THM-2BP1DFCDA",
+      "1028:249a": "MTFDMBQ30T7THM-2BP1DFCDA",
+      "1028:249b": "MTFDMBQ7T6THM-2BP1DABDA",
+      "1028:249c": "MTFDMBQ15T3THM-2BP1DABDA",
+      "1028:249d": "MTFDMBQ30T7THM-2BP1DABDA"
+     }
+    },
+    "51ce": {
+     "name": "9650 MAX NVMe SSD",
+     "subsystems": {
+      "1028:2492": "MTFDMBQ6T4THP-2BP1DFCDA",
+      "1028:2493": "MTFDMBQ12T8THP-2BP1DFCDA",
+      "1028:2494": "MTFDMBQ25T6THP-2BP1DFCDA",
+      "1028:2495": "MTFDMBQ6T4THP-2BP1DABDA",
+      "1028:2496": "MTFDMBQ12T8THP-2BP1DABDA",
+      "1028:2497": "MTFDMBQ25T6THP-2BP1DABDA"
+     }
+    },
+    "5404": {
+     "name": "2210 NVMe SSD [Cobain]",
+     "subsystems": {}
+    },
+    "5405": {
+     "name": "2300 NVMe SSD [Santana]",
+     "subsystems": {}
+    },
+    "5407": {
+     "name": "3400 NVMe SSD [Hendrix]",
+     "subsystems": {}
+    },
+    "5410": {
+     "name": "2200S NVMe SSD [Cassandra]",
+     "subsystems": {}
+    },
+    "5411": {
+     "name": "2450 NVMe SSD [HendrixV] (DRAM-less)",
+     "subsystems": {}
+    },
+    "5413": {
+     "name": "2400 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5414": {
+     "name": "3460 NVMe SSD",
+     "subsystems": {}
+    },
+    "5415": {
+     "name": "3500 NVMe SSD",
+     "subsystems": {}
+    },
+    "5416": {
+     "name": "2550 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5425": {
+     "name": "2500 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5427": {
+     "name": "2650 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5428": {
+     "name": "4600 NVMe SSD",
+     "subsystems": {}
+    },
+    "5429": {
+     "name": "2600 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "6001": {
+     "name": "2100AI NVMe SSD [Nitro]",
+     "subsystems": {}
+    },
+    "6003": {
+     "name": "4150AT NVMe SSD",
+     "subsystems": {}
+    },
+    "6004": {
+     "name": "4100AT NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    }
+   },
+   "name": "Micron Technology Inc"
+  },
+  "1414": {
+   "devices": {
+    "c030": {
+     "name": "OpenVMM PCIe Root Port",
+     "subsystems": {}
+    },
+    "c031": {
+     "name": "OpenVMM PCIe Switch Upstream Port",
+     "subsystems": {}
+    },
+    "c032": {
+     "name": "OpenVMM PCIe Switch Downstream Port",
+     "subsystems": {}
+    },
+    "c03e": {
+     "name": "OpenVMM NVMe Controller",
+     "subsystems": {}
+    }
+   },
+   "name": "Microsoft Corporation"
+  },
+  "144d": {
+   "devices": {
+    "1600": {
+     "name": "S4LN053X01 AHCI SSD Controller(Apple slot)",
+     "subsystems": {}
+    },
+    "a800": {
+     "name": "XP941 PCIe SSD",
+     "subsystems": {}
+    },
+    "a801": {
+     "name": "S4LN058A01[SSUBX] AHCI SSD Controller (Apple slot)",
+     "subsystems": {}
+    },
+    "a802": {
+     "name": "NVMe SSD Controller SM951/PM951",
+     "subsystems": {
+      "144d:a801": "PM963 2.5\" NVMe PCIe SSD"
+     }
+    },
+    "a804": {
+     "name": "NVMe SSD Controller SM961/PM961/SM963",
+     "subsystems": {
+      "144d:a801": "SM963 2.5\" NVMe PCIe SSD"
+     }
+    },
+    "a806": {
+     "name": "PM971 BGA PCIe x2 NVMe SSD",
+     "subsystems": {}
+    },
+    "a808": {
+     "name": "NVMe SSD Controller SM981/PM981/PM983",
+     "subsystems": {
+      "144d:a801": "SSD 970 EVO/PRO",
+      "1d49:403b": "Thinksystem U.2 PM983 NVMe SSD"
+     }
+    },
+    "a809": {
+     "name": "NVMe SSD Controller 980 (DRAM-less)",
+     "subsystems": {}
+    },
+    "a80a": {
+     "name": "NVMe SSD Controller PM9A1/PM9A3/980PRO",
+     "subsystems": {
+      "1028:215a": "DC NVMe PM9A3 RI U.2 960GB",
+      "1028:215b": "DC NVMe PM9A3 RI U.2 1.92TB",
+      "1028:215c": "DC NVMe PM9A3 RI U.2 3.84TB",
+      "1028:215d": "Dell DC NVMe PM9A3 RI U.2 7.68TB",
+      "1028:2166": "DC NVMe PM9A3 RI 110M.2 960GB",
+      "1028:2167": "DC NVMe PM9A3 RI 110M.2 1.92TB",
+      "1028:2168": "DC NVMe PM9A3 RI 80M.2 480GB",
+      "1028:2169": "DC NVMe PM9A3 RI 80M.2 960GB",
+      "1028:2276": "DC NVMe PM9A3 RI 110M.2 960GB",
+      "1028:2277": "DC NVMe PM9A3 RI 110M.2 1.92TB",
+      "1028:512d": "DC NVMe PM9A3 RI U.2 7.68TB",
+      "144d:a801": "SSD 980 PRO",
+      "144d:a813": "General DC NVMe PM9A3"
+     }
+    },
+    "a80b": {
+     "name": "NVMe SSD Controller PM9B1 (DRAM-less)",
+     "subsystems": {}
+    },
+    "a80c": {
+     "name": "NVMe SSD Controller S4LV008[Pascal]",
+     "subsystems": {
+      "144d:a801": "SSD 990 PRO"
+     }
+    },
+    "a80d": {
+     "name": "NVMe SSD Controller PM9C1a (DRAM-less)",
+     "subsystems": {}
+    },
+    "a80e": {
+     "name": "NVMe SSD Controller PM9D3a",
+     "subsystems": {}
+    },
+    "a80f": {
+     "name": "BM9C1 QLC NVME SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "a810": {
+     "name": "NVMe SSD 9100 PRO [PM9E1]",
+     "subsystems": {}
+    },
+    "a811": {
+     "name": "BM9H1 NVME SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "a820": {
+     "name": "NVMe SSD Controller 171X",
+     "subsystems": {
+      "1028:1f95": "Express Flash NVMe XS1715 SSD 400GB",
+      "1028:1f96": "Express Flash NVMe XS1715 SSD 800GB",
+      "1028:1f97": "Express Flash NVMe XS1715 SSD 1600GB",
+      "1028:1fa4": "Express Flash NVMe SM1715 3.2TB SFF",
+      "1028:1fa6": "Express Flash NVMe SM1715 3.2TB AIC",
+      "1028:1fba": "Express Flash NVMe SM1715 800GB SFF",
+      "1028:1fbb": "Express Flash NVMe SM1715 1.6TB SFF",
+      "1028:1fbc": "Express Flash NVMe SM1715 1.6TB AIC"
+     }
+    },
+    "a821": {
+     "name": "NVMe SSD Controller 172X",
+     "subsystems": {
+      "1028:1fb7": "Express Flash NVMe PM1725 3.2TB SFF",
+      "1028:1fb8": "Express Flash NVMe PM1725 3.2TB AIC",
+      "1028:1fb9": "Express Flash NVMe PM1725 6.4TB AIC",
+      "1028:1fc1": "Express Flash NVMe PM1725 800GB SFF",
+      "1028:1fc2": "Express Flash NVMe PM1725 1.6TB SFF",
+      "1028:1fc4": "Express Flash NVMe PM1725 1.6TB AIC"
+     }
+    },
+    "a822": {
+     "name": "NVMe SSD Controller 172Xa/172Xb",
+     "subsystems": {
+      "1014:0621": "PCIe3 1.6TB NVMe Flash Adapter II x8",
+      "1014:0622": "PCIe3 3.2TB NVMe Flash Adapter II x8",
+      "1014:0629": "PCIe3 6.4TB NVMe Flash Adapter II x8",
+      "1014:064a": "PCIe3 1.6TB NVMe Flash Adapter III x8",
+      "1014:064b": "PCIe3 3.2TB NVMe Flash Adapter III x8",
+      "1014:064c": "PCIe3 6.4TB NVMe Flash Adapter III x8",
+      "1028:1fd9": "Express Flash PM1725a 800GB SFF",
+      "1028:1fda": "Express Flash PM1725a 1.6TB SFF",
+      "1028:1fdb": "Express Flash PM1725a 3.2TB SFF",
+      "1028:1fdc": "Express Flash PM1725a 6.4TB SFF",
+      "1028:1fdd": "Express Flash PM1725a 1.6TB AIC",
+      "1028:1fde": "Express Flash PM1725a 3.2TB AIC",
+      "1028:1fdf": "Express Flash PM1725a 6.4TB AIC",
+      "1028:1ff3": "Express Flash PM1725b 1.6TB SFF",
+      "1028:1ff4": "Express Flash PM1725b 3.2TB SFF",
+      "1028:1ff5": "Express Flash PM1725b 6.4TB SFF",
+      "1028:1ff6": "Express Flash PM1725b 12.8TB SFF",
+      "1028:1ff7": "Express Flash PM1725b 1.6TB AIC",
+      "1028:1ff8": "Express Flash PM1725b 3.2TB AIC",
+      "1028:1ff9": "Express Flash PM1725b 6.4TB AIC",
+      "1028:1ffa": "Express Flash PM1725b 12.8TB AIC"
+     }
+    },
+    "a824": {
+     "name": "NVMe SSD Controller PM173X",
+     "subsystems": {
+      "1028:2040": "EMC PowerEdge Express Flash Ent NVMe AGN MU U.2 Gen4 1.6TB",
+      "1028:2041": "EMC PowerEdge Express Flash Ent NVMe AGN MU U.2 Gen4 3.2TB",
+      "1028:2042": "EMC PowerEdge Express Flash Ent NVMe AGN MU U.2 Gen4 6.4TB",
+      "1028:2043": "EMC PowerEdge Express Flash Ent NVMe AGN MU U.2 Gen4 12.8TB",
+      "1028:2044": "EMC PowerEdge Express Flash Ent NVMe AGN MU AIC Gen4 1.6TB",
+      "1028:2045": "EMC PowerEdge Express Flash Ent NVMe AGN MU AIC Gen4 3.2TB",
+      "1028:2046": "EMC PowerEdge Express Flash Ent NVMe AGN MU AIC Gen4 6.4TB",
+      "1028:2070": "EMC PowerEdge Express Flash Ent NVMe AGN RI U.2 Gen4 1.92TB",
+      "1028:2071": "EMC PowerEdge Express Flash Ent NVMe AGN RI U.2 Gen4 3.84TB",
+      "1028:2072": "EMC PowerEdge Express Flash Ent NVMe AGN RI U.2 Gen4 7.68TB",
+      "1028:2073": "EMC PowerEdge Express Flash Ent NVMe AGN RI U.2 Gen4 15.36TB",
+      "1028:2074": "EMC PowerEdge Express Flash Ent NVMe AGN RI AIC Gen4 1.92TB",
+      "1028:2075": "EMC PowerEdge Express Flash Ent NVMe AGN RI AIC Gen4 3.84TB",
+      "1028:2076": "EMC PowerEdge Express Flash Ent NVMe AGN RI AIC Gen4 7.68TB",
+      "1028:2090": "EMC PowerEdge Express Flash Ent NVMe AGN SED MU U.2 Gen4 1.6TB",
+      "1028:2091": "EMC PowerEdge Express Flash Ent NVMe AGN SED MU U.2 Gen4 3.2TB",
+      "1028:2092": "EMC PowerEdge Express Flash Ent NVMe AGN SED MU U.2 Gen4 6.4TB",
+      "1028:2093": "EMC PowerEdge Express Flash Ent NVMe AGN SED MU U.2 Gen4 12.8TB",
+      "1028:2094": "EMC PowerEdge Express Flash Ent NVMe AGN SED MU AIC Gen4 1.6TB",
+      "1028:2095": "EMC PowerEdge Express Flash Ent NVMe AGN SED MU AIC Gen4 3.2TB",
+      "1028:2096": "EMC PowerEdge Express Flash Ent NVMe AGN SED MU AIC Gen4 6.4TB",
+      "1028:2097": "EMC PowerEdge Express Flash Ent NVMe AGN SED RI U.2 Gen4 1.92TB",
+      "1028:2098": "EMC PowerEdge Express Flash Ent NVMe AGN SED RI U.2 Gen4 3.84TB",
+      "1028:2099": "EMC PowerEdge Express Flash Ent NVMe AGN SED RI U.2 Gen4 7.68TB",
+      "1028:2118": "Ent NVMe v2 AGN FIPS MU U.2 1.6TB",
+      "1028:2119": "Ent NVMe v2 AGN MU U.2 1.6TB",
+      "1028:2120": "Ent NVMe v2 AGN FIPS MU U.2 3.2T",
+      "1028:2121": "Ent NVMe v2 AGN MU U.2 3.2TB",
+      "1028:2122": "Ent NVMe v2 AGN FIPS MU U.2 6.4TB",
+      "1028:2123": "Ent NVMe v2 AGN MU U.2 6.4TB",
+      "1028:2124": "Ent NVMe v2 AGN FIPS MU U.2 6.4TB",
+      "1028:2125": "Ent NVMe v2 AGN MU U.2 12.8TB",
+      "1028:2126": "Ent NVMe v2 AGN FIPS RI U.2 1.92TB",
+      "1028:2127": "Ent NVMe v2 AGN RI U.2 1.92TB",
+      "1028:2128": "Ent NVMe v2 AGN FIPS RI U.2 3.84TB",
+      "1028:2129": "Ent NVMe v2 AGN RI U.2 3.84TB",
+      "1028:2130": "Ent NVMe v2 AGN FIPS RI U.2 7.68TB",
+      "1028:2131": "Ent NVMe v2 AGN RI U.2 7.68TB",
+      "1028:2132": "Ent NVMe v2 AGN FIPS RI U.2 15.36TB",
+      "1028:2133": "Ent NVMe v2 AGN RI U.2 15.36TB"
+     }
+    },
+    "a825": {
+     "name": "NVMe SSD Controller PM173Xa",
+     "subsystems": {
+      "1028:2178": "Ent NVMe FIPS PM1733a RI 1.92TB",
+      "1028:2179": "Ent NVMe PM1733a RI 1.92TB",
+      "1028:217a": "Ent NVMe FIPS PM1733a RI 3.84TB",
+      "1028:217b": "Ent NVMe PM1733a RI 3.84TB",
+      "1028:217c": "Ent NVMe FIPS PM1733a RI 7.68TB",
+      "1028:217d": "Ent NVMe PM1733a RI 7.68TB",
+      "1028:217e": "Ent NVMe FIPS PM1733a RI 15.36TB",
+      "1028:217f": "Ent NVMe PM1733a RI 15.36TB",
+      "1028:2180": "Ent NVMe FIPS PM1735a MU 1.6TB",
+      "1028:2181": "Ent NVMe PM1735a MU 1.6TB",
+      "1028:2182": "Ent NVMe FIPS PM1735a MU 3.2TB",
+      "1028:2183": "Ent NVMe PM1735a MU 3.2TB",
+      "1028:2184": "Ent NVMe FIPS PM1735a MU 6.4TB",
+      "1028:2185": "Ent NVMe PM1735a MU 6.4TB",
+      "1028:2186": "Ent NVMe FIPS PM1735a MU 12.8TB",
+      "1028:2187": "Ent NVMe PM1735a MU 12.8TB",
+      "1028:226a": "Ent NVMe FIPS PM1733a RI 30.72TB"
+     }
+    },
+    "a826": {
+     "name": "NVMe SSD Controller PM174X",
+     "subsystems": {
+      "1028:2214": "NVMe PM1743 RI E3.S 1.92TB",
+      "1028:2216": "NVMe PM1743 RI E3.S 3.84TB",
+      "1028:2218": "NVMe PM1743 RI E3.S 7.68TB",
+      "1028:221a": "NVMe PM1743 RI E3.S 15.36TB",
+      "1028:221c": "NVMe PM1745 MU E3.S 1.6TB",
+      "1028:221e": "NVMe PM1745 MU E3.S 3.2TB",
+      "1028:2220": "NVMe PM1745 MU E3.S 6.4TB",
+      "1028:2222": "NVMe PM1745 MU E3.S 12.8TB",
+      "1028:224e": "NVMe FIPS PM1743 RI U.2 1.92TB",
+      "1028:224f": "NVMe PM1743 RI U.2 1.92TB",
+      "1028:2250": "NVMe FIPS PM1743 RI U.2 3.84TB",
+      "1028:2251": "NVMe PM1743 RI U.2 3.84TB",
+      "1028:2252": "NVMe FIPS PM1743 RI U.2 7.68TB",
+      "1028:2253": "NVMe PM1743 RI U.2 7.68TB",
+      "1028:2254": "NVMe FIPS PM1743 RI U.2 15.36TB",
+      "1028:2255": "NVMe PM1743 RI U.2 15.36TB",
+      "1028:2258": "NVMe FIPS PM1745 MU U.2 1.6TB",
+      "1028:2259": "NVMe PM1745 MU U.2 1.6TB",
+      "1028:225a": "NVMe FIPS PM1745 MU U.2 3.2TB",
+      "1028:225b": "NVMe PM1745 MU U.2 3.2TB",
+      "1028:225c": "NVMe FIPS PM1745 MU U.2 6.4TB",
+      "1028:225d": "NVMe PM1745 MU U.2 6.4TB",
+      "1028:225e": "NVMe FIPS PM1745 MU U.2 12.8TB",
+      "1028:225f": "NVMe PM1745 MU U.2 12.8TB"
+     }
+    },
+    "a900": {
+     "name": "NVMe SSD Controller PM9DXa",
+     "subsystems": {
+      "1028:230f": "DC NVMe PM9D3a RI 80M.2 480GB ISE",
+      "1028:2310": "DC NVMe PM9D3a RI 80M.2 960GB ISE",
+      "1028:2311": "DC NVMe PM9D3a RI 80M.2 1.92TB ISE",
+      "1028:2341": "DC NVMe PM9D3a RI U.2 960GB",
+      "1028:2342": "DC NVMe PM9D3a RI U.2 1.92TB",
+      "1028:2343": "DC NVMe PM9D3a RI U.2 3.84TB",
+      "1028:2344": "DC NVMe PM9D3a RI U.2 7.68TB",
+      "1028:2345": "DC NVMe PM9D3a RI U.2 15.36TB",
+      "1028:2346": "DC NVMe FIPS PM9D3a RI U.2 960GB",
+      "1028:2347": "DC NVMe FIPS PM9D3a RI U.2 1.92TB",
+      "1028:2348": "DC NVMe FIPS PM9D3a RI U.2 3.84TB",
+      "1028:2349": "DC NVMe FIPS PM9D3a RI U.2 7.68TB",
+      "1028:234a": "DC NVMe FIPS PM9D3a RI U.2 15.36TB",
+      "1028:234d": "DC NVMe PM9D3a RI E3.S 1.92TB",
+      "1028:234e": "DC NVMe PM9D3a RI E3.S 3.84TB",
+      "1028:234f": "DC NVMe PM9D3a RI E3.S 7.68TB",
+      "1028:2350": "DC NVMe PM9D3a RI E3.S 15.36TB",
+      "1028:2351": "DC NVMe FIPS PM9D3a RI E3.S 1.92TB",
+      "1028:2352": "DC NVMe FIPS PM9D3a RI E3.S 3.84TB",
+      "1028:2353": "DC NVMe FIPS PM9D3a RI E3.S 7.68TB",
+      "1028:2354": "DC NVMe FIPS PM9D3a RI E3.S 15.36TB",
+      "1028:2355": "DC NVMe PM9D5a MU U.2 800GB",
+      "1028:2356": "DC NVMe PM9D5a MU U.2 1.6TB",
+      "1028:2357": "DC NVMe PM9D5a MU U.2 3.2TB",
+      "1028:2358": "DC NVMe PM9D5a MU U.2 6.4TB",
+      "1028:2359": "DC NVMe PM9D5a MU E3.S 1.6TB",
+      "1028:235a": "DC NVMe PM9D5a MU E3.S 3.2TB",
+      "1028:235b": "DC NVMe PM9D5a MU E3.S 6.4TB"
+     }
+    },
+    "aa00": {
+     "name": "NVMe SSD Controller BM1743",
+     "subsystems": {
+      "1028:2312": "NVMe FIPS BM1743 QLC U.2 15.36TB",
+      "1028:2313": "NVMe FIPS BM1743 QLC U.2 30.72TB",
+      "1028:2314": "NVMe FIPS BM1743 QLC U.2 61.44TB",
+      "1028:2315": "NVMe BM1743 QLC U.2 15.36TB",
+      "1028:2316": "NVMe BM1743 QLC U.2 30.72TB",
+      "1028:2317": "NVMe BM1743 QLC U.2 61.44TB",
+      "1028:2364": "NVMe BM1743 QLC U.2 122.88TB",
+      "1028:2366": "MZ3MO15THCLCAD3",
+      "1028:2367": "MZ3MO30THCLFAD3"
+     }
+    },
+    "ac00": {
+     "name": "NVMe SSD Controller PM175x",
+     "subsystems": {
+      "1028:2383": "MZ3L91T9HFJAAD9",
+      "1028:2384": "MZ3L91T9HFJAAD3",
+      "1028:2385": "MZ3L93T8HFJAAD9",
+      "1028:2386": "MZ3L93T8HFJAAD3",
+      "1028:2387": "MZ3L97T6HFLTAD9",
+      "1028:2388": "MZ3L97T6HFLTAD3",
+      "1028:2389": "MZ3L915THBLCAD9",
+      "1028:238a": "MZ3L915THBLCAD3",
+      "1028:238b": "MZ3L930THBLFAD9",
+      "1028:238c": "MZ3L930THBLFAD3",
+      "1028:238d": "MZ3L91T6HFJAAD9",
+      "1028:238e": "MZ3L91T6HFJAAD3",
+      "1028:238f": "MZ3L93T2HFJAAD9",
+      "1028:2390": "MZ3L93T2HFJAAD3",
+      "1028:2391": "MZ3L96T4HFLTAD9",
+      "1028:2392": "MZ3L96T4HFLTAD3",
+      "1028:2394": "MZWL91T9HFJAAD3",
+      "1028:2396": "MZWL93T8HFLTAD3",
+      "1028:2398": "MZWL97T6HFLAAD3",
+      "1028:239a": "MZWL915THBLFAD3",
+      "1028:239b": "MZWL930THBLFAD9",
+      "1028:239c": "MZWL930THBLFAD3",
+      "1028:239e": "MZWL91T6HFJAAD3",
+      "1028:239f": "MZWL93T2HFLTAD3",
+      "1028:23a0": "MZWL96T4HFLAAD3"
+     }
+    },
+    "ac02": {
+     "name": "NVMe SSD Controller PM1763/PM1765",
+     "subsystems": {
+      "1028:249e": "MZ3LD3T8HELVAD7",
+      "1028:249f": "MZ3LD7T6HELDAD7",
+      "1028:24a0": "MZ3LD15THEL1AD7",
+      "1028:24a1": "MZ3LD30THELFAD7",
+      "1028:24a2": "MZ3LD3T2HELVAD7",
+      "1028:24a3": "MZ3LD6T4HELDAD7"
+     }
+    }
+   },
+   "name": "Samsung Electronics Co Ltd"
+  },
+  "14a4": {
+   "devices": {
+    "2100": {
+     "name": "CA1-8D128 NVMe SSD",
+     "subsystems": {}
+    },
+    "21f1": {
+     "name": "Plextor NVMe SSD",
+     "subsystems": {}
+    },
+    "2200": {
+     "name": "CX2-8B256, CX2-8B512 NVMe SSD",
+     "subsystems": {}
+    },
+    "22a0": {
+     "name": "EP2-KB960 NVMe SSD",
+     "subsystems": {}
+    },
+    "22f1": {
+     "name": "M8Pe Series NVMe SSD",
+     "subsystems": {}
+    },
+    "2300": {
+     "name": "CA3-8D256, CA3-8D512 NVMe SSD",
+     "subsystems": {}
+    },
+    "23f1": {
+     "name": "M9PeG, M9PeGN, M9PeY NVMe SSD",
+     "subsystems": {}
+    },
+    "2f00": {
+     "name": "CAZ-82512 NVMe SSD",
+     "subsystems": {}
+    },
+    "3500": {
+     "name": "CA5-8D512 NVMe SSD",
+     "subsystems": {}
+    },
+    "35f1": {
+     "name": "PLEXTOR PX-256M9PGN+ NVMe SSD",
+     "subsystems": {}
+    },
+    "5100": {
+     "name": "CB1-SD256, CB1-SD512 NVMe SSD",
+     "subsystems": {}
+    },
+    "9100": {
+     "name": "CL1-3D256, CL1-8D512 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    }
+   },
+   "name": "Lite-On Technology Corporation"
+  },
+  "15ad": {
+   "devices": {
+    "07f0": {
+     "name": "NVMe SSD Controller",
+     "subsystems": {}
+    }
+   },
+   "name": "VMware"
+  },
+  "15b3": {
+   "devices": {
+    "6001": {
+     "name": "NVMe SNAP Controller",
+     "subsystems": {}
+    }
+   },
+   "name": "Mellanox Technologies"
+  },
+  "15b6": {
+   "devices": {
+    "0014": {
+     "name": "RamSan Flash SSD",
+     "subsystems": {}
+    }
+   },
+   "name": "Texas Memory Systems Inc"
+  },
+  "15b7": {
+   "devices": {
+    "2001": {
+     "name": "Skyhawk Series NVME SSD",
+     "subsystems": {}
+    },
+    "5001": {
+     "name": "WD Black NVMe SSD",
+     "subsystems": {}
+    },
+    "5002": {
+     "name": "SanDisk Extreme Pro / WD Black 2018/SN750/PC SN720 NVMe SSD",
+     "subsystems": {}
+    },
+    "5003": {
+     "name": "WD Blue SN500 / PC SN520 x2 M.2 2280 NVMe SSD",
+     "subsystems": {}
+    },
+    "5004": {
+     "name": "PC SN520 x2 M.2 2230 NVMe SSD",
+     "subsystems": {}
+    },
+    "5005": {
+     "name": "PC SN520 x2 M.2 2242 NVMe SSD",
+     "subsystems": {}
+    },
+    "5006": {
+     "name": "SanDisk Extreme Pro / WD Black SN750 / PC SN730 / Red SN700 NVMe SSD",
+     "subsystems": {}
+    },
+    "5007": {
+     "name": "IX SN530 NVMe SSD / microSD Express Card (DRAM-less)",
+     "subsystems": {}
+    },
+    "5008": {
+     "name": "PC SN530 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5009": {
+     "name": "SanDisk Ultra 3D / WD PC SN530, IX SN530, Blue SN550 NVMe SSD (DRAM-less)",
+     "subsystems": {
+      "15b7:5009": "WD Blue SN550 NVMe SSD"
+     }
+    },
+    "500b": {
+     "name": "PC SN530 NVMe SSD",
+     "subsystems": {
+      "1414:500b": "Xbox Series X"
+     }
+    },
+    "500d": {
+     "name": "WD Ultrastar DC SN340 NVMe SSD",
+     "subsystems": {}
+    },
+    "5011": {
+     "name": "WD PC SN810 / Black SN850 NVMe SSD",
+     "subsystems": {}
+    },
+    "5014": {
+     "name": "WD PC SN540 / Green SN350 NVMe SSD 1 TB (DRAM-less)",
+     "subsystems": {}
+    },
+    "5015": {
+     "name": "PC SN740 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5016": {
+     "name": "WD PC SN740 NVMe SSD 512GB (DRAM-less)",
+     "subsystems": {}
+    },
+    "5017": {
+     "name": "WD SN560/SN740/SN770/SN5000 NVMe SSD",
+     "subsystems": {}
+    },
+    "5019": {
+     "name": "WD Green SN350 240GB (DRAM-less) / SN560E NVMe SSD",
+     "subsystems": {}
+    },
+    "501a": {
+     "name": "SanDisk Ultra 3D / WD Blue SN570 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "501d": {
+     "name": "WD Blue SN550 NVMe SSD 2TB (DRAM-less)",
+     "subsystems": {}
+    },
+    "501e": {
+     "name": "PC SN735 / WD_BLACK SN750 SE NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "501f": {
+     "name": "WD PC SN735 NVMe SSD 512GB (DRAM-less)",
+     "subsystems": {}
+    },
+    "5025": {
+     "name": "WD Blue SN570 NVMe SSD 2TB",
+     "subsystems": {}
+    },
+    "5026": {
+     "name": "WD PC SN735 NVMe SSD 1TB (DRAM-less)",
+     "subsystems": {}
+    },
+    "5028": {
+     "name": "WD CH SN560 NVMe SSD",
+     "subsystems": {}
+    },
+    "5030": {
+     "name": "WD Black SN850X NVMe SSD",
+     "subsystems": {}
+    },
+    "5034": {
+     "name": "WD PC SN5000S M.2 2230 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5035": {
+     "name": "WD PC SN5000S M.2 2242 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5036": {
+     "name": "WD PC SN5000S M.2 2280 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5041": {
+     "name": "WD Blue SN580 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5042": {
+     "name": "WD Black SN770M NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5043": {
+     "name": "WD PC SN7100S M.2 2230 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5044": {
+     "name": "WD PC SN7100S M.2 2242 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5045": {
+     "name": "WD_BLACK SN7100/WD PC SN7100S M.2 2280 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5046": {
+     "name": "SanDisk Extreme NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5049": {
+     "name": "SN8000S NVMe SSD",
+     "subsystems": {}
+    },
+    "504a": {
+     "name": "WD Blue SN5000 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5050": {
+     "name": "WD PC SN8050S / WD_BLACK SN8100 NVMe SSD",
+     "subsystems": {}
+    },
+    "5061": {
+     "name": "PC SN5100S M.2 2230 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5062": {
+     "name": "PC SN5100S M.2 2242 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5063": {
+     "name": "PC SN5100S / WD Blue SN5100 M.2 2280 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5070": {
+     "name": "SanDisk Optimus 5110, PC SN4100S, PC SN6100S / WD Green SN3000 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    }
+   },
+   "name": "Sandisk Corp"
+  },
+  "177d": {
+   "devices": {
+    "9703": {
+     "name": "CN23XX [LiquidIO II] NVMe Controller",
+     "subsystems": {}
+    },
+    "9713": {
+     "name": "CN23XX [LiquidIO II] NVMe SRIOV Virtual Function",
+     "subsystems": {}
+    }
+   },
+   "name": "Cavium, Inc."
+  },
+  "17d3": {
+   "devices": {
+    "1886": {
+     "name": "ARC-1886 series PCIe 4.0 to NVMe/SAS/SATA 16/12/6Gb RAID Controller",
+     "subsystems": {
+      "17d3:1686": "ARC-1686 PCIe 4.0 to NVMe/SAS/SATA 16/12/6Gb RAID Controller",
+      "17d3:1886": "ARC-1886 PCIe 4.0 to NVMe/SAS/SATA 16/12/6Gb RAID Controller"
+     }
+    },
+    "188a": {
+     "name": "ARC-1886 series PCIe 4.0 to NVMe/SAS/SATA 16/12/6Gb RAID Controller",
+     "subsystems": {
+      "17d3:1217": "ARC-1217 4-Port PCIe 4.0 to SAS/SATA 12/6Gb RAID Controller",
+      "17d3:1227": "ARC-1227 8-Port PCIe 4.0 to SAS/SATA 12/6Gb RAID Controller",
+      "17d3:1686": "ARC-1686 PCIe 4.0 to NVMe/SAS/SATA 16/12/6Gb RAID Controller",
+      "17d3:1688": "ARC-1688 PCIe 4.0 to NVMe/SAS/SATA 16/12/6Gb RAID Controller",
+      "17d3:1886": "ARC-1886 PCIe 4.0 to NVMe/SAS/SATA 16/12/6Gb RAID Controller"
+     }
+    }
+   },
+   "name": "Areca Technology Corp."
+  },
+  "1987": {
+   "devices": {
+    "5007": {
+     "name": "E7 NVMe Controller",
+     "subsystems": {}
+    },
+    "5008": {
+     "name": "E8 PCIe3 x2 NVMe Controller",
+     "subsystems": {}
+    },
+    "5012": {
+     "name": "E12 NVMe Controller",
+     "subsystems": {}
+    },
+    "5013": {
+     "name": "PS5013-E13 PCIe3 NVMe Controller (DRAM-less)",
+     "subsystems": {}
+    },
+    "5015": {
+     "name": "PS5015-E15 PCIe3 NVMe Controller (DRAM-less)",
+     "subsystems": {}
+    },
+    "5016": {
+     "name": "E16 PCIe4 NVMe Controller",
+     "subsystems": {}
+    },
+    "5017": {
+     "name": "PS5017 x2 NVMe SD Express SSD Controller (DRAM-less)",
+     "subsystems": {}
+    },
+    "5018": {
+     "name": "E18 PCIe4 NVMe Controller",
+     "subsystems": {}
+    },
+    "5019": {
+     "name": "PS5019-E19 PCIe4 NVMe Controller (DRAM-less)",
+     "subsystems": {}
+    },
+    "5020": {
+     "name": "PS5020-E20 (X1) PCIe4 NVMe Controller",
+     "subsystems": {}
+    },
+    "5021": {
+     "name": "PS5021-E21 PCIe4 NVMe Controller (DRAM-less)",
+     "subsystems": {}
+    },
+    "5026": {
+     "name": "PS5026-E26 PCIe5 NVMe Controller",
+     "subsystems": {}
+    },
+    "5027": {
+     "name": "PS5027-E27T PCIe4 NVMe Controller (DRAM-less)",
+     "subsystems": {}
+    },
+    "5028": {
+     "name": "PS5028-E28 PCIe5 NVMe Controller",
+     "subsystems": {}
+    },
+    "5029": {
+     "name": "PS5029-E29T PCIe4 NVMe Controller (DRAM-less)",
+     "subsystems": {}
+    },
+    "5031": {
+     "name": "PS5031-E31T PCIe5 NVMe Controller",
+     "subsystems": {}
+    },
+    "5033": {
+     "name": "PS5033-E33T PCIe4 NVMe Controller",
+     "subsystems": {}
+    },
+    "5037": {
+     "name": "PS5037-E37T PCIe5 NVMe Controller (DRAM-less)",
+     "subsystems": {}
+    },
+    "5302": {
+     "name": "PS5302-X2 PCIe5 NVMe Controller",
+     "subsystems": {}
+    }
+   },
+   "name": "Phison Electronics Corporation"
+  },
+  "1998": {
+   "devices": {
+    "0001": {
+     "name": "TOBOLT1 51987 NVMe SSD",
+     "subsystems": {
+      "1998:0192": "TOBOLT1 45967 1920G M.2 NVMe SSD",
+      "1998:0384": "TOBOLT1 51987 3840G 2.5\" U.2 NVMe SSD",
+      "1998:0768": "TOBOLT1 51987 7680G 2.5\" U.2 NVMe SSD",
+      "1998:2012": "TOBOLT1 51987 3840G 2.5\" U.2 NVMe SSD",
+      "1998:6144": "TOBOLT1 51995 6144G 2.5\" U.2 NVMe SSD"
+     }
+    }
+   },
+   "name": "Toyou Feiji Electronics Co., Ltd."
+  },
+  "19e5": {
+   "devices": {
+    "0123": {
+     "name": "ES3000 V3 NVMe PCIe SSD",
+     "subsystems": {
+      "19e5:3022": "NVMe SSD ES3600P V3 800GB 2.5\" U.2",
+      "19e5:3023": "NVMe SSD ES3600P V3 1200GB 2.5\" U.2",
+      "19e5:3024": "NVMe SSD ES3600P V3 1600GB 2.5\" U.2",
+      "19e5:3025": "NVMe SSD ES3600P V3 2000GB 2.5\" U.2",
+      "19e5:3026": "NVMe SSD ES3600P V3 3200GB 2.5\" U.2",
+      "19e5:3033": "NVMe SSD ES3600C V3 1200GB HHHL AIC",
+      "19e5:3034": "NVMe SSD ES3600C V3 1600GB HHHL AIC",
+      "19e5:3036": "NVMe SSD ES3600C V3 3200GB HHHL AIC"
+     }
+    },
+    "3714": {
+     "name": "ES3000 V5 NVMe PCIe SSD",
+     "subsystems": {
+      "19e5:5312": "NVMe SSD ES3500P V5 2000GB 2.5\" U.2"
+     }
+    },
+    "3754": {
+     "name": "ES3000 V6 NVMe PCIe SSD",
+     "subsystems": {
+      "19e5:6122": "NVMe SSD ES3600P V6 1600GB 2.5\" U.2",
+      "19e5:6123": "NVMe SSD ES3600P V6 3200GB 2.5\" U.2",
+      "19e5:6124": "NVMe SSD ES3600P V6 6400GB 2.5\" U.2",
+      "19e5:6141": "NVMe SSD ES3800P V6 800GB 2.5\" U.2",
+      "19e5:6142": "NVMe SSD ES3800P V6 1600GB 2.5\" U.2",
+      "19e5:6212": "NVMe SSD ES3500P V6 1920GB 2.5\" U.2",
+      "19e5:6213": "NVMe SSD ES3500P V6 3840GB 2.5\" U.2",
+      "19e5:6214": "NVMe SSD ES3500P V6 7680GB 2.5\" U.2",
+      "19e5:6215": "NVMe SSD ES3500P V6 15360GB 2.5\" U.2"
+     }
+    },
+    "a126": {
+     "name": "HiSilicon SDI NVMe Storage Controller",
+     "subsystems": {}
+    }
+   },
+   "name": "Huawei Technologies Co., Ltd."
+  },
+  "1a78": {
+   "devices": {
+    "0031": {
+     "name": "FlashMAX Drive",
+     "subsystems": {
+      "1a78:0034": "FlashMAX PCIe SSD [rev 3]",
+      "1a78:0037": "FlashMAX PCIe SSD [rev 3D]",
+      "1a78:0038": "FlashMAX PCIe SSD [rev 4]",
+      "1a78:0039": "FlashMAX PCIe SSD [rev 4D]"
+     }
+    }
+   },
+   "name": "Virident Systems Inc."
+  },
+  "1ae0": {
+   "devices": {
+    "001f": {
+     "name": "NVMe device",
+     "subsystems": {}
+    }
+   },
+   "name": "Google, Inc."
+  },
+  "1aed": {
+   "devices": {
+    "1005": {
+     "name": "ioDimm3",
+     "subsystems": {
+      "1014:03c3": "High IOPS SSD PCIe Adapter",
+      "103c:176f": "1.28TB MLC PCIe ioDrive Duo",
+      "103c:1770": "5.2TB MLC PCIe ioDrive Octal",
+      "103c:178b": "160GB SLC PCIe ioDrive",
+      "103c:178c": "320GB MLC PCIe ioDrive",
+      "103c:178d": "320GB SLC PCIe ioDrive Duo",
+      "103c:178e": "640GB MLC PCIe ioDrive Duo"
+     }
+    }
+   },
+   "name": "SanDisk"
+  },
+  "1b36": {
+   "devices": {
+    "0010": {
+     "name": "QEMU NVM Express Controller",
+     "subsystems": {}
+    }
+   },
+   "name": "Red Hat, Inc."
+  },
+  "1b39": {
+   "devices": {
+    "0001": {
+     "name": "S1120 PCIe Accelerator SSD",
+     "subsystems": {}
+    }
+   },
+   "name": "sTec, Inc."
+  },
+  "1b4b": {
+   "devices": {
+    "1092": {
+     "name": "88SS1092 NVMe SSD Controller",
+     "subsystems": {}
+    },
+    "1160": {
+     "name": "88NV1160 PCIe x2 NVMe SSD Controller (DRAM-less)",
+     "subsystems": {}
+    },
+    "1321": {
+     "name": "88SS1321 NVMe SSD Controller",
+     "subsystems": {}
+    },
+    "2241": {
+     "name": "88NR2241 Non-Volatile memory controller",
+     "subsystems": {
+      "1028:2112": "BOSS-N1 Monolithic",
+      "1028:2113": "BOSS-N1 Modular",
+      "1028:2151": "BOSS-N1 Modular ET",
+      "1028:2196": "ROR-N1",
+      "1028:2286": "BOSS-N1 DC-MHS",
+      "1028:2287": "BOSS-N1 Modular DC-MHS",
+      "1028:23b0": "eBOSS-N1 DC-MHS",
+      "1590:02f6": "NS204i-p Gen10+ Boot Controller",
+      "1b4b:2241": "Santa Cruz NVMe Host Adapter",
+      "1b96:4000": "WD_BLACK AN1500 NVMe SSD",
+      "1d49:0306": "ThinkSystem M.2 NVMe 2-Bay RAID Enablement Kit",
+      "1d49:0307": "ThinkSystem 7mm NVMe 2-Bay Rear RAID Enablement Kit",
+      "207d:0800": "TrustRAID B310n",
+      "4c52:9541": "LRNV9541 2-port M.2 NVMe Raid Adapter"
+     }
+    },
+    "9183": {
+     "name": "88SS9183 PCIe SSD Controller",
+     "subsystems": {}
+    }
+   },
+   "name": "Marvell Technology Group Ltd."
+  },
+  "1b85": {
+   "devices": {
+    "1021": {
+     "name": "RevoDrive 3 X2 PCIe SSD 240 GB (Marvell SAS Controller)",
+     "subsystems": {}
+    },
+    "1041": {
+     "name": "RevoDrive 3 X2 PCIe SSD 240 GB (Marvell SAS Controller)",
+     "subsystems": {}
+    },
+    "4018": {
+     "name": "Z Drive 6000/6300 NVME SSD",
+     "subsystems": {}
+    },
+    "6018": {
+     "name": "RD400/400A SSD",
+     "subsystems": {}
+    }
+   },
+   "name": "OCZ Technology Group, Inc."
+  },
+  "1b96": {
+   "devices": {
+    "2200": {
+     "name": "Ultrastar DC SN630 NVMe SSD",
+     "subsystems": {}
+    },
+    "2201": {
+     "name": "Ultrastar DC SN630 NVMe SSD",
+     "subsystems": {}
+    },
+    "2300": {
+     "name": "Ultrastar DC SN840 NVMe SSD",
+     "subsystems": {}
+    },
+    "2400": {
+     "name": "Ultrastar DC SN640 NVMe SSD",
+     "subsystems": {}
+    },
+    "2401": {
+     "name": "Ultrastar DC SN640 NVMe SSD",
+     "subsystems": {}
+    },
+    "2402": {
+     "name": "Ultrastar DC SN640 NVMe SSD",
+     "subsystems": {}
+    },
+    "2404": {
+     "name": "Ultrastar DC SN640 NVMe SSD",
+     "subsystems": {}
+    },
+    "2500": {
+     "name": "Ultrastar DC SN840 NVMe SSD",
+     "subsystems": {}
+    },
+    "2600": {
+     "name": "Ultrastar DC ZN540 ZNS NVMe SSD",
+     "subsystems": {}
+    },
+    "2700": {
+     "name": "Ultrastar DC SN650 NVMe SSD",
+     "subsystems": {}
+    },
+    "2701": {
+     "name": "Ultrastar DC SN650 NVMe SSD",
+     "subsystems": {}
+    },
+    "2702": {
+     "name": "Ultrastar DC SN650 NVMe SSD",
+     "subsystems": {}
+    },
+    "2720": {
+     "name": "Ultrastar DC SN650 NVMe SSD",
+     "subsystems": {}
+    },
+    "2721": {
+     "name": "Ultrastar DC SN650 NVMe SSD",
+     "subsystems": {}
+    },
+    "2722": {
+     "name": "Ultrastar DC SN655 NVMe SSD",
+     "subsystems": {}
+    },
+    "2750": {
+     "name": "Ultrastar DC SN861 NVMe SSD",
+     "subsystems": {}
+    },
+    "2751": {
+     "name": "Ultrastar DC SN861 NVMe SSD",
+     "subsystems": {}
+    },
+    "3001": {
+     "name": "RapidFlex C2000 NVMe Initiator",
+     "subsystems": {}
+    },
+    "3714": {
+     "name": "PC SN730 NVMe SSD",
+     "subsystems": {}
+    },
+    "3734": {
+     "name": "PC SN730 NVMe SSD",
+     "subsystems": {}
+    }
+   },
+   "name": "Western Digital"
+  },
+  "1bb1": {
+   "devices": {
+    "0153": {
+     "name": "Nytro 5x50 NVMe SSD",
+     "subsystems": {}
+    },
+    "0155": {
+     "name": "Nytro 5x50 NVMe SSD",
+     "subsystems": {}
+    },
+    "2000": {
+     "name": "PCIe Gen4 SSD",
+     "subsystems": {}
+    },
+    "5012": {
+     "name": "FireCuda/IronWolf 510 SSD",
+     "subsystems": {}
+    },
+    "5013": {
+     "name": "BarraCuda Q5 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5016": {
+     "name": "FireCuda 520/IronWolf 525 SSD",
+     "subsystems": {}
+    },
+    "5018": {
+     "name": "E18 PCIe SSD",
+     "subsystems": {}
+    },
+    "5019": {
+     "name": "BarraCuda PCIe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5021": {
+     "name": "PCIe Gen4 SSD",
+     "subsystems": {}
+    },
+    "5026": {
+     "name": "FireCuda 540 SSD",
+     "subsystems": {}
+    },
+    "5027": {
+     "name": "BarraCuda 530 SSD / LaCie Rugged SSD Pro5",
+     "subsystems": {}
+    },
+    "5100": {
+     "name": "PCIe Gen3 SSD",
+     "subsystems": {}
+    },
+    "5101": {
+     "name": "PCIe Gen5 SSD",
+     "subsystems": {}
+    }
+   },
+   "name": "Seagate Technology PLC"
+  },
+  "1bcd": {
+   "devices": {
+    "0120": {
+     "name": "NVMe SSD Drive 960GB",
+     "subsystems": {}
+    },
+    "0180": {
+     "name": "PB4480 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "0310": {
+     "name": "NVMe SSD Drive 480GB",
+     "subsystems": {}
+    },
+    "5027": {
+     "name": "AS2280Q4 NVMe SSD",
+     "subsystems": {}
+    }
+   },
+   "name": "Apacer Technology"
+  },
+  "1bd4": {
+   "devices": {
+    "1000": {
+     "name": "NS8600G1U160 NVME SSD",
+     "subsystems": {}
+    },
+    "1001": {
+     "name": "NS8600G1U320 NVME SSD",
+     "subsystems": {}
+    },
+    "1002": {
+     "name": "NS8600G1U640 NVME SSD",
+     "subsystems": {}
+    },
+    "1003": {
+     "name": "NS8500G1U192 NVME SSD",
+     "subsystems": {}
+    },
+    "1004": {
+     "name": "NS8500G1U384 NVME SSD",
+     "subsystems": {}
+    },
+    "1005": {
+     "name": "NS8500G1U768 NVME SSD",
+     "subsystems": {}
+    },
+    "1006": {
+     "name": "NS6610G1U160, NS6510G1U192 NVME SSD",
+     "subsystems": {}
+    },
+    "1007": {
+     "name": "NS6610G1U320, NS6510G1U384 NVME SSD",
+     "subsystems": {}
+    },
+    "100c": {
+     "name": "NS8510G1Uxxx, NS8610G1Uxxx NVME SSD",
+     "subsystems": {}
+    },
+    "100e": {
+     "name": "NS8500G2Uxxxx, NS8600G2Uxxxx NVME SSD",
+     "subsystems": {}
+    },
+    "100f": {
+     "name": "NS6500G2UXXXX,NS6600G2UXXXX NVME SSD",
+     "subsystems": {}
+    }
+   },
+   "name": "IEIT SYSTEMS Co., Ltd"
+  },
+  "1bf5": {
+   "devices": {
+    "1000": {
+     "name": "G7200 series U.2 NVMe SSD",
+     "subsystems": {}
+    },
+    "e040": {
+     "name": "ArmourDrive NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    }
+   },
+   "name": "Greenliant"
+  },
+  "1c28": {
+   "devices": {
+    "0122": {
+     "name": "M6e PCI Express SSD [Marvell 88SS9183]",
+     "subsystems": {}
+    }
+   },
+   "name": "Lite-On IT Corp. / Plextor"
+  },
+  "1c44": {
+   "devices": {
+    "1100": {
+     "name": "Fuzedrive NVMe SSD",
+     "subsystems": {}
+    }
+   },
+   "name": "Enmotus Inc"
+  },
+  "1c58": {
+   "devices": {
+    "0003": {
+     "name": "Ultrastar SN100 Series NVMe SSD",
+     "subsystems": {
+      "1014:04f5": "PCIe3 1.6TB NVMe Flash Adapter",
+      "1014:04f6": "PCIe3 3.2TB NVMe Flash Adapter",
+      "1c58:0003": "Ultrastar SN100/SN150 NVMe SSD"
+     }
+    },
+    "0023": {
+     "name": "Ultrastar SN200 Series NVMe SSD",
+     "subsystems": {
+      "1c58:8823": "Ultrastar Memory (ME200)"
+     }
+    }
+   },
+   "name": "HGST, Inc."
+  },
+  "1c5c": {
+   "devices": {
+    "1069": {
+     "name": "PCB01 NVMe Solid State Drive",
+     "subsystems": {}
+    },
+    "1282": {
+     "name": "PC300 NVMe Solid State Drive 128GB",
+     "subsystems": {}
+    },
+    "1283": {
+     "name": "PC300 NVMe Solid State Drive 256GB",
+     "subsystems": {}
+    },
+    "1284": {
+     "name": "PC300 NVMe Solid State Drive 512GB",
+     "subsystems": {}
+    },
+    "1285": {
+     "name": "PC300 NVMe Solid State Drive 1TB",
+     "subsystems": {}
+    },
+    "1327": {
+     "name": "BC501 NVMe Solid State Drive",
+     "subsystems": {}
+    },
+    "1339": {
+     "name": "BC511 NVMe SSD",
+     "subsystems": {}
+    },
+    "1504": {
+     "name": "PC400 NVMe SSD",
+     "subsystems": {}
+    },
+    "1527": {
+     "name": "PC401 NVMe Solid State Drive 256GB",
+     "subsystems": {}
+    },
+    "1627": {
+     "name": "PC601 NVMe Solid State Drive",
+     "subsystems": {}
+    },
+    "1639": {
+     "name": "PC611 NVMe Solid State Drive",
+     "subsystems": {}
+    },
+    "1739": {
+     "name": "BC701 NVMe Solid State Drive",
+     "subsystems": {}
+    },
+    "174a": {
+     "name": "Gold P31/BC711/PC711 NVMe Solid State Drive",
+     "subsystems": {}
+    },
+    "1959": {
+     "name": "Platinum P41/PC801 NVMe Solid State Drive",
+     "subsystems": {}
+    },
+    "1969": {
+     "name": "PC811 NVMe Solid State Drive",
+     "subsystems": {}
+    },
+    "1d59": {
+     "name": "BC901 NVMe Solid State Drive (DRAM-less)",
+     "subsystems": {}
+    },
+    "1f69": {
+     "name": "PVC10 NVMe Solid State Drive (DRAM-less)",
+     "subsystems": {}
+    },
+    "2069": {
+     "name": "PEB110 Series NVMe Solid State Drive",
+     "subsystems": {}
+    },
+    "2204": {
+     "name": "960GB TLC PCIe Gen3 x4 NVMe M.2 22110",
+     "subsystems": {}
+    },
+    "2427": {
+     "name": "PE6010 NVMe Solid State Drive",
+     "subsystems": {}
+    },
+    "2429": {
+     "name": "PE6011 NVMe Solid State Drive",
+     "subsystems": {}
+    },
+    "243b": {
+     "name": "PE6110 NVMe Solid State Drive",
+     "subsystems": {
+      "1c5c:0100": "PE6110 NVMe Solid State Drive"
+     }
+    },
+    "2527": {
+     "name": "PE4010 NVMe Solid State Drive",
+     "subsystems": {}
+    },
+    "2839": {
+     "name": "PE8000 Series NVMe Solid State Drive",
+     "subsystems": {
+      "1028:2143": "DC NVMe SED PE8010 RI U.2 960GB",
+      "1028:2144": "DC NVMe PE8010 RI U.2 960GB",
+      "1028:2145": "DC NVMe SED PE8010 RI U.2 1.92TB",
+      "1028:2146": "DC NVMe PE8010 RI U.2 1.92TB",
+      "1028:2147": "DC NVMe SED PE8010 RI U.2 3.84TB",
+      "1028:2148": "DC NVMe PE8010 RI U.2 3.84TB",
+      "1028:2149": "DC NVMe SED PE8010 RI U.2 7.68TB",
+      "1028:214a": "DC NVMe PE8010 RI U.2 7.68TB",
+      "1c5c:0100": "PE8000 Series NVMe Solid State Drive"
+     }
+    },
+    "2849": {
+     "name": "PE81x0 U.2/3 NVMe Solid State Drive",
+     "subsystems": {
+      "1028:2262": "DC NVMe OPAL PE8110 RI U.2 960GB",
+      "1028:2263": "DC NVMe OPAL PE8110 RI U.2 1920GB",
+      "1028:2264": "DC NVMe OPAL PE8110 RI U.2 3840GB",
+      "1028:2265": "DC NVMe OPAL PE8110 RI U.2 7680GB",
+      "1028:2266": "DC NVMe ISE PE8110 RI U.2 960GB",
+      "1028:2267": "DC NVMe ISE PE8110 RI U.2 1920GB",
+      "1028:2268": "DC NVMe ISE PE8110 RI U.2 3840GB",
+      "1028:2269": "DC NVMe ISE PE8110 RI U.2 7680GB",
+      "1c5c:0101": "PE81x0 U.2/3 NVMe Solid State Drive"
+     }
+    },
+    "284a": {
+     "name": "PE8110 Series NVMe Solid State Drive",
+     "subsystems": {}
+    },
+    "2a49": {
+     "name": "PE9110 Series NVMe Solid State Drive",
+     "subsystems": {}
+    },
+    "2a59": {
+     "name": "PE9010 Series NVMe Solid State Drives",
+     "subsystems": {}
+    },
+    "2b59": {
+     "name": "Px10x0 Series NVMe Solid State Drives",
+     "subsystems": {
+      "1028:2295": "NVMe ISE PS1010 RI U.2 1.92TB",
+      "1028:2296": "NVMe ISE PS1010 RI U.2 3.84TB",
+      "1028:2297": "NVMe ISE PS1010 RI U.2 7.68TB",
+      "1028:2298": "NVMe ISE PS1010 RI U.2 15.36TB",
+      "1028:2299": "NVMe ISE PS1030 MU U.2 1.6TB",
+      "1028:229a": "NVMe ISE PS1030 MU U.2 3.2TB",
+      "1028:229b": "NVMe ISE PS1030 MU U.2 6.4TB",
+      "1028:229c": "NVMe ISE PS1030 MU U.2 12.8TB",
+      "1028:22a7": "NVMe ISE PS1010 RI E3.S 1.92TB",
+      "1028:22a8": "NVMe ISE PS1010 RI E3.S 3.84TB",
+      "1028:22a9": "NVMe ISE PS1010 RI E3.S 7.68TB",
+      "1028:22aa": "NVMe ISE PS1010 RI E3.S 15.36TB",
+      "1028:22ab": "NVMe ISE PS1030 MU E3.S 1.6TB",
+      "1028:22ac": "NVMe ISE PS1030 MU E3.S 3.2TB",
+      "1028:22ad": "NVMe ISE PS1030 MU E3.S 6.4TB",
+      "1028:22ae": "NVMe ISE PS1030 MU E3.S 12.8TB",
+      "1028:22dc": "NVMe FIPS PS1010 RI E3.S 1.92TB",
+      "1028:22dd": "NVMe FIPS PS1010 RI E3.S 3.84TB",
+      "1028:22de": "NVMe FIPS PS1010 RI E3.S 7.68TB",
+      "1028:22df": "NVMe FIPS PS1010 RI E3.S 15.36TB",
+      "1028:22e0": "NVMe FIPS PS1030 MU E3.S 1.6TB",
+      "1028:22e1": "NVMe FIPS PS1030 MU E3.S 3.2TB",
+      "1028:22e2": "NVMe FIPS PS1030 MU E3.S 6.4TB",
+      "1028:22e3": "NVMe FIPS PS1030 MU E3.S 12.8TB",
+      "1028:22f8": "NVMe ISE PE1010 RI E3.S 1.92TB",
+      "1028:22f9": "NVMe ISE PE1010 RI E3.S 3.84TB",
+      "1028:22fa": "NVMe ISE PE1010 RI E3.S 7.68TB",
+      "1028:22fb": "NVMe ISE PE1010 RI E3.S 15.36TB",
+      "1028:22fc": "NVMe ISE PE1030 MU E3.S 1.6TB",
+      "1028:22fd": "NVMe ISE PE1030 MU E3.S 3.2TB",
+      "1028:22fe": "NVMe ISE PE1030 MU E3.S 6.4TB",
+      "1028:22ff": "NVMe ISE PE1030 MU E3.S 12.8TB"
+     }
+    }
+   },
+   "name": "SK hynix"
+  },
+  "1c5f": {
+   "devices": {
+    "000d": {
+     "name": "PBlaze5 520/526",
+     "subsystems": {
+      "1c5f:0220": "NVMe SSD PBlaze5 520 1920G AIC",
+      "1c5f:0221": "NVMe SSD PBlaze5 520 1920G 2.5\" U.2",
+      "1c5f:0230": "NVMe SSD PBlaze5 520 3840G AIC",
+      "1c5f:0231": "NVMe SSD PBlaze5 520 3840G 2.5\" U.2",
+      "1c5f:4220": "NVMe SSD PBlaze5 526 1600G AIC",
+      "1c5f:4221": "NVMe SSD PBlaze5 526 1600G 2.5\" U.2",
+      "1c5f:4230": "NVMe SSD PBlaze5 526 3200G AIC",
+      "1c5f:4231": "NVMe SSD PBlaze5 526 3200G 2.5\" U.2"
+     }
+    },
+    "000e": {
+     "name": "PBlaze6 6530/6531/6541/6630",
+     "subsystems": {
+      "1c5f:0b20": "NVMe SSD PBlaze6 6530 1920G AIC",
+      "1c5f:0b21": "NVMe SSD PBlaze6 6530 1920G 2.5\" U.2",
+      "1c5f:0b25": "NVMe SSD PBlaze6 6530 1920G E1.S",
+      "1c5f:0b27": "NVMe SSD PBlaze6 6630 1920G 2.5\" U.2",
+      "1c5f:0b30": "NVMe SSD PBlaze6 6530 3840G AIC",
+      "1c5f:0b31": "NVMe SSD PBlaze6 6530 3840G 2.5\" U.2",
+      "1c5f:0b35": "NVMe SSD PBlaze6 6530 3840G E1.S",
+      "1c5f:0b37": "NVMe SSD PBlaze6 6630 3840G 2.5\" U.2",
+      "1c5f:0b40": "NVMe SSD PBlaze6 6530 7680G AIC",
+      "1c5f:0b41": "NVMe SSD PBlaze6 6530 7680G 2.5\" U.2",
+      "1c5f:0b47": "NVMe SSD PBlaze6 6630 7680G 2.5\" U.2",
+      "1c5f:1320": "NVMe SSD PBlaze6 6531 1920G AIC",
+      "1c5f:1321": "NVMe SSD PBlaze6 6531 1920G 2.5\" U.2",
+      "1c5f:1330": "NVMe SSD PBlaze6 6531 3840G AIC",
+      "1c5f:1331": "NVMe SSD PBlaze6 6531 3840G 2.5\" U.2",
+      "1c5f:1340": "NVMe SSD PBlaze6 6531 7680G AIC",
+      "1c5f:1341": "NVMe SSD PBlaze6 6531 7680G 2.5\" U.2",
+      "1c5f:1421": "NVMe SSD PBlaze6 6541 1920G 2.5\" U.2",
+      "1c5f:1427": "NVMe SSD PBlaze6 6641 1920G 2.5\" U.2(dual port)",
+      "1c5f:1431": "NVMe SSD PBlaze6 6541 3840G 2.5\" U.2",
+      "1c5f:1437": "NVMe SSD PBlaze6 6641 3840G 2.5\" U.2(dual port)",
+      "1c5f:1441": "NVMe SSD PBlaze6 6541 7680G 2.5\" U.2",
+      "1c5f:1447": "NVMe SSD PBlaze6 6641 7680G 2.5\" U.2(dual port)",
+      "1c5f:4b20": "NVMe SSD PBlaze6 6536 1600G AIC",
+      "1c5f:4b21": "NVMe SSD PBlaze6 6536 1600G 2.5\" U.2",
+      "1c5f:4b25": "NVMe SSD PBlaze6 6536 1600G E1.S",
+      "1c5f:4b27": "NVMe SSD PBlaze6 6636 1600G 2.5\" U.2",
+      "1c5f:4b30": "NVMe SSD PBlaze6 6536 3200G AIC",
+      "1c5f:4b31": "NVMe SSD PBlaze6 6536 3200G 2.5\" U.2",
+      "1c5f:4b35": "NVMe SSD PBlaze6 6536 3200G E1.S",
+      "1c5f:4b37": "NVMe SSD PBlaze6 6636 3200G 2.5\" U.2",
+      "1c5f:4b40": "NVMe SSD PBlaze6 6536 6400G AIC",
+      "1c5f:4b41": "NVMe SSD PBlaze6 6536 6400G 2.5\" U.2",
+      "1c5f:4b47": "NVMe SSD PBlaze6 6636 6400G 2.5\" U.2",
+      "1c5f:5320": "NVMe SSD PBlaze6 6537 1600G AIC",
+      "1c5f:5321": "NVMe SSD PBlaze6 6537 1600G 2.5\" U.2",
+      "1c5f:5330": "NVMe SSD PBlaze6 6537 3200G AIC",
+      "1c5f:5331": "NVMe SSD PBlaze6 6537 3200G 2.5\" U.2",
+      "1c5f:5340": "NVMe SSD PBlaze6 6537 6400G AIC",
+      "1c5f:5341": "NVMe SSD PBlaze6 6537 6400G 2.5\" U.2",
+      "1c5f:5421": "NVMe SSD PBlaze6 6547 1600G 2.5\" U.2",
+      "1c5f:5427": "NVMe SSD PBlaze6 6647 1600G 2.5\" U.2(dual port)",
+      "1c5f:5431": "NVMe SSD PBlaze6 6547 3200G 2.5\" U.2",
+      "1c5f:5437": "NVMe SSD PBlaze6 6647 3200G 2.5\" U.2(dual port)",
+      "1c5f:5441": "NVMe SSD PBlaze6 6547 6400G 2.5\" U.2",
+      "1c5f:5447": "NVMe SSD PBlaze6 6647 6400G 2.5\" U.2(dual port)"
+     }
+    },
+    "0027": {
+     "name": "PBlaze7 7A40/7A46 NVMe SSD",
+     "subsystems": {
+      "1c5f:1421": "NVMe SSD PBlaze7 7A40 1920G 2.5\" U.2",
+      "1c5f:1431": "NVMe SSD PBlaze7 7A40 3840G 2.5\" U.2",
+      "1c5f:1441": "NVMe SSD PBlaze7 7A40 7680G 2.5\" U.2",
+      "1c5f:1631": "NVMe SSD PBlaze7 7A40 3840G 2.5\" U.2",
+      "1c5f:1641": "NVMe SSD PBlaze7 7A40 7680G 2.5\" U.2",
+      "1c5f:1651": "NVMe SSD PBlaze7 7A40 15360G 2.5\" U.2",
+      "1c5f:1661": "NVMe SSD PBlaze7 7A40 30720G 2.5\" U.2",
+      "1c5f:1751": "NVMe SSD PBlaze7 7A40 Ocean 15360G 2.5\" U.2",
+      "1c5f:1761": "NVMe SSD PBlaze7 7A40 Ocean 30720G 2.5\" U.2",
+      "1c5f:1771": "NVMe SSD PBlaze7 7A40 Ocean 61440G 2.5\" U.2",
+      "1c5f:1781": "NVMe SSD PBlaze7 7A40 Ocean 122880G 2.5\" U.2",
+      "1c5f:5431": "NVMe SSD PBlaze7 7A46 3200G 2.5\" U.2",
+      "1c5f:5441": "NVMe SSD PBlaze7 7A46 6400G 2.5\" U.2",
+      "1c5f:5631": "NVMe SSD PBlaze7 7A46 3200G 2.5\" U.2",
+      "1c5f:5641": "NVMe SSD PBlaze7 7A46 6400G 2.5\" U.2",
+      "1c5f:5651": "NVMe SSD PBlaze7 7A46 12800G 2.5\" U.2",
+      "1c5f:5661": "NVMe SSD PBlaze7 7A46 25600G 2.5\" U.2"
+     }
+    },
+    "003d": {
+     "name": "PBlaze5 920/926",
+     "subsystems": {
+      "1c5f:0a30": "NVMe SSD PBlaze5 920 3840G AIC",
+      "1c5f:0a31": "NVMe SSD PBlaze5 920 3840G 2.5\" U.2",
+      "1c5f:0a40": "NVMe SSD PBlaze5 920 7680G AIC",
+      "1c5f:0a41": "NVMe SSD PBlaze5 920 7680G 2.5\" U.2",
+      "1c5f:4a30": "NVMe SSD PBlaze5 926 3200G AIC",
+      "1c5f:4a31": "NVMe SSD PBlaze5 926 3200G 2.5\" U.2",
+      "1c5f:4a40": "NVMe SSD PBlaze5 926 6400G AIC",
+      "1c5f:4a41": "NVMe SSD PBlaze5 926 6400G 2.5\" U.2"
+     }
+    },
+    "003e": {
+     "name": "PBlaze6 6920/6930",
+     "subsystems": {
+      "1c5f:0a31": "NVMe SSD PBlaze6 6920 3840GB 2.5\" U.2",
+      "1c5f:0a41": "NVMe SSD PBlaze6 6920 7680GB 2.5\" U.2",
+      "1c5f:0b31": "NVMe SSD PBlaze6 6930 3840GB 2.5\" U.3",
+      "1c5f:0b41": "NVMe SSD PBlaze6 6930 7680GB 2.5\" U.3",
+      "1c5f:0b51": "NVMe SSD PBlaze6 6930 15360GB 2.5\" U.3",
+      "1c5f:0b61": "NVMe SSD PBlaze6 6930 30720GB 2.5\" U.3",
+      "1c5f:4a31": "NVMe SSD PBlaze6 6920 3200GB 2.5\" U.2",
+      "1c5f:4a41": "NVMe SSD PBlaze6 6920 6400GB 2.5\" U.2",
+      "1c5f:4b41": "NVMe SSD PBlaze6 6936 6400GB 2.5\" U.3",
+      "1c5f:4b51": "NVMe SSD PBlaze6 6936 12800GB 2.5\" U.3",
+      "1c5f:4b61": "NVMe SSD PBlaze6 6936 25600GB 2.5\" U.3"
+     }
+    },
+    "003f": {
+     "name": "PBlaze7 7940/7946 NVMe SSD",
+     "subsystems": {
+      "1c5f:0431": "NVMe SSD PBlaze7 7940 3840G 2.5\" U.2",
+      "1c5f:0441": "NVMe SSD PBlaze7 7940 7680G 2.5\" U.2",
+      "1c5f:0451": "NVMe SSD PBlaze7 7940 15360G 2.5\" U.2",
+      "1c5f:0c31": "NVMe SSD PBlaze7 7940 3840G 2.5\" U.2",
+      "1c5f:0c41": "NVMe SSD PBlaze7 7940 7680G 2.5\" U.2",
+      "1c5f:0c51": "NVMe SSD PBlaze7 7940 15360G 2.5\" U.2",
+      "1c5f:0c61": "NVMe SSD PBlaze7 7940 30720G 2.5\" U.2",
+      "1c5f:1430": "NVMe SSD PBlaze7 7940 3840G AIC",
+      "1c5f:1431": "NVMe SSD PBlaze7 7940 3840G 2.5\" U.2",
+      "1c5f:1435": "NVMe SSD PBlaze7 7940 3840G E1.S",
+      "1c5f:1440": "NVMe SSD PBlaze7 7940 7680G AIC",
+      "1c5f:1441": "NVMe SSD PBlaze7 7940 7680G 2.5\" U.2",
+      "1c5f:1445": "NVMe SSD PBlaze7 7940 7680G E1.S",
+      "1c5f:1450": "NVMe SSD PBlaze7 7940 15360G AIC",
+      "1c5f:1451": "NVMe SSD PBlaze7 7940 15360G 2.5\" U.2",
+      "1c5f:4431": "NVMe SSD PBlaze7 7946 3200G 2.5\" U.2",
+      "1c5f:4441": "NVMe SSD PBlaze7 7946 6400G 2.5\" U.2",
+      "1c5f:4451": "NVMe SSD PBlaze7 7946 12800G 2.5\" U.2",
+      "1c5f:4c31": "NVMe SSD PBlaze7 7946 3200G 2.5\" U.2",
+      "1c5f:4c41": "NVMe SSD PBlaze7 7946 6400G 2.5\" U.2",
+      "1c5f:4c51": "NVMe SSD PBlaze7 7946 12800G 2.5\" U.2",
+      "1c5f:5430": "NVMe SSD PBlaze7 7946 3200G AIC",
+      "1c5f:5431": "NVMe SSD PBlaze7 7946 3200G 2.5\" U.2",
+      "1c5f:5435": "NVMe SSD PBlaze7 7946 3200G E1.S",
+      "1c5f:5440": "NVMe SSD PBlaze7 7946 6400G AIC",
+      "1c5f:5441": "NVMe SSD PBlaze7 7946 6400G 2.5\" U.2",
+      "1c5f:5445": "NVMe SSD PBlaze7 7946 6400G E1.S",
+      "1c5f:5450": "NVMe SSD PBlaze7 7946 12800G AIC",
+      "1c5f:5451": "NVMe SSD PBlaze7 7946 12800G 2.5\" U.2",
+      "1ea0:2100": "TP2510 Series U.2 NVMe Datacenter SSD(3.84TB)",
+      "1ea0:2101": "TP2511 Series U.2 NVMe Datacenter SSD(3.84TB)",
+      "1ea0:2110": "TP2510 Series E3.S NVMe Datacenter SSD(3.84TB)",
+      "1ea0:2111": "TP2511 Series E3.S NVMe Datacenter SSD(3.84TB)",
+      "1ea0:2200": "TP2510 Series U.2 NVMe Datacenter SSD(7.68TB)",
+      "1ea0:2201": "TP2511 Series U.2 NVMe Datacenter SSD(7.68TB)",
+      "1ea0:2202": "TP2310 Series U.2 NVMe Datacenter SSD(7.68TB)",
+      "1ea0:2210": "TP2510 Series E3.S NVMe Datacenter SSD(7.68TB)",
+      "1ea0:2211": "TP2511 Series E3.S NVMe Datacenter SSD(7.68TB)",
+      "1ea0:2301": "TP2511 Series U.2 NVMe Datacenter SSD (15.36TB)"
+     }
+    },
+    "0540": {
+     "name": "PBlaze4 NVMe SSD",
+     "subsystems": {}
+    }
+   },
+   "name": "Beijing Memblaze Technology Co. Ltd."
+  },
+  "1cb0": {
+   "devices": {
+    "8266": {
+     "name": "SP4 Series SSD",
+     "subsystems": {
+      "1cb0:2021": "SP4 Series OCS U.2 SSD",
+      "1cb0:2121": "SP4 Series ZNS U.2 SSD",
+      "1cb0:2f21": "SP4E Series NVMe U.2 SSD(1920/3840/7680GB)",
+      "1cb0:2f22": "SP4X Series NVMe U.2 SSD(1600/3200/6400GB)"
+     }
+    },
+    "d000": {
+     "name": "Venice NVMe SSD",
+     "subsystems": {
+      "1cb0:2010": "Venice-E Series OCS U.2",
+      "1cb0:2011": "Venice Series OCS U.2",
+      "1cb0:2012": "Venice-X Series OCS U.2",
+      "1cb0:2f10": "Venice-E Series NVMe U.2",
+      "1cb0:2f11": "Venice Series NVMe U.2",
+      "1cb0:2f12": "Venice-X Series NVMe U.2",
+      "1cb0:a010": "Venice-E Series OCS AIC",
+      "1cb0:a012": "Venice-X Series OCS AIC",
+      "1cb0:af10": "Venice-E Series NVMe AIC",
+      "1cb0:af12": "Venice-X Series NVMe AIC"
+     }
+    }
+   },
+   "name": "Shannon Systems"
+  },
+  "1cc1": {
+   "devices": {
+    "1202": {
+     "name": "IM2P32A8 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "1602": {
+     "name": "LEGEND 900 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "2263": {
+     "name": "XPG SX6000 Lite NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "32a8": {
+     "name": "SM2P32A8 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "33f3": {
+     "name": "IM2P33F3 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "33f4": {
+     "name": "IM2P33F4 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "33f8": {
+     "name": "IM2P33F8 series NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "413d": {
+     "name": "SM2P41D3Q NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "41b8": {
+     "name": "IM2P41B8P NVMe SSD",
+     "subsystems": {}
+    },
+    "41c3": {
+     "name": "SM2P41C3 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "41c8": {
+     "name": "SM2P41C8 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "41d3": {
+     "name": "SM2P41D3 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "41d8": {
+     "name": "SM2P41D8Q NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5236": {
+     "name": "XPG GAMMIX S70 BLADE NVMe SSD",
+     "subsystems": {}
+    },
+    "5350": {
+     "name": "XPG GAMMIX S50, S50 Lite NVMe SSD",
+     "subsystems": {}
+    },
+    "5370": {
+     "name": "GAMMIX S70 BLADE, PS5 PREMIUM NVMe SSD",
+     "subsystems": {}
+    },
+    "5762": {
+     "name": "FALCON, GAMMIX S41, SPECTRIX S40G NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5763": {
+     "name": "XPG GAMMIX S5 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5766": {
+     "name": "XPG GAMMIXS1 1L, XPG GAMMIX S5, LEGEND 710 / 740, SWORDFISH NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5772": {
+     "name": "LEGEND 850 LITE NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "612a": {
+     "name": "LEGEND 750 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "613a": {
+     "name": "ATOM 50, LEGEND 840 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "621a": {
+     "name": "LEGEND 850 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "622a": {
+     "name": "LEGEND 960 NVMe SSD",
+     "subsystems": {}
+    },
+    "623a": {
+     "name": "LEGEND 710 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "624a": {
+     "name": "LEGEND 700, XPG GAMMIX S20 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "625a": {
+     "name": "LEGEND 850 LITE NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "627a": {
+     "name": "LEGEND 800 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "628a": {
+     "name": "LEGEND 800 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "631a": {
+     "name": "LEGEND 970 NVMe SSD",
+     "subsystems": {}
+    },
+    "633a": {
+     "name": "LEGEND 900 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "634c": {
+     "name": "LEGEND 820 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "635a": {
+     "name": "XPG GAMMIX S60 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "636a": {
+     "name": "XPG GAMMIX S55 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "641a": {
+     "name": "LEGEND 970 PRO NVMe SSD",
+     "subsystems": {}
+    },
+    "642a": {
+     "name": "XPG GAMMIX S50 CORE NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "646a": {
+     "name": "XPG MARS 980 BLADE NVMe SSD",
+     "subsystems": {}
+    },
+    "647a": {
+     "name": "XPG MARS 980 PRO NVMe SSD",
+     "subsystems": {}
+    },
+    "648a": {
+     "name": "LEGEND 860 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "64ba": {
+     "name": "LEGEND 900 PRO NVMe SSD",
+     "subsystems": {}
+    },
+    "8201": {
+     "name": "XPG SX8200 Pro PCIe Gen3x4 M.2 2280 Solid State Drive",
+     "subsystems": {}
+    },
+    "a010": {
+     "name": "TRUSTA T7P5 NVMe SSD",
+     "subsystems": {}
+    },
+    "a120": {
+     "name": "TRUSTA T5P4B NVMe SSD",
+     "subsystems": {}
+    }
+   },
+   "name": "ADATA Technology Co., Ltd."
+  },
+  "1cc4": {
+   "devices": {
+    "1203": {
+     "name": "NVMe SSD Controller UHXXXa series",
+     "subsystems": {
+      "1cc4:a121": "NVMe SSD UHXXXa series U.2 960GB",
+      "1cc4:a122": "NVMe SSD UHXXXa series U.2 1920GB",
+      "1cc4:a123": "NVMe SSD UHXXXa series U.2 3840GB",
+      "1cc4:a124": "NVMe SSD UHXXXa series U.2 7680GB",
+      "1cc4:a125": "NVMe SSD UHXXXa series U.2 15360GB",
+      "1cc4:a211": "NVMe SSD UHXXXa series U.2 800GB",
+      "1cc4:a212": "NVMe SSD UHXXXa series U.2 1600GB",
+      "1cc4:a213": "NVMe SSD UHXXXa series U.2 3200GB",
+      "1cc4:a214": "NVMe SSD UHXXXa series U.2 6400GB",
+      "1cc4:e122": "NVMe SSD UH711a series U.2 1920GB",
+      "1cc4:e123": "NVMe SSD UH711a series U.2 3840GB",
+      "1cc4:e124": "NVMe SSD UH711a series U.2 7680GB"
+     }
+    },
+    "17a9": {
+     "name": "RPITJ1TBVME2HWD NVMe SSD 1024GB",
+     "subsystems": {}
+    },
+    "17aa": {
+     "name": "AH631 PCIe 3.0 NVMe SSD 512GB",
+     "subsystems": {}
+    },
+    "17ab": {
+     "name": "AH631 PCIe 3.0 NVMe SSD 256GB",
+     "subsystems": {}
+    },
+    "2263": {
+     "name": "AM611 PCIe 3.0 x2 NVMe SSD 256GB",
+     "subsystems": {}
+    },
+    "5008": {
+     "name": "AM610 PCIe 3.0 x2 NVMe SSD 128GB, 256GB",
+     "subsystems": {}
+    },
+    "5012": {
+     "name": "AH530 PCIe 3.0 NVMe SSD 512GB",
+     "subsystems": {}
+    },
+    "5201": {
+     "name": "AM520 PCIe 3.0 NVMe SSD 128GB",
+     "subsystems": {}
+    },
+    "5212": {
+     "name": "AM521 PCIe 3.0 NVMe SSD 256GB",
+     "subsystems": {}
+    },
+    "5414": {
+     "name": "AM541 PCIe 4.0 NVMe SSD 1024GB",
+     "subsystems": {}
+    },
+    "6020": {
+     "name": "NVMe SSD Controller UM3X1X series",
+     "subsystems": {
+      "1cc4:8320": "NVMe SSD UM301a M.2 480GB",
+      "1cc4:8321": "NVMe SSD UM301a M.2 960GB",
+      "1cc4:8322": "NVMe SSD UM301a M.2 1.92TB",
+      "1ea0:8320": "NVMe SSD TM1300 M.2 480GB",
+      "1ea0:8322": "NVMe SSD TM1300 M.2 1.92TB"
+     }
+    },
+    "6201": {
+     "name": "AM620 PCIe 3.0 NVMe SSD 128GB",
+     "subsystems": {}
+    },
+    "6202": {
+     "name": "AM620 PCIe 3.0 NVMe SSD 256GB",
+     "subsystems": {}
+    },
+    "6203": {
+     "name": "AM620 PCIe 3.0 NVMe SSD 512GB",
+     "subsystems": {}
+    },
+    "6204": {
+     "name": "AM620 PCIe 3.0 NVMe SSD 1024GB",
+     "subsystems": {}
+    },
+    "6302": {
+     "name": "AM630 PCIe 4.0 NVMe SSD 256GB",
+     "subsystems": {}
+    },
+    "6303": {
+     "name": "AM630 PCIe 4.0 x4 NVMe SSD Controller",
+     "subsystems": {}
+    },
+    "6304": {
+     "name": "AM630 PCIe 4.0 NVMe SSD 1024GB",
+     "subsystems": {}
+    },
+    "634c": {
+     "name": "LEGEND 820 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "635a": {
+     "name": "GAMMIX S60 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "660b": {
+     "name": "AH660 PCIe 4.0 NVMe SSD 512GB",
+     "subsystems": {}
+    },
+    "660c": {
+     "name": "AH660 PCIe 4.0 NVMe SSD",
+     "subsystems": {}
+    },
+    "6a01": {
+     "name": "AM620 PCIe 3.0 NVMe SSD 128GB",
+     "subsystems": {}
+    },
+    "6a02": {
+     "name": "AM6A0 PCIe 4.0 NVMe SSD 256GB",
+     "subsystems": {}
+    },
+    "6a03": {
+     "name": "RPETJ512MKP1QDQ PCIe 4.0 NVMe SSD 512GB (DRAM-less)",
+     "subsystems": {}
+    },
+    "6a04": {
+     "name": "AM6A0 PCIe 4.0 NVMe SSD 1024GB (DRAM-less)",
+     "subsystems": {}
+    },
+    "6a13": {
+     "name": "RPJYJ512MKN1QWQ PCIe 4.0 NVMe SSD 512GB (DRAM-less)",
+     "subsystems": {}
+    },
+    "6a14": {
+     "name": "AM6A1 PCIe 4.0 NVMe SSD 1024GB (DRAM-less)",
+     "subsystems": {}
+    },
+    "6b02": {
+     "name": "AM6B0 PCIe 4.0 NVMe SSD 256GB (DRAM-less)",
+     "subsystems": {}
+    },
+    "6b03": {
+     "name": "RPETJ512MMW1MDQ PCIe 4.0 NVMe SSD 512GB (DRAM-less)",
+     "subsystems": {}
+    },
+    "6b04": {
+     "name": "AM6B0 PCIe 4.0 NVMe SSD",
+     "subsystems": {}
+    },
+    "6b13": {
+     "name": "AM6B1 PCIe 4.0 NVMe SSD 512GB (DRAM-less)",
+     "subsystems": {}
+    },
+    "6b14": {
+     "name": "RPJYJ1T24MLR1HWY PCIe 4.0 NVMe SSD 1024GB (DRAM-less)",
+     "subsystems": {}
+    },
+    "6c13": {
+     "name": "AM6C1 PCIe 4.0 NVMe SSD",
+     "subsystems": {}
+    },
+    "6d03": {
+     "name": "AM6DX PCIe 5.0 NVMe SSD",
+     "subsystems": {}
+    },
+    "7030": {
+     "name": "NVMe SSD Controller UH7X3X series",
+     "subsystems": {
+      "1cc4:7112": "NVMe SSD UH733a U.2 1.6TB",
+      "1cc4:7113": "NVMe SSD UH733a U.2 3.2TB",
+      "1cc4:7114": "NVMe SSD UH733a U.2 6.4TB",
+      "1cc4:7115": "NVMe SSD UH733a U.2 12.8TB",
+      "1cc4:7122": "NVMe SSD UH713a U.2 1.92TB",
+      "1cc4:7123": "NVMe SSD UH713a U.2 3.84TB",
+      "1cc4:7124": "NVMe SSD UH713a U.2 7.68TB",
+      "1cc4:7125": "NVMe SSD UH713a U.2 15.36TB"
+     }
+    },
+    "8030": {
+     "name": "NVMe SSD Controller UH8X2X/UH7X2X series",
+     "subsystems": {
+      "1cc4:1122": "NVMe SSD UH812a U.2 1.92TB",
+      "1cc4:1123": "NVMe SSD UH812a U.2 3.84TB",
+      "1cc4:1124": "NVMe SSD UH812a U.2 7.68TB",
+      "1cc4:1125": "NVMe SSD UH812a U.2 15.36TB",
+      "1cc4:1222": "NVMe SSD UH812a E3.S 1.92TB",
+      "1cc4:1223": "NVMe SSD UH812a E3.S 3.84TB",
+      "1cc4:1224": "NVMe SSD UH812a E3.S 7.68TB",
+      "1cc4:1225": "NVMe SSD UH812a E3.S 15.36TB",
+      "1cc4:2112": "NVMe SSD UH832a U.2 1.6TB",
+      "1cc4:2113": "NVMe SSD UH832a U.2 3.2TB",
+      "1cc4:2114": "NVMe SSD UH832a U.2 6.4TB",
+      "1cc4:2115": "NVMe SSD UH832a U.2 12.8TB",
+      "1cc4:2212": "NVMe SSD UH832a E3.S 1.6TB",
+      "1cc4:2213": "NVMe SSD UH832a E3.S 3.2TB",
+      "1cc4:2214": "NVMe SSD UH832a E3.S 6.4TB",
+      "1cc4:2215": "NVMe SSD UH832a E3.S 12.8TB",
+      "1cc4:3122": "NVMe SSD UH712a U.2 1.92TB",
+      "1cc4:3123": "NVMe SSD UH712a U.2 3.84TB",
+      "1cc4:3124": "NVMe SSD UH712a U.2 7.68TB",
+      "1cc4:3125": "NVMe SSD UH712a U.2 15.36TB",
+      "1cc4:5125": "NVMe SSD UH802a U.2 15.36TB",
+      "1cc4:5126": "NVMe SSD UH802a U.2 30.72TB",
+      "1cc4:5127": "NVMe SSD UH802a U.2 61.44TB",
+      "1cc4:6112": "NVMe SSD UH832c U.2 1.6TB",
+      "1cc4:6113": "NVMe SSD UH832c U.2 3.2TB",
+      "1cc4:6114": "NVMe SSD UH832c U.2 6.4TB",
+      "1cc4:6115": "NVMe SSD UH832c U.2 12.8TB",
+      "1cc4:6122": "NVMe SSD UH812c U.2 1.92TB",
+      "1cc4:6123": "NVMe SSD UH812c U.2 3.84TB",
+      "1cc4:6124": "NVMe SSD UH812c U.2 7.68TB",
+      "1cc4:6125": "NVMe SSD UH812c U.2 15.36TB",
+      "1cc4:6214": "NVMe SSD UH832c E3.S 6.4TB",
+      "1cc4:6215": "NVMe SSD UH832c E3.S 12.8TB",
+      "1cc4:6224": "NVMe SSD UH812c E3.S 7.68TB",
+      "1cc4:6225": "NVMe SSD UH812c E3.S 15.36TB",
+      "1ea0:4124": "NVMe SSD TP3511 U.2 7.68TB",
+      "1ea0:4125": "NVMe SSD TP3511 U.2 15.36TB",
+      "1ea0:4224": "NVMe SSD TP3511 E3.S 7.68TB",
+      "1ea0:4225": "NVMe SSD TP3511 E3.S 15.36TB",
+      "1ea0:5125": "NVMe SSD TP3310 U.2 15.36TB",
+      "1ea0:5126": "NVMe SSD TP3310 U.2 30.72TB",
+      "1ea0:5127": "NVMe SSD TP3310 U.2 61.44TB",
+      "1ea0:6124": "NVMe SSD TP3510 U.2 7.68TB",
+      "1ea0:6125": "NVMe SSD TP3510 U.2 15.36TB",
+      "1ea0:6224": "NVMe SSD TP3510 E3.S 7.68TB",
+      "1ea0:6225": "NVMe SSD TP3510 E3.S 15.36TB",
+      "1ea0:7124": "NVMe SSD TP3512 U.2 7.68TB",
+      "1ea0:7125": "NVMe SSD TP3512 U.2 15.36TB"
+     }
+    }
+   },
+   "name": "Shenzhen Unionmemory Information System Ltd."
+  },
+  "1cc7": {
+   "devices": {
+    "0200": {
+     "name": "RMS-200 PCIe NVMe SSD",
+     "subsystems": {}
+    },
+    "0250": {
+     "name": "RMS-250 U.2 NVMe SSD",
+     "subsystems": {}
+    }
+   },
+   "name": "Radian Memory Systems Inc."
+  },
+  "1cfd": {
+   "devices": {
+    "6300": {
+     "name": "MX6300 series PCIe x8 NVMe SSD",
+     "subsystems": {}
+    }
+   },
+   "name": "Mangstor"
+  },
+  "1d0f": {
+   "devices": {
+    "8061": {
+     "name": "NVMe EBS Controller",
+     "subsystems": {}
+    },
+    "cd01": {
+     "name": "NVMe SSD Controller",
+     "subsystems": {}
+    }
+   },
+   "name": "Amazon.com, Inc."
+  },
+  "1d1d": {
+   "devices": {
+    "1f1f": {
+     "name": "QEMU NVM Express LightNVM Controller",
+     "subsystems": {}
+    },
+    "2807": {
+     "name": "8800 series NVMe SSD",
+     "subsystems": {}
+    }
+   },
+   "name": "CNEX Labs"
+  },
+  "1d40": {
+   "devices": {
+    "5501": {
+     "name": "XC100C55-xxxx NVME SSD",
+     "subsystems": {}
+    },
+    "5c01": {
+     "name": "XC100C5C-xxxx, XC100E5C-xxxx NVME SSD",
+     "subsystems": {}
+    },
+    "b100": {
+     "name": "PV100C55-xxxx NVME SSD",
+     "subsystems": {}
+    }
+   },
+   "name": "Techman Electronics (Changshu) Co., Ltd."
+  },
+  "1d63": {
+   "devices": {
+    "3801": {
+     "name": "SA3801 PCIe 3.0 x2 NVMe controller",
+     "subsystems": {}
+    }
+   },
+   "name": "StorArt Technology Co., Ltd"
+  },
+  "1d78": {
+   "devices": {
+    "1512": {
+     "name": "TAI NVMe Controller",
+     "subsystems": {
+      "1d78:2004": "D5437 HHHL 2TB NVMe SSD",
+      "1d78:2006": "D5437 HHHL 4TB NVMe SSD",
+      "1d78:2008": "D5437 HHHL 8TB NVMe SSD",
+      "1d78:2104": "D5437 U.2 2TB NVMe SSD",
+      "1d78:2106": "D5437 U.2 4TB NVMe SSD",
+      "1d78:2108": "D5437 U.2 8TB NVMe SSD",
+      "1d78:3003": "D5457 HHHL 1.6TB NVMe SSD",
+      "1d78:3005": "D5457 HHHL 3.2TB NVMe SSD",
+      "1d78:3007": "D5457 HHHL 6.4TB NVMe SSD",
+      "1d78:3103": "D5457 U.2 1.6TB NVMe SSD",
+      "1d78:3105": "D5457 U.2 3.2TB NVMe SSD",
+      "1d78:3107": "D5457 U.2 6.4TB NVMe SSD",
+      "1d78:3108": "D5437 U.2 7.68TB NVMe SSD",
+      "1d78:5003": "D5447 HHHL 1.6TB NVMe SSD",
+      "1d78:5004": "D5427 HHHL 1.92TB NVMe SSD",
+      "1d78:5005": "D5447 HHHL 3.2TB NVMe SSD",
+      "1d78:5006": "D5427 HHHL 3.84TB NVMe SSD",
+      "1d78:5007": "D5447 HHHL 6.4TB NVMe SSD",
+      "1d78:5008": "D5427 HHHL 7.68TB NVMe SSD",
+      "1d78:5103": "D5447 U.2 1.6TB NVMe SSD",
+      "1d78:5105": "D5447 U.2 3.2TB NVMe SSD",
+      "1d78:5106": "AF3UP34DTCUN3T8B SSD",
+      "1d78:5107": "D5447 U.2 6.4TB NVMe SSD",
+      "1d78:5114": "D5427 U.2 1.92TB NVMe SSD",
+      "1d78:5116": "D5427 U.2 3.84TB NVMe SSD",
+      "1d78:5118": "D5427 U.2 7.68TB NVMe SSD",
+      "1d78:8107": "D5457 U.2 6.4TB NVMe SSD"
+     }
+    },
+    "1513": {
+     "name": "DERA MENG NVMe Controller",
+     "subsystems": {
+      "1d78:6015": "D6456 HHHL 3.2TB NVMe SSD",
+      "1d78:6016": "D6436 HHHL 3.84TB NVMe SSD",
+      "1d78:6017": "D6456 HHHL 6.4TB NVMe SSD",
+      "1d78:6018": "D6436 HHHL 7.68TB NVMe SSD",
+      "1d78:6105": "D6457 U.2 3.2TB NVMe SSD",
+      "1d78:6106": "D6437 U.2 3.84TB NVMe SSD",
+      "1d78:6107": "D6457 U.2 6.4TB NVMe SSD",
+      "1d78:6108": "D6437 U.2 7.68TB NVMe SSD",
+      "1d78:6115": "D6456 U.2 3.2TB NVMe SSD",
+      "1d78:6116": "D6436 U.2 3.84TB NVMe SSD",
+      "1d78:6117": "D6456 U.2 6.4TB NVMe SSD",
+      "1d78:6118": "D6436 U.2 7.68TB NVMe SSD"
+     }
+    },
+    "1515": {
+     "name": "DERA EMEI NVMe Controller",
+     "subsystems": {
+      "1d78:7002": "D7436 HHHL 1.92TB NVMe SSD",
+      "1d78:7003": "D7456 HHHL 1.6TB NVMe SSD",
+      "1d78:7004": "D7436 HHHL 3.84TB NVMe SSD",
+      "1d78:7005": "D7456 HHHL 3.2TB NVMe SSD",
+      "1d78:7007": "D7456 HHHL 6.4TB NVMe SSD",
+      "1d78:7008": "D7436 HHHL 7.68TB NVMe SSD",
+      "1d78:7009": "D7456 HHHL 12.8TB NVMe SSD",
+      "1d78:700a": "D7436 HHHL 15.36TB NVMe SSD",
+      "1d78:7102": "D7436 U.2 15mm 1.92TB NVMe SSD",
+      "1d78:7103": "D7456 U.2 15mm 1.6TB NVMe SSD",
+      "1d78:7104": "D7436 U.2 15mm 3.84TB NVMe SSD",
+      "1d78:7105": "D7456 U.2 15mm 3.2TB NVMe SSD",
+      "1d78:7107": "D7456 U.2 15mm 6.4TB NVMe SSD",
+      "1d78:7108": "D7436 U.2 15mm 7.68TB NVMe SSD",
+      "1d78:7109": "D7456 U.2 15mm 12.8TB NVMe SSD",
+      "1d78:710a": "D7436 U.2 15mm 15.36TB NVMe SSD",
+      "1d78:7143": "D7556 U.2 15mm 1.6TB dual port NVMe SSD",
+      "1d78:7144": "D7536 U.2 15mm 1.92TB dual port NVMe SSD",
+      "1d78:7145": "D7556 U.2 15mm 3.2TB dual port NVMe SSD",
+      "1d78:7146": "D7536 U.2 15mm 3.84TB dual port NVMe SSD",
+      "1d78:7147": "D7556 U.2 15mm 6.4TB dual port NVMe SSD",
+      "1d78:7148": "D7536 U.2 15mm 7.68TB dual port NVMe SSD",
+      "1d78:7149": "D7556 U.2 15mm 12.8TB dual port NVMe SSD",
+      "1d78:714a": "D7536 U.2 15mm 15.36TB dual port NVMe SSD",
+      "1d78:7202": "Aliflash V2 U.2 15mm 1.92TB NVMe SSD",
+      "1d78:7204": "Aliflash V2 U.2 15mm 3.84TB NVMe SSD",
+      "1d78:7208": "Aliflash V2 U.2 15mm 7.68TB NVMe SSD"
+     }
+    },
+    "1516": {
+     "name": "DERA D8436/D8456 NVMe SSD",
+     "subsystems": {}
+    }
+   },
+   "name": "DERA Storage"
+  },
+  "1d79": {
+   "devices": {
+    "2262": {
+     "name": "NVMe PCIe SSD 220S/MTE662T2",
+     "subsystems": {}
+    },
+    "2263": {
+     "name": "NVMe PCIe SSD 110S/112S/120S/MTE300S/MTE400S/MTE652T2 (DRAM-less)",
+     "subsystems": {}
+    },
+    "2264": {
+     "name": "NVMe PCIe SSD 250H",
+     "subsystems": {}
+    },
+    "2267": {
+     "name": "NVMe PCIe SSD 220S/240S/MTE710T",
+     "subsystems": {}
+    },
+    "2268": {
+     "name": "NVMe PCIe SSD 245S (DRAM-less)",
+     "subsystems": {}
+    },
+    "2269": {
+     "name": "NVMe PCIe SSD 410S (DRAM-less)",
+     "subsystems": {}
+    },
+    "5766": {
+     "name": "NVMe PCIe SSD 110Q (DRAM-less)",
+     "subsystems": {}
+    }
+   },
+   "name": "Transcend Information, Inc."
+  },
+  "1d82": {
+   "devices": {
+    "0101": {
+     "name": "Codensity D400 SSD",
+     "subsystems": {}
+    },
+    "0102": {
+     "name": "Codensity D408 PCIe Gen4 NVMe SSD",
+     "subsystems": {}
+    }
+   },
+   "name": "NETINT Technologies Inc."
+  },
+  "1d89": {
+   "devices": {
+    "0280": {
+     "name": "PCIe NVMe SSD",
+     "subsystems": {}
+    },
+    "ef25": {
+     "name": "GDRAMARS GMT1000 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    }
+   },
+   "name": "YEESTOR Microelectronics Co., Ltd"
+  },
+  "1d97": {
+   "devices": {
+    "0304": {
+     "name": "HIKSEMI FUTURE Lite NVMe SSD",
+     "subsystems": {}
+    },
+    "1062": {
+     "name": "Lexar NM710 NVME SSD",
+     "subsystems": {}
+    },
+    "1160": {
+     "name": "FORESEE P900 BGA NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "1202": {
+     "name": "Lexar NM610 PRO NVME SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "12e4": {
+     "name": "ORCA 4836 Series eSSD",
+     "subsystems": {}
+    },
+    "1602": {
+     "name": "Lexar NM790 / Patriot Viper VP4300 Lite NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "1806": {
+     "name": "Lexar NM990 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "1d97": {
+     "name": "Lexar NM620 NVME SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "2263": {
+     "name": "SM2263EN/SM2263XT-based OEM NVME SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "2268": {
+     "name": "FORESEE XP2300F001T / Lexar NM790 NVME SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "2269": {
+     "name": "FORESEE XP2000, Lexar NM760 NVME SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "2508": {
+     "name": "Lexar NM1090 PRO NVMe SSD",
+     "subsystems": {}
+    },
+    "5216": {
+     "name": "FORESEE XP1000 / Lexar Professional CFexpress Type B Gold series, NM620 PCIe NVME SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5220": {
+     "name": "FORESEE XP2100 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5236": {
+     "name": "Lexar NM800 PRO NVME SSD",
+     "subsystems": {}
+    },
+    "5772": {
+     "name": "Lexar NQ700 NVME SSD (DRAM-less)",
+     "subsystems": {}
+    }
+   },
+   "name": "Shenzhen Longsys Electronics Co., Ltd."
+  },
+  "1dad": {
+   "devices": {
+    "0108": {
+     "name": "FC50, FC100, FC200 DPU NVMeoF Adapters",
+     "subsystems": {}
+    }
+   },
+   "name": "Fungible"
+  },
+  "1dbb": {
+   "devices": {
+    "1021": {
+     "name": "ICS-8100 NVMe SSD",
+     "subsystems": {}
+    }
+   },
+   "name": "NGD Systems, Inc."
+  },
+  "1dbe": {
+   "devices": {
+    "5208": {
+     "name": "NVMe SSD Controller IG5208 [Shasta] (DRAM-less)",
+     "subsystems": {}
+    },
+    "5216": {
+     "name": "NVMe SSD Controller IG5216 [Shasta+] (DRAM-less)",
+     "subsystems": {}
+    },
+    "5220": {
+     "name": "NVMe SSD Controller IG5220 [RainierQX] (DRAM-less)",
+     "subsystems": {}
+    },
+    "5222": {
+     "name": "NVMe SSD Controller IG5222 [RainierX] (DRAM-less)",
+     "subsystems": {}
+    },
+    "5236": {
+     "name": "NVMe SSD Controller IG5236 [RainierPC]",
+     "subsystems": {
+      "1dbe:4001": "Dongting-B1 DC SSD M.2 480GB",
+      "1dbe:4002": "Dongting-B1 DC SSD M.2 960GB"
+     }
+    },
+    "5636": {
+     "name": "NVMe DC SSD IG5636",
+     "subsystems": {
+      "1dbe:0001": "Dongting-N1 DC SSD U.2 1600GB",
+      "1dbe:0002": "Dongting-N1 DC SSD U.2 1920GB",
+      "1dbe:0003": "Dongting-N1 DC SSD U.2 3200GB",
+      "1dbe:0004": "Dongting-N1 DC SSD U.2 3840GB",
+      "1dbe:0005": "Dongting-N1 DC SSD U.2 6400GB",
+      "1dbe:0006": "Dongting-N1 DC SSD U.2 7680GB",
+      "1dbe:1001": "Donghu-Z1 DC ZNS SSD U.2 4000GB",
+      "1dbe:1002": "Donghu-Z1 DC ZNS SSD U.2 8000GB"
+     }
+    },
+    "5638": {
+     "name": "NVMe DC SSD IG5638",
+     "subsystems": {
+      "1dbe:2001": "Dongting-N2 DC SSD U.2 1600GB",
+      "1dbe:2002": "Dongting-N2 DC SSD U.2 1920GB",
+      "1dbe:2003": "Dongting-N2 DC SSD U.2 3200GB",
+      "1dbe:2004": "Dongting-N2 DC SSD U.2 3840GB",
+      "1dbe:2005": "Dongting-N2 DC SSD U.2 6400GB",
+      "1dbe:2006": "Dongting-N2 DC SSD U.2 7680GB",
+      "1dbe:2118": "Dongting-N2Q DC QLC SSD U.2 15360GB",
+      "1dbe:2190": "Dongting-N2Q DC QLC SSD U.2 30720GB",
+      "1dbe:2201": "Dongting-N2 2000 DC SSD U.2 1600GB",
+      "1dbe:2202": "Dongting-N2 2000 DC SSD U.2 1920GB",
+      "1dbe:2203": "Dongting-N2 2000 DC SSD U.2 3200GB",
+      "1dbe:2204": "Dongting-N2 2000 DC SSD U.2 3840GB",
+      "1dbe:2205": "Dongting-N2 2000 DC SSD U.2 6400GB",
+      "1dbe:2206": "Dongting-N2 2000 DC SSD U.2 7680GB",
+      "1dbe:3001": "Donghu-Z2 DC ZNS SSD U.2 4000GB",
+      "1dbe:3002": "Donghu-Z2 DC ZNS SSD U.2 8000GB"
+     }
+    },
+    "5666": {
+     "name": "NVMe SSD Controller IG5666",
+     "subsystems": {}
+    },
+    "5668": {
+     "name": "NVMe PCIe 5.0 DC SSD",
+     "subsystems": {
+      "1dbe:5003": "Dongting-N3 DC SSD U.2 3200GB",
+      "1dbe:5004": "Dongting-N3 DC SSD U.2 3840GB",
+      "1dbe:5005": "Dongting-N3 DC SSD U.2 6400GB",
+      "1dbe:5006": "Dongting-N3 DC SSD U.2 7680GB",
+      "1dbe:5007": "Dongting-N3 DC SSD U.2 12800GB",
+      "1dbe:5008": "Dongting-N3 DC SSD U.2 15360GB",
+      "1dbe:5009": "Dongting-N3 DC SSD U.2 25600GB",
+      "1dbe:5080": "Dongting-N3 DC SSD U.2 30720GB",
+      "1dbe:5118": "Dongting-N3Q DC QLC SSD U.2 15360GB",
+      "1dbe:5190": "Dongting-N3Q DC QLC SSD U.2 30720GB",
+      "1dbe:5192": "Dongting-N3Q DC QLC SSD U.2 61440GB",
+      "1dbe:5803": "Dongting-N3 DC SSD E3.S 3200GB",
+      "1dbe:5804": "Dongting-N3 DC SSD E3.S 3840GB",
+      "1dbe:5805": "Dongting-N3 DC SSD E3.S 6400GB",
+      "1dbe:5806": "Dongting-N3 DC SSD E3.S 7680GB",
+      "1dbe:5807": "Dongting-N3 DC SSD E3.S 12800GB",
+      "1dbe:5808": "Dongting-N3 DC SSD E3.S 15360GB",
+      "1dbe:5809": "Dongting-N3 DC SSD E3.S 25600GB",
+      "1dbe:5880": "Dongting-N3 DC SSD E3.S 30720GB",
+      "1dbe:6116": "Dongting-Z3Q DC ZNS SSD U.2 7680GB"
+     }
+    },
+    "5669": {
+     "name": "NVMe SSD Controller IG5669 [Tacoma]",
+     "subsystems": {}
+    }
+   },
+   "name": "INNOGRIT Corporation"
+  },
+  "1dc5": {
+   "devices": {
+    "4081": {
+     "name": "FC4121 PCIe 4.0 NVMe controller [DELTA]",
+     "subsystems": {}
+    },
+    "5161": {
+     "name": "FC5161 PCIe 5.0 NVMe controller [ECHO]",
+     "subsystems": {}
+    },
+    "6150": {
+     "name": "FC3081 PCIe 3.0 NVMe controller [BRAVO]",
+     "subsystems": {}
+    }
+   },
+   "name": "FADU Inc."
+  },
+  "1dd4": {
+   "devices": {
+    "0010": {
+     "name": "N-10m2 NVMe SSD",
+     "subsystems": {}
+    },
+    "0020": {
+     "name": "EN-20 BGA NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "0030": {
+     "name": "N-30m2 NVMe SSD",
+     "subsystems": {}
+    },
+    "0036": {
+     "name": "N-36m2 NVMe SSD",
+     "subsystems": {}
+    },
+    "1200": {
+     "name": "D1200 NVMe SSD",
+     "subsystems": {}
+    },
+    "3000": {
+     "name": "N3000 NVMe SSD",
+     "subsystems": {}
+    },
+    "3002": {
+     "name": "N3002 NVMe SSD",
+     "subsystems": {}
+    },
+    "3602": {
+     "name": "N3602 NVMe SSD",
+     "subsystems": {}
+    },
+    "4131": {
+     "name": "A1x NVMe SSD Series",
+     "subsystems": {}
+    },
+    "4432": {
+     "name": "D2x NVMe SSD Series",
+     "subsystems": {}
+    },
+    "5200": {
+     "name": "N5200 NVMe SSD",
+     "subsystems": {}
+    }
+   },
+   "name": "Swissbit AG"
+  },
+  "1dd8": {
+   "devices": {
+    "1005": {
+     "name": "DSC NVMe Controller",
+     "subsystems": {
+      "1dd8:100e": "Distributed Services Card",
+      "1dd8:5001": "DSC2-200 50/100/200G 2-port 32G RAM 64G eMMC G2 Services Card",
+      "1dd8:5003": "DSC2-200 50/100/200G 2-port 32G RAM 64G eMMC G2 Services Card",
+      "1dd8:5008": "DSC25v2 10/25G 2p 32GB Spl Card",
+      "1dd8:5009": "DSC2-25 10/25G 2p SFP56 DPU",
+      "1dd8:500a": "DSC2-200 50/100/200G 2-port 32G RAM 64G eMMC G2 DPU R2",
+      "1dd8:500b": "DSC2-200 50/100/200G 2-port 32G RAM 64G eMMC G2 DPU",
+      "1dd8:500c": "DSC2-200 50/100/200G 2-port 32G RAM 64G eMMC G2 DPU R3",
+      "1dd8:500d": "DSC2-200 50/100/200G 2-port 32G RAM 64G eMMC G2 DPU R4",
+      "1dd8:500e": "DSC2-200 50/100/200G 2-port 32G RAM 64G eMMC G2 DPU R5",
+      "1dd8:500f": "DSC2-200 50/100/200G 2-port 32G RAM 64G eMMC G2 DPU R4-T",
+      "1dd8:5200": "DSC3-2Q400 100/200/400G 2-port DDR5 128G eMMC G3 Services Card"
+     }
+    },
+    "1006": {
+     "name": "DSC NVMe Controller VF",
+     "subsystems": {
+      "1dd8:100e": "Distributed Services Card",
+      "1dd8:5001": "DSC2-200 50/100/200G 2-port 32G RAM 64G eMMC G2 Services Card",
+      "1dd8:5003": "DSC2-200 50/100/200G 2-port 32G RAM 64G eMMC G2 Services Card",
+      "1dd8:5008": "DSC25v2 10/25G 2p 32GB Spl Card",
+      "1dd8:5009": "DSC2-25 10/25G 2p SFP56 DPU",
+      "1dd8:500a": "DSC2-200 50/100/200G 2-port 32G RAM 64G eMMC G2 DPU R2",
+      "1dd8:500b": "DSC2-200 50/100/200G 2-port 32G RAM 64G eMMC G2 DPU",
+      "1dd8:500c": "DSC2-200 50/100/200G 2-port 32G RAM 64G eMMC G2 DPU R3",
+      "1dd8:500d": "DSC2-200 50/100/200G 2-port 32G RAM 64G eMMC G2 DPU R4",
+      "1dd8:500e": "DSC2-200 50/100/200G 2-port 32G RAM 64G eMMC G2 DPU R5",
+      "1dd8:500f": "DSC2-200 50/100/200G 2-port 32G RAM 64G eMMC G2 DPU R4-T",
+      "1dd8:5200": "DSC3-2Q400 100/200/400G 2-port DDR5 128G eMMC G3 Services Card"
+     }
+    }
+   },
+   "name": "AMD Pensando Systems"
+  },
+  "1dee": {
+   "devices": {
+    "1202": {
+     "name": "HP EX900 Plus NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "1602": {
+     "name": "HP FX700 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "2262": {
+     "name": "HP EX950 NVMe SSD",
+     "subsystems": {}
+    },
+    "2263": {
+     "name": "HP EX900 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "2500": {
+     "name": "XCG 2500 Enterprise Gen 4 SSD",
+     "subsystems": {}
+    },
+    "2682": {
+     "name": "AP923P Gen4 NVME SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "4121": {
+     "name": "PCIe 4.0 SP406/416 NVMe SSD",
+     "subsystems": {
+      "1dee:0000": "NVMe SSD SP416 800G 2.5\" U.2",
+      "1dee:0001": "NVMe SSD SP416 1.6T 2.5\" U.2",
+      "1dee:0002": "NVMe SSD SP416 3.2T 2.5\" U.2",
+      "1dee:0003": "NVMe SSD SP416 6.4T 2.5\" U.2",
+      "1dee:0010": "NVMe SSD SP406 960G 2.5\" U.2",
+      "1dee:0011": "NVMe SSD SP406 1.92T 2.5\" U.2",
+      "1dee:0012": "NVMe SSD SP406 3.84T 2.5\" U.2",
+      "1dee:0013": "NVMe SSD SP406 7.68T 2.5\" U.2"
+     }
+    },
+    "5016": {
+     "name": "BIWIN NVMe SSD SP509/SP519",
+     "subsystems": {}
+    },
+    "5161": {
+     "name": "BIWIN NVMe SSD SP506/SP516",
+     "subsystems": {
+      "1dee:0001": "NVMe SSD SP516 1.6T 2.5\" U.2",
+      "1dee:0002": "NVMe SSD SP516 3.2T 2.5\" U.2",
+      "1dee:0003": "NVMe SSD SP516 6.4T 2.5\" U.2",
+      "1dee:0004": "NVMe SSD SP516 12.8T 2.5\" U.2",
+      "1dee:0011": "NVMe SSD SP506 1.92T 2.5\" U.2",
+      "1dee:0012": "NVMe SSD SP506 3.84T 2.5\" U.2",
+      "1dee:0013": "NVMe SSD SP506 7.68T 2.5\" U.2",
+      "1dee:0014": "NVMe SSD SP506 15.36T 2.5\" U.2"
+     }
+    },
+    "5216": {
+     "name": "KingSpec NX series NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5236": {
+     "name": "Acer Predator GM7000 NVMe SSD",
+     "subsystems": {}
+    },
+    "7700": {
+     "name": "BIWIN NVMe SSD SP5 series",
+     "subsystems": {
+      "1dee:0001": "NVMe SSD SP51Y 3.2TB 2.5\"U.2",
+      "1dee:0002": "NVMe SSD SP51Y 6.4TB 2.5\"U.2",
+      "1dee:0003": "NVMe SSD SP51Y 12.8TB 2.5\"U.2",
+      "1dee:0011": "NVMe SSD SP50Y 3.84TB 2.5\"U.2",
+      "1dee:0012": "NVMe SSD SP50Y 7.68TB 2.5\"U.2",
+      "1dee:0013": "NVMe SSD SP50Y 15.36B 2.5\"U.2",
+      "1dee:0101": "NVMe SSD SP518 3.2TB 2.5\"U.2",
+      "1dee:0102": "NVMe SSD SP518 6.4TB 2.5\"U.2",
+      "1dee:0103": "NVMe SSD SP518 12.8TB 2.5\"U.2",
+      "1dee:0111": "NVMe SSD SP508 3.84TB 2.5\"U.2",
+      "1dee:0112": "NVMe SSD SP508 7.68TB 2.5\"U.2",
+      "1dee:0113": "NVMe SSD SP508 15.36B 2.5\"U.2",
+      "1dee:0201": "NVMe SSD SP5000 30.72TB 2.5\"U.2",
+      "1dee:0202": "NVMe SSD SP5000 61.44TB 2.5\"U.2",
+      "1dee:1201": "NVMe SSD SP5001 30.72TB 2.5\"U.2",
+      "1dee:1202": "NVMe SSD SP5001 61.44TB 2.5\"U.2"
+     }
+    }
+   },
+   "name": "Biwin Storage Technology Co., Ltd."
+  },
+  "1df5": {
+   "devices": {
+    "1202": {
+     "name": "kimtigo NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "2263": {
+     "name": "kimtigo MG931K NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    }
+   },
+   "name": "Shenzhen TIGO Semiconductor"
+  },
+  "1df8": {
+   "devices": {
+    "3000": {
+     "name": "PC NVMe SSD",
+     "subsystems": {
+      "1df8:3100": "M.2 NVMe Gen3*4 SSD"
+     }
+    },
+    "4000": {
+     "name": "M.2 NVMe SSD",
+     "subsystems": {
+      "1df8:4001": "M.2 NVMe Gen4*4 SSD",
+      "1df8:4002": "M.2 NVMe Gen4*4 SSD"
+     }
+    },
+    "c000": {
+     "name": "DC NVMe SSD",
+     "subsystems": {
+      "1df8:c600": "Enterprise U.2 NVMe SSD"
+     }
+    },
+    "d000": {
+     "name": "PC NVMe SSD",
+     "subsystems": {
+      "1df8:d100": "M.2 NVMe SSD",
+      "1df8:d201": "M.2 NVMe SSD",
+      "1df8:d600": "M.2 NVMe SSD"
+     }
+    }
+   },
+   "name": "V&G Information System Co.,Ltd"
+  },
+  "1e0f": {
+   "devices": {
+    "0001": {
+     "name": "NVMe SSD Controller BG4 (DRAM-less)",
+     "subsystems": {}
+    },
+    "0007": {
+     "name": "NVMe SSD Controller Cx6",
+     "subsystems": {
+      "1028:2078": "DC NVMe CD6 RI 960GB",
+      "1028:2079": "DC NVMe CD6 RI 1.92TB",
+      "1028:207a": "DC NVMe CD6 RI 3.84TB",
+      "1028:207b": "DC NVMe CD6 RI 7.68TB",
+      "1028:207c": "DC NVMe CD6 RI 15.36TB",
+      "1028:207e": "Dell Ent NVMe CM6 RI 1.92TB",
+      "1028:207f": "Dell Ent NVMe CM6 RI 3.84TB",
+      "1028:2080": "Dell Ent NVMe CM6 RI 7.68TB",
+      "1028:2081": "Dell Ent NVMe CM6 RI 15.36TB",
+      "1028:2084": "Dell Ent NVMe CM6 MU 1.6TB",
+      "1028:2085": "Dell Ent NVMe CM6 MU 3.2TB",
+      "1028:2086": "Dell Ent NVMe CM6 MU 6.4TB",
+      "1028:210a": "Dell Ent NVMe FIPS CM6 RI 1.92TB",
+      "1028:210b": "Dell Ent NVMe FIPS CM6 RI 3.84TB",
+      "1028:210c": "Dell Ent NVMe FIPS CM6 RI 7.68TB",
+      "1028:210d": "Dell Ent NVMe FIPS CM6 RI15.36TB",
+      "1028:210e": "Dell Ent NVMe FIPS CM6 MU 1.6TB",
+      "1028:210f": "Dell Ent NVMe FIPS CM6 MU 3.2TB",
+      "1028:2110": "Dell Ent NVMe FIPS CM6 MU 6.4TB",
+      "1e0f:0001": "Generic NVMe CM6"
+     }
+    },
+    "0008": {
+     "name": "RD500/Exceria Plus/Exceria Plus G2 NVMe SSD",
+     "subsystems": {}
+    },
+    "0009": {
+     "name": "NVMe SSD",
+     "subsystems": {
+      "1e0f:0001": "Toshiba RC500 Series NVMe SSD",
+      "1e0f:0032": "KIOXIA EXCERIA RC10 Series NVMe SSD"
+     }
+    },
+    "000c": {
+     "name": "NVMe SSD Controller BG5 (DRAM-less)",
+     "subsystems": {}
+    },
+    "000d": {
+     "name": "NVMe SSD Controller XG7",
+     "subsystems": {}
+    },
+    "0010": {
+     "name": "NVMe SSD Controller XG8",
+     "subsystems": {}
+    },
+    "0011": {
+     "name": "NVMe SSD Controller CD7",
+     "subsystems": {
+      "1028:2189": "DC NVMe SED CD7 RI 960GB",
+      "1028:218a": "DC NVMe CD7 RI 960GB",
+      "1028:218b": "DC NVMe SED CD7 RI 1.92TB",
+      "1028:218c": "DC NVMe CD7 RI 1.92TB",
+      "1028:218d": "DC NVMe SED CD7 RI 3.84TB",
+      "1028:218e": "DC NVMe CD7 RI 3.84TB",
+      "1028:218f": "DC NVMe SED CD7 RI 7.68TB",
+      "1028:2190": "DC NVMe CD7 RI 7.68TB",
+      "1028:2191": "DC NVMe SED CD7 RI 15.36TB",
+      "1028:2192": "DC NVMe CD7 RI 15.36TB",
+      "1028:2193": "NVMe CD7 E3.S 1.92TB",
+      "1028:2194": "NVMe CD7 E3.S 3.84TB",
+      "1028:2195": "NVMe CD7 E3.S 7.68TB"
+     }
+    },
+    "0013": {
+     "name": "NVMe SSD Controller CM7",
+     "subsystems": {
+      "1028:222d": "Ent NVMe CM7 FIPS U.2 RI 30.72TB",
+      "1028:222e": "Ent NVMe CM7 FIPS U.2 RI 15.36TB",
+      "1028:222f": "Ent NVMe CM7 FIPS U.2 RI 7.68TB",
+      "1028:2230": "Ent NVMe CM7 FIPS U.2 RI 3.84TB",
+      "1028:2231": "Ent NVMe CM7 FIPS U.2 RI 1.92TB",
+      "1028:2232": "Ent NVMe CM7 U.2 RI 30.72TB",
+      "1028:2233": "Ent NVMe CM7 U.2 RI 15.36TB",
+      "1028:2234": "Ent NVMe CM7 U.2 RI 7.68TB",
+      "1028:2235": "Ent NVMe CM7 U.2 RI 3.84TB",
+      "1028:2236": "Ent NVMe CM7 U.2 RI 1.92TB",
+      "1028:2237": "Ent NVMe CM7 FIPS U.2 MU 12.8TB",
+      "1028:2238": "Ent NVMe CM7 FIPS U.2 MU 6.4TB",
+      "1028:2239": "Ent NVMe CM7 FIPS U.2 MU 3.2TB",
+      "1028:223a": "Ent NVMe CM7 FIPS U.2 MU 1.6TB",
+      "1028:223b": "Ent NVMe CM7 U.2 MU 12.8TB",
+      "1028:223c": "Ent NVMe CM7 U.2 MU 6.4TB",
+      "1028:223d": "Ent NVMe CM7 U.2 MU 3.2TB",
+      "1028:223e": "Ent NVMe CM7 U.2 MU 1.6TB",
+      "1028:228c": "Ent NVMe CM7 U.2 MU 6.4TB"
+     }
+    },
+    "0014": {
+     "name": "NVMe SSD Controller CM7 EDSFF",
+     "subsystems": {
+      "1028:223f": "Ent NVMe CM7 FIPS E3.S RI 15.36TB",
+      "1028:2240": "Ent NVMe CM7 FIPS E3.S RI 7.68TB",
+      "1028:2241": "Ent NVMe CM7 FIPS E3.S RI 3.84TB",
+      "1028:2242": "Ent NVMe CM7 E3.S RI 15.36TB",
+      "1028:2243": "Ent NVMe CM7 E3.S RI 7.68TB",
+      "1028:2244": "Ent NVMe CM7 E3.S RI 3.84TB",
+      "1028:2245": "Ent NVMe CM7 E3.S RI 1.92TB",
+      "1028:2246": "Ent NVMe CM7 E3.S MU 12.8TB",
+      "1028:2247": "Ent NVMe CM7 E3.S MU 6.4TB",
+      "1028:2248": "Ent NVMe CM7 E3.S MU 3.2TB",
+      "1028:2249": "Ent NVMe CM7 E3.S MU 1.6TB",
+      "1028:22b7": "Ent NVMe CM7 FIPS E3.S MU 1.6TB",
+      "1028:22b8": "Ent NVMe CM7 FIPS E3.S MU 3.2TB",
+      "1028:22b9": "Ent NVMe CM7 FIPS E3.S MU 6.4TB",
+      "1028:22ba": "Ent NVMe CM7 FIPS E3.S MU 12.8TB"
+     }
+    },
+    "0018": {
+     "name": "Exceria Pro NVMe SSD",
+     "subsystems": {}
+    },
+    "001a": {
+     "name": "NVMe SSD Controller BG6 (DRAM-less)",
+     "subsystems": {}
+    },
+    "001b": {
+     "name": "NVMe SSD Controller EG6 (DRAM-less)",
+     "subsystems": {}
+    },
+    "001e": {
+     "name": "NVMe SSD Controller LD2-L",
+     "subsystems": {}
+    },
+    "001f": {
+     "name": "NVMe SSD Controller CD8",
+     "subsystems": {
+      "1028:2223": "DC NVMe CD8 U.2 SED 15.36TB",
+      "1028:2224": "DC NVMe CD8 U.2 SED 7.68TB",
+      "1028:2225": "DC NVMe CD8 U.2 SED 3.84TB",
+      "1028:2226": "DC NVMe CD8 U.2 SED 1.92TB",
+      "1028:2227": "DC NVMe CD8 U.2 SED 960GB",
+      "1028:2228": "DC NVMe CD8 U.2 15.36TB",
+      "1028:2229": "DC NVMe CD8 U.2 7.68TB",
+      "1028:222a": "DC NVMe CD8 U.2 3.84TB",
+      "1028:222b": "DC NVMe CD8 U.2 1.92TB",
+      "1028:222c": "DC NVMe CD8 U.2 960GB"
+     }
+    },
+    "0025": {
+     "name": "NVMe SSD Controller CM7 2.5\"",
+     "subsystems": {
+      "1028:222d": "Ent NVMe CM7 FIPS U.2 RI 30.72TB",
+      "1028:222e": "Ent NVMe CM7 FIPS U.2 RI 15.36TB",
+      "1028:222f": "Ent NVMe CM7 FIPS U.2 RI 7.68TB",
+      "1028:2230": "Ent NVMe CM7 FIPS U.2 RI 3.84TB",
+      "1028:2231": "Ent NVMe CM7 FIPS U.2 RI 1.92TB",
+      "1028:2232": "Ent NVMe CM7 U.2 RI 30.72TB",
+      "1028:2233": "Ent NVMe CM7 U.2 RI 15.36TB",
+      "1028:2234": "Ent NVMe CM7 U.2 RI 7.68TB",
+      "1028:2235": "Ent NVMe CM7 U.2 RI 3.84TB",
+      "1028:2236": "Ent NVMe CM7 U.2 RI 1.92TB",
+      "1028:2237": "Ent NVMe CM7 FIPS U.2 MU 12.8TB",
+      "1028:2238": "Ent NVMe CM7 FIPS U.2 MU 6.4TB",
+      "1028:2239": "Ent NVMe CM7 FIPS U.2 MU 3.2TB",
+      "1028:223a": "Ent NVMe CM7 FIPS U.2 MU 1.6TB",
+      "1028:223b": "Ent NVMe CM7 U.2 MU 12.8TB",
+      "1028:223c": "Ent NVMe CM7 U.2 MU 6.4TB",
+      "1028:223d": "Ent NVMe CM7 U.2 MU 3.2TB",
+      "1028:223e": "Ent NVMe CM7 U.2 MU 1.6TB"
+     }
+    },
+    "002a": {
+     "name": "Exceria Plus G3 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "002b": {
+     "name": "NVMe SSD Controller CD8P",
+     "subsystems": {}
+    },
+    "002c": {
+     "name": "NVMe SSD Controller CD8P EDSFF",
+     "subsystems": {
+      "1028:22bf": "DC NVMe CD8P E3.S 15.36TB",
+      "1028:22c0": "DC NVMe CD8P E3.S 7.68TB",
+      "1028:22c1": "DC NVMe CD8P E3.S 3.84TB",
+      "1028:22c2": "DC NVMe CD8P E3.S 1.92TB",
+      "1028:22c7": "DC NVMe CD8P E3.S MU 12.8TB",
+      "1028:22c8": "DC NVMe CD8P E3.S MU 6.4TB",
+      "1028:22c9": "DC NVMe CD8P E3.S MU 3.2TB",
+      "1028:22ca": "DC NVMe CD8P E3.S MU 1.6TB"
+     }
+    },
+    "002e": {
+     "name": "NVMe SSD Controller XD8",
+     "subsystems": {}
+    },
+    "002f": {
+     "name": "NVMe SSD Controller BG7 (DRAM-less)",
+     "subsystems": {}
+    },
+    "0030": {
+     "name": "NVMe SSD Controller EG7",
+     "subsystems": {}
+    },
+    "0031": {
+     "name": "PCIe 5.0 NVMe SSD Controller XG10",
+     "subsystems": {}
+    },
+    "0032": {
+     "name": "PCIe 4.0 NVMe SSD Controller XG10d",
+     "subsystems": {}
+    },
+    "0033": {
+     "name": "Exceria Plus G4 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "0034": {
+     "name": "CM9-based E3.S NVMe SSD",
+     "subsystems": {
+      "1028:240f": "KCM9FRJE1T92",
+      "1028:2410": "KCM9FRJE3T84",
+      "1028:2411": "KCM9FRJE7T68",
+      "1028:2412": "KCM9FRJE15T3",
+      "1028:2413": "KCM9FRJE30T7",
+      "1028:2414": "KCM9XRJE1T92",
+      "1028:2415": "KCM9XRJE3T84",
+      "1028:2416": "KCM9XRJE7T68",
+      "1028:2417": "KCM9XRJE15T3",
+      "1028:2418": "KCM9XRJE30T7",
+      "1028:2419": "KCM9FVJE1T60",
+      "1028:241a": "KCM9FVJE3T20",
+      "1028:241b": "KCM9FVJE6T40",
+      "1028:241c": "KCM9FVJE12T8",
+      "1028:241d": "KCM9XVJE1T60",
+      "1028:241e": "KCM9XVJE3T20",
+      "1028:241f": "KCM9XVJE6T40",
+      "1028:2420": "KCM9XVJE12T8"
+     }
+    },
+    "0035": {
+     "name": "CM9-based U3 NVMe SSD",
+     "subsystems": {
+      "1028:23fb": "KCM9FRUL1T92",
+      "1028:23fc": "KCM9FRUL3T84",
+      "1028:23fd": "KCM9FRUL7T68",
+      "1028:23fe": "KCM9FRUL15T3",
+      "1028:23ff": "KCM9FRUL30T7",
+      "1028:2400": "KCM9FRUL61T4",
+      "1028:2401": "KCM9XRUL1T92",
+      "1028:2402": "KCM9XRUL3T84",
+      "1028:2403": "KCM9XRUL7T68",
+      "1028:2404": "KCM9XRUL15T3",
+      "1028:2405": "KCM9XRUL30T7",
+      "1028:2406": "KCM9XRUL61T4",
+      "1028:2407": "KCM9FVUL1T60",
+      "1028:2408": "KCM9FVUL3T20",
+      "1028:2409": "KCM9FVUL6T40",
+      "1028:240a": "KCM9FVUL12T8",
+      "1028:240b": "KCM9XVUL1T60",
+      "1028:240c": "KCM9XVUL3T20",
+      "1028:240d": "KCM9XVUL6T40",
+      "1028:240e": "KCM9XVUL12T8"
+     }
+    },
+    "0036": {
+     "name": "NVMe SSD Controller CD9P U.2",
+     "subsystems": {
+      "1028:23d5": "KCD9DPUG1T92",
+      "1028:23d6": "KCD9DPUG3T84",
+      "1028:23d7": "KCD9DPUG7T68",
+      "1028:23d8": "KCD9DPUG15T3",
+      "1028:23d9": "KCD9DPUG30T7",
+      "1028:23da": "KCD9DPUG61T4",
+      "1028:23db": "KCD9XPUG1T92",
+      "1028:23dc": "KCD9XPUG3T84",
+      "1028:23dd": "KCD9XPUG7T68",
+      "1028:23de": "KCD9XPUG15T3",
+      "1028:23df": "KCD9XPUG30T7",
+      "1028:23e0": "KCD9XPUG61T4",
+      "1028:23e1": "KCD9DPUG1T60",
+      "1028:23e2": "KCD9DPUG3T20",
+      "1028:23e3": "KCD9DPUG6T40",
+      "1028:23e4": "KCD9DPUG12T8",
+      "1028:23e5": "KCD9XPUG1T60",
+      "1028:23e6": "KCD9XPUG3T20",
+      "1028:23e7": "KCD9XPUG6T40",
+      "1028:23e8": "KCD9XPUG12T8"
+     }
+    },
+    "0037": {
+     "name": "NVMe SSD Controller CD9P E3.S",
+     "subsystems": {
+      "1028:23e9": "KCD9DPJE1T92",
+      "1028:23ea": "KCD9DPJE3T84",
+      "1028:23eb": "KCD9DPJE7T68",
+      "1028:23ec": "KCD9DPJE15T3",
+      "1028:23ed": "KCD9DPJE30T7",
+      "1028:23ee": "KCD9XPJE1T92",
+      "1028:23ef": "KCD9XPJE3T84",
+      "1028:23f0": "KCD9XPJE7T68",
+      "1028:23f1": "KCD9XPJE15T3",
+      "1028:23f2": "KCD9XPJE30T7",
+      "1028:23f3": "KCD9DPJE1T60",
+      "1028:23f4": "KCD9DPJE3T20",
+      "1028:23f5": "KCD9DPJE6T40",
+      "1028:23f6": "KCD9DPJE12T8",
+      "1028:23f7": "KCD9XPJE1T60",
+      "1028:23f8": "KCD9XPJE3T20",
+      "1028:23f9": "KCD9XPJE6T40",
+      "1028:23fa": "KCD9XPJE12T8"
+     }
+    },
+    "003a": {
+     "name": "NVMe SSD Controller BG8 (DRAM-less)",
+     "subsystems": {}
+    },
+    "003b": {
+     "name": "Exceria Basic NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "003d": {
+     "name": "LC9 E3.L NVMe SSD",
+     "subsystems": {
+      "1028:244f": "RLC9GZV245T",
+      "1028:2450": "RLC9CZV245T"
+     }
+    },
+    "003e": {
+     "name": "LC9 E3.S NVMe SSD",
+     "subsystems": {
+      "1028:245a": "RLC9GDR30T7",
+      "1028:245c": "RLC9GZR61T4",
+      "1028:245d": "RLC9GZR122T",
+      "1028:245e": "RLC9CDR30T7",
+      "1028:2460": "RLC9CZR61T4",
+      "1028:2461": "RLC9CZR122T"
+     }
+    },
+    "003f": {
+     "name": "LC9 U.2 NVMe SSD",
+     "subsystems": {
+      "1028:2462": "RLC9GDB30T7",
+      "1028:2464": "RLC9GZB61T4",
+      "1028:2465": "RLC9GZB122T",
+      "1028:2467": "RLC9CDB30T7",
+      "1028:2469": "RLC9CZB61T4",
+      "1028:246a": "RLC9CZB122T"
+     }
+    },
+    "0040": {
+     "name": "Exceria G3 PCIe 5 NVMe SSD (QLC) (DRAM-less)",
+     "subsystems": {}
+    },
+    "0042": {
+     "name": "NVMe SSD Controller LD4",
+     "subsystems": {}
+    }
+   },
+   "name": "KIOXIA Corporation"
+  },
+  "1e3a": {
+   "devices": {
+    "2263": {
+     "name": "270PM6, 270PM7 series NVMe SSD",
+     "subsystems": {}
+    }
+   },
+   "name": "Cactus Technologies Limited"
+  },
+  "1e3b": {
+   "devices": {
+    "0600": {
+     "name": "NVMe SSD Controller DP600",
+     "subsystems": {
+      "1e3b:0006": "Enterprise NVMe SSD U.2 7.68TB (J5000)",
+      "1e3b:000c": "Enterprise NVMe SSD U.2 30.72TB (J5060)",
+      "1e3b:000d": "Enterprise NVMe SSD U.2 61.44TB (J5060)",
+      "1e3b:000e": "Enterprise NVMe SSD U.2 30.72TB (J5060D)",
+      "1e3b:000f": "Enterprise NVMe SSD U.2 61.44TB (J5060D)",
+      "1e3b:0010": "Enterprise NVMe SSD U.2 3.84TB (R5102)",
+      "1e3b:0013": "Enterprise NVMe SSD U.2 3.20TB (R5302)",
+      "1e3b:0027": "Enterprise NVMe SSD U.2 61.44TB (J5060)",
+      "1e3b:0028": "Enterprise NVMe SSD U.2 61.44TB (J5060D)",
+      "1e3b:0029": "Enterprise NVMe SSD U.2 15.36TB (J5060)",
+      "1e3b:002a": "Enterprise NVMe SSD U.2 15.36TB (J5060D)",
+      "1e3b:0030": "Enterprise NVMe SSD U.2 3.84TB (J5100)",
+      "1e3b:0031": "Enterprise NVMe SSD U.2 7.68TB (J5100)",
+      "1e3b:0032": "Enterprise NVMe SSD U.2 15.36TB (J5100)",
+      "1e3b:0033": "Enterprise NVMe SSD U.2 3.20TB (J5300)",
+      "1e3b:0034": "Enterprise NVMe SSD U.2 6.40TB (J5300)",
+      "1e3b:0035": "Enterprise NVMe SSD U.2 12.80TB (J5300)",
+      "1e3b:0036": "Enterprise NVMe SSD AIC 7.68TB (J5110)",
+      "1e3b:0037": "Enterprise NVMe SSD AIC 6.40TB (J5310)",
+      "1e3b:0038": "Enterprise NVMe SSD U.2 3.84TB (J5100D)",
+      "1e3b:0039": "Enterprise NVMe SSD U.2 7.68TB (J5100D)",
+      "1e3b:003b": "Enterprise NVMe SSD U.2 3.20TB (J5300D)",
+      "1e3b:003c": "Enterprise NVMe SSD U.2 6.40TB (J5300D)",
+      "1e3b:003e": "Enterprise NVMe SSD AIC 3.84TB (J5110)",
+      "1e3b:003f": "Enterprise NVMe SSD AIC 3.20TB (J5310)",
+      "1e3b:004c": "Enterprise NVMe SSD U.2 QDP 1.92TB (J5100)",
+      "1e3b:004d": "Enterprise NVMe SSD U.2 QDP 1.60TB (J5300)",
+      "1e3b:0050": "Enterprise NVMe SSD U.2 3.84TB (R5100)",
+      "1e3b:0051": "Enterprise NVMe SSD U.2 7.68TB (R5100)",
+      "1e3b:0052": "Enterprise NVMe SSD U.2 15.36TB (R5100)",
+      "1e3b:0053": "Enterprise NVMe SSD U.2 3.20TB (R5300)",
+      "1e3b:0054": "Enterprise NVMe SSD U.2 6.40TB (R5300)",
+      "1e3b:0055": "Enterprise NVMe SSD U.2 12.80TB (R5300)",
+      "1e3b:0056": "Enterprise NVMe SSD U.2 3.84TB (R5101)",
+      "1e3b:0059": "Enterprise NVMe SSD U.2 3.20TB (R5301)",
+      "1e3b:0060": "Enterprise NVMe SSD U.2 3.84TB (R5100D)",
+      "1e3b:0061": "Enterprise NVMe SSD U.2 7.68TB (R5100D)",
+      "1e3b:0063": "Enterprise NVMe SSD U.2 3.20TB (R5300D)",
+      "1e3b:0064": "Enterprise NVMe SSD U.2 6.40TB (R5300D)",
+      "1e3b:0066": "Enterprise NVMe SSD U.2 3.84TB (R5101D)",
+      "1e3b:0069": "Enterprise NVMe SSD U.2 3.20TB (R5301D)",
+      "1e3b:006c": "Enterprise NVMe SSD U.2 1.92TB (R5101)",
+      "1e3b:006d": "Enterprise NVMe SSD U.2 1.60TB (J5301)",
+      "1e3b:0083": "Enterprise NVMe SSD AIC 1.6TB (J5310)",
+      "1e3b:0096": "Enterprise NVMe SSD AIC 1.92TB (J5110)",
+      "1e3b:00b9": "Enterprise NVMe SSD U.2 25.60TB",
+      "1e3b:00be": "Enterprise NVMe SSD U.2 30.72TB",
+      "1e3b:00c1": "Enterprise NVMe SSD U.2 25.60TB",
+      "1e3b:00c4": "Enterprise NVMe SSD U.2 30.72TB",
+      "1e3b:00c7": "Enterprise NVMe SSD U.2 25.60TB (J5301)",
+      "1e3b:00c8": "Enterprise NVMe SSD U.2 30.72TB (J5000)",
+      "1e3b:00c9": "Enterprise NVMe SSD U.2 15.36TB (J5000)",
+      "1e3b:00ca": "Enterprise NVMe SSD U.2 3.84TB (J5102)",
+      "1e3b:00cb": "Enterprise NVMe SSD U.2 7.68TB (J5102)",
+      "1e3b:00cc": "Enterprise NVMe SSD U.2 3.84TB (J5101)",
+      "1e3b:00cd": "Enterprise NVMe SSD U.2 7.68TB (J5101)",
+      "1e3b:00ce": "Enterprise NVMe SSD U.2 3.84TB (J5101D)",
+      "1e3b:00cf": "Enterprise NVMe SSD U.2 7.68TB (J5101D)",
+      "1e3b:00dc": "Enterprise NVMe SSD U.2 30.72TB (J5000)",
+      "1e3b:00dd": "Enterprise NVMe SSD U.2 30.72TB(J5000)",
+      "1e3b:00de": "Enterprise NVMe SSD U.2 15.36TB (J5000D)",
+      "1e3b:00df": "Enterprise NVMe SSD U.2 30.72TB (J5000)",
+      "1e3b:00e7": "Enterprise NVMe SSD U.2 30.72TB (J5000D)",
+      "1e3b:00e8": "Enterprise NVMe SSD U.2 3.20TB (J5301)",
+      "1e3b:00e9": "Enterprise NVMe SSD U.2 6.40TB (J5301)",
+      "1e3b:00ea": "Enterprise NVMe SSD U.2 3.20TB (J5301D)",
+      "1e3b:00eb": "Enterprise NVMe SSD U.2 6.40TB (J5301D)",
+      "1e3b:00ec": "Enterprise NVMe SSD U.2 7.68TB (J5100)",
+      "1e3b:00ed": "Enterprise NVMe SSD U.2 30.72TB (R5101)",
+      "1e3b:00ee": "Enterprise NVMe SSD U.2 15.36B (J5101)",
+      "1e3b:00ef": "Enterprise NVMe SSD U.2 12.80TB (J5301)",
+      "1e3b:00f0": "Enterprise NVMe SSD U.2 0.40TB (X2900)",
+      "1e3b:00f1": "Enterprise NVMe SSD U.2 0.80TB (X2900)",
+      "1e3b:00f2": "Enterprise NVMe SSD U.2 1.60TB (X2900)",
+      "1e3b:00f3": "Enterprise NVMe SSD U.2 3.20TB (X2900)",
+      "1e3b:00f5": "Enterprise NVMe SSD U.2 0.40TB (X2900P)",
+      "1e3b:00f6": "Enterprise NVMe SSD U.2 0.80TB (X2900P)",
+      "1e3b:00f8": "Enterprise NVMe SSD U.2 122.88TB",
+      "1e3b:00f9": "Enterprise NVMe SSD U.2 122.88TB (J5060D)",
+      "1e3b:00fc": "Enterprise NVMe SSD U.2 7.68TB (J5000D)"
+     }
+    },
+    "0800": {
+     "name": "NVMe SSD Controller DP800",
+     "subsystems": {
+      "1e3b:0001": "Enterprise NVMe SSD U.2 3.84TB (R6101)",
+      "1e3b:0003": "Enterprise NVMe SSD U.2 7.68TB (R6100)",
+      "1e3b:0004": "Enterprise NVMe SSD U.2 7.68TB (R6101)",
+      "1e3b:0006": "Enterprise NVMe SSD U.2 15.36TB (R6100)",
+      "1e3b:0007": "Enterprise NVMe SSD U.2 15.36TB (R6101)",
+      "1e3b:000a": "Enterprise NVMe SSD U.2 3.2TB (R6301)",
+      "1e3b:000c": "Enterprise NVMe SSD U.2 6.4TB (R6300)",
+      "1e3b:000d": "Enterprise NVMe SSD U.2 6.4TB (R6301)",
+      "1e3b:000f": "Enterprise NVMe SSD U.2 12.8TB (R6300)",
+      "1e3b:0010": "Enterprise NVMe SSD U.2 12.8TB (R6301)",
+      "1e3b:0018": "Enterprise NVMe SSD U.2 3.84TB (R6101C)",
+      "1e3b:0019": "Enterprise NVMe SSD U.2 7.68TB (R6101C)",
+      "1e3b:001a": "Enterprise NVMe SSD U.2 3.2TB (R6301C)",
+      "1e3b:001b": "Enterprise NVMe SSD U.2 6.4TB (R6301C)",
+      "1e3b:001d": "Enterprise NVMe SSD U.2 3.84TB (R6101)",
+      "1e3b:001e": "Enterprise NVMe SSD U.2 3.84TB (R6100)",
+      "1e3b:001f": "Enterprise NVMe SSD U.2 1.92TB (R6101)",
+      "1e3b:0024": "Enterprise NVMe SSD U.2 3.2TB (R6300)",
+      "1e3b:0027": "Enterprise NVMe SSD U.2 7.68TB (R6101)",
+      "1e3b:0028": "Enterprise NVMe SSD U.2 15.36TB (R6101)",
+      "1e3b:002a": "Enterprise NVMe SSD U.2 6.4TB (R6301)",
+      "1e3b:002b": "Enterprise NVMe SSD U.2 12.8TB (R6301)",
+      "1e3b:002c": "Enterprise NVMe SSD U.2 30.72TB (R6101)",
+      "1e3b:002d": "Enterprise NVMe SSD U.2 25.6TB (R6301)",
+      "1e3b:002e": "Enterprise NVMe SSD U.2 15.36TB (R6000)",
+      "1e3b:002f": "Enterprise NVMe SSD U.2 30.72TB (R6000)",
+      "1e3b:0034": "Enterprise NVMe SSD U.2 30.72TB (R6060)",
+      "1e3b:0035": "Enterprise NVMe SSD U.2 61.44TB (R6060)",
+      "1e3b:0036": "Enterprise NVMe SSD U.2 122.88TB (R6060)",
+      "1e3b:003b": "Enterprise NVMe SSD U.2 1.6TB (R6301)",
+      "1e3b:003f": "Enterprise NVMe SSD U.2 7.68TB (R6100)",
+      "1e3b:0040": "Enterprise NVMe SSD U.2 15.36TB (R6100)",
+      "1e3b:0041": "Enterprise NVMe SSD U.2 6.4TB (R6300)",
+      "1e3b:0042": "Enterprise NVMe SSD U.2 12.8TB (R6300)",
+      "1e3b:0043": "Enterprise NVMe SSD U.2 1.92TB (R6101)",
+      "1e3b:0049": "Enterprise NVMe SSD U.2 1.92TB (R6101)",
+      "1e3b:0051": "Enterprise NVMe SSD U.2 7.68TB (R6101)",
+      "1e3b:0052": "Enterprise NVMe SSD U.2 15.36TB (R6101)",
+      "1e3b:0054": "Enterprise NVMe SSD U.2 6.4TB (R6301)",
+      "1e3b:0055": "Enterprise NVMe SSD U.2 12.8TB (R6301)",
+      "1e3b:0058": "Enterprise NVMe SSD U.2 0.8TB (X5900P)",
+      "1e3b:0059": "Enterprise NVMe SSD U.2 15.36TB (R6060)",
+      "1e3b:005a": "Enterprise NVMe SSD U.2 3.84TB (R6101)",
+      "1e3b:005c": "Enterprise NVMe SSD U.2 3.84TB (R6101)",
+      "1e3b:0060": "Enterprise NVMe SSD U.2 15.36TB (R6000)",
+      "1e3b:0061": "Enterprise NVMe SSD U.2 30.72TB (R6000)",
+      "1e3b:0062": "Enterprise NVMe SSD U.2 15.36TB (R6060)",
+      "1e3b:0063": "Enterprise NVMe SSD U.2 30.72TB (R6060)",
+      "1e3b:0064": "Enterprise NVMe SSD U.2 61.44TB (R6060)",
+      "1e3b:0065": "Enterprise NVMe SSD U.2 122.88TB (R6060)",
+      "1e3b:0067": "Enterprise NVMe SSD U.2 7.68TB (R6101)",
+      "1e3b:0068": "Enterprise NVMe SSD U.2 15.36TB (R6101)",
+      "1e3b:0069": "Enterprise NVMe SSD U.2 6.4TB (R6301)",
+      "1e3b:006a": "Enterprise NVMe SSD U.2 12.8TB (R6301)",
+      "1e3b:0070": "Enterprise NVMe SSD U.2 7.68TB (R6101)",
+      "1e3b:0071": "Enterprise NVMe SSD U.2 15.36TB (R6101)",
+      "1e3b:0072": "Enterprise NVMe SSD U.2 6.4TB (R6301)",
+      "1e3b:0073": "Enterprise NVMe SSD U.2 12.8TB (R6301)",
+      "1e3b:0077": "Enterprise NVMe SSD U.2 3.84TB (R6100)",
+      "1e3b:0078": "Enterprise NVMe SSD U.2 3.2TB (R6300)",
+      "1e3b:0079": "Enterprise NVMe SSD U.2 3.84TB (R6100)",
+      "1e3b:007a": "Enterprise NVMe SSD U.2 3.2TB (R6300)",
+      "1e3b:007b": "Enterprise NVMe SSD U.2 30.72TB (R6101)",
+      "1e3b:007c": "Enterprise NVMe SSD U.2 25.6TB (R6301)",
+      "1e3b:007d": "Enterprise NVMe SSD U.2 1.6TB (X5900P)",
+      "1e3b:007e": "Enterprise NVMe SSD U.2 0.8TB (X5900P)",
+      "1e3b:007f": "Enterprise NVMe SSD U.2 1.6TB (X5900P)",
+      "1e3b:0143": "Enterprise NVMe SSD U.2 1.92TB (R6101)",
+      "1e3b:0144": "Enterprise NVMe SSD U.2 1.6TB (R6301)",
+      "1e3b:0149": "Enterprise NVMe SSD U.2 1.92TB (R6101)",
+      "1e3b:014c": "Enterprise NVMe SSD U.2 1.6TB (R6301)",
+      "1e3b:015a": "Enterprise NVMe SSD U.2 3.84TB (R6101)",
+      "1e3b:015b": "Enterprise NVMe SSD U.2 3.2TB (R6301)",
+      "1e3b:015c": "Enterprise NVMe SSD U.2 3.84TB (R6101)",
+      "1e3b:015d": "Enterprise NVMe SSD U.2 3.2TB (R6301)",
+      "1e3b:2000": "Enterprise NVMe SSD E1.S 9.5 3.2TB (X5900P)",
+      "1e3b:3001": "Enterprise NVMe SSD E3.S 3.84TB (R6100)",
+      "1e3b:3002": "Enterprise NVMe SSD E3.S 7.68TB (R6100)",
+      "1e3b:3003": "Enterprise NVMe SSD E3.S 15.36TB (R6100)",
+      "1e3b:3004": "Enterprise NVMe SSD E3.S 3.2TB (R6300)",
+      "1e3b:3005": "Enterprise NVMe SSD E3.S 6.4TB (R6300)",
+      "1e3b:3006": "Enterprise NVMe SSD E3.S 12.8TB (R6300)"
+     }
+    },
+    "1098": {
+     "name": "Haishen3 NVMe SSD",
+     "subsystems": {
+      "1e3b:0001": "Enterprise NVMe SSD U.2 0.8TB (H2100)",
+      "1e3b:0002": "Enterprise NVMe SSD U.2 0.96TB (H2200)",
+      "1e3b:0004": "Enterprise NVMe SSD U.2 1.6TB (H2100)",
+      "1e3b:0005": "Enterprise NVMe SSD U.2 1.92TB (H2200)",
+      "1e3b:0009": "Enterprise NVMe SSD U.2 0.8TB (H3100)",
+      "1e3b:000a": "Enterprise NVMe SSD U.2 0.96TB (H3200)",
+      "1e3b:000c": "Enterprise NVMe SSD U.2 1.6TB (H3100)",
+      "1e3b:000d": "Enterprise NVMe SSD U.2 1.92TB (H3200)",
+      "1e3b:0014": "Enterprise NVMe SSD U.2 3.2TB (H3100)",
+      "1e3b:0015": "Enterprise NVMe SSD U.2 3.84TB (H3200)",
+      "1e3b:0021": "Enterprise NVMe SSD U.2 6.4TB (H3100)",
+      "1e3b:0022": "Enterprise NVMe SSD U.2 7.68TB (H3200)",
+      "1e3b:0052": "Enterprise NVMe SSD U.2 0.8TB (H3900)",
+      "1e3b:0053": "Enterprise NVMe SSD U.2 1.6TB (H3900)",
+      "1e3b:0059": "Enterprise NVMe SSD U.2 0.75TB (H3900)",
+      "1e3b:0061": "Enterprise NVMe SSD HHHL 0.8TB (H2100)",
+      "1e3b:0062": "Enterprise NVMe SSD HHHL 0.96TB (H2200)",
+      "1e3b:0064": "Enterprise NVMe SSD HHHL 1.6TB (H2100)",
+      "1e3b:0065": "Enterprise NVMe SSD HHHL 1.92TB (H2200)",
+      "1e3b:006c": "Enterprise NVMe SSD HHHL 0.8TB (H3100)",
+      "1e3b:006d": "Enterprise NVMe SSD HHHL 0.96TB (H3200)",
+      "1e3b:006f": "Enterprise NVMe SSD HHHL 1.6TB (H3100)",
+      "1e3b:0070": "Enterprise NVMe SSD HHHL 1.92TB (H3200)",
+      "1e3b:007c": "Enterprise NVMe SSD HHHL 3.2TB (H3100)",
+      "1e3b:007d": "Enterprise NVMe SSD HHHL 3.84TB (H3200)",
+      "1e3b:007f": "Enterprise NVMe SSD HHHL 6.4TB (H3100)",
+      "1e3b:0080": "Enterprise NVMe SSD HHHL 7.68TB (H3200)",
+      "1e3b:008a": "Enterprise NVMe SSD HHHL 0.8TB (H3900)",
+      "1e3b:008b": "Enterprise NVMe SSD HHHL 1.6TB (H3900)",
+      "1e3b:0091": "Enterprise NVMe SSD HHHL 0.75TB (H3900)"
+     }
+    },
+    "1321": {
+     "name": "AdgeStor NVMe SSD",
+     "subsystems": {
+      "1e3b:4000": "AdgeStor NVMe SSD M.2 0.48TB",
+      "1e3b:4001": "AdgeStor NVMe SSD M.2 0.96TB",
+      "1e3b:4002": "AdgeStor NVMe SSD M.2 1.92TB",
+      "1e3b:4100": "AdgeStor NVMe SSD M.2 0.48TB",
+      "1e3b:4101": "AdgeStor NVMe SSD M.2 0.96TB",
+      "1e3b:4102": "AdgeStor NVMe SSD M.2 1.92TB"
+     }
+    },
+    "1333": {
+     "name": "Haishen5 NVMe SSD",
+     "subsystems": {
+      "1e3b:001a": "Enterprise NVMe SSD E3.S 1T 3.84TB (H5100)",
+      "1e3b:001b": "Enterprise NVMe SSD E3.S 1T 7.68TB (H5100)",
+      "1e3b:001d": "Enterprise NVMe SSD E3.S 1T 3.2TB (H5300)",
+      "1e3b:001e": "Enterprise NVMe SSD E3.S 1T 6.4TB (H5300)",
+      "1e3b:0031": "Enterprise NVMe SSD U2 3.84TB (H5100)",
+      "1e3b:0032": "Enterprise NVMe SSD U2 7.68TB (H5100)",
+      "1e3b:0033": "Enterprise NVMe SSD U2 15.36TB (H5100)",
+      "1e3b:0034": "Enterprise NVMe SSD U2 3.2TB (H5300)",
+      "1e3b:0035": "Enterprise NVMe SSD U2 6.4TB (H5300)",
+      "1e3b:0036": "Enterprise NVMe SSD U2 12.8TB (H5300)",
+      "1e3b:004a": "Enterprise NVMe SSD E3.S 1T 7.68TB (H5100)",
+      "1e3b:004b": "Enterprise NVMe SSD E3.S 1T 15.36TB (H5100)",
+      "1e3b:004c": "Enterprise NVMe SSD E3.S 1T 6.4TB (H5300)",
+      "1e3b:004d": "Enterprise NVMe SSD E3.S 1T 12.8TB (H5300)",
+      "1e3b:0081": "Enterprise NVMe SSD U.2 3.84TB (H5100)",
+      "1e3b:0082": "Enterprise NVMe SSD U.2 7.68TB (H5100)",
+      "1e3b:0084": "Enterprise NVMe SSD U.2 3.2TB (H5300)",
+      "1e3b:0085": "Enterprise NVMe SSD U.2 6.4TB (H5300)",
+      "1e3b:008a": "Enterprise NVMe SSD U.2 7.68TB (H5100)",
+      "1e3b:008b": "Enterprise NVMe SSD U.2 15.36TB (H5100)",
+      "1e3b:008c": "Enterprise NVMe SSD U.2 30.72TB (H5100)",
+      "1e3b:008d": "Enterprise NVMe SSD U.2 6.4TB (H5300)",
+      "1e3b:008e": "Enterprise NVMe SSD U.2 12.8TB (H5300)",
+      "1e3b:008f": "Enterprise NVMe SSD U.2 25.6TB (H5300)",
+      "1e3b:0090": "Enterprise NVMe SSD E1.S 9.5mm 3.84TB (H5100)",
+      "1e3b:0091": "Enterprise NVMe SSD E1.S 9.5mm 7.68TB (H5100)",
+      "1e3b:0092": "Enterprise NVMe SSD E1.S 9.5mm 3.2TB (H5300)",
+      "1e3b:0093": "Enterprise NVMe SSD E1.S 9.5mm 6.4TB (H5300)",
+      "1e3b:0094": "Enterprise NVMe SSD E1.S 9.5mm 3.84TB (H5100)",
+      "1e3b:0096": "Enterprise NVMe SSD E1.S 9.5mm 3.2TB (H5300)",
+      "1e3b:0098": "Enterprise NVMe SSD E1.S 9.5mm 7.68TB (H5100)",
+      "1e3b:0099": "Enterprise NVMe SSD E1.S 9.5mm 6.4TB (H5300)",
+      "1e3b:00f0": "Enterprise NVMe SSD U2 Mold"
+     }
+    },
+    "50d0": {
+     "name": "NVME RAID Card DP800",
+     "subsystems": {}
+    },
+    "50d1": {
+     "name": "Flexraid6 NVMeRAID",
+     "subsystems": {}
+    }
+   },
+   "name": "DapuStor Corporation"
+  },
+  "1e49": {
+   "devices": {
+    "0001": {
+     "name": "ZHITAI PC005 NVMe SSD",
+     "subsystems": {}
+    },
+    "0021": {
+     "name": "ZHITAI TiPro5000 NVMe SSD",
+     "subsystems": {}
+    },
+    "0081": {
+     "name": "ZHITAI Ti600 NVMe SSD",
+     "subsystems": {}
+    },
+    "0090": {
+     "name": "ZHITAI TiPro9000 NVMe SSD",
+     "subsystems": {}
+    },
+    "00a1": {
+     "name": "ZHITAI TiPlus7100s NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "1001": {
+     "name": "PC005 NVMe SSD",
+     "subsystems": {}
+    },
+    "1011": {
+     "name": "PC210 M.2 2280 NVMe SSD",
+     "subsystems": {}
+    },
+    "1013": {
+     "name": "PC210 M.2 2242 NVMe SSD",
+     "subsystems": {}
+    },
+    "1031": {
+     "name": "PC300 M.2 2280 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "1033": {
+     "name": "PC300 M.2 2242 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "1071": {
+     "name": "PC411 M.2 2280 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "1073": {
+     "name": "PC411 M.2 2242 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "1078": {
+     "name": "PE321 U.2 NVMe SSD",
+     "subsystems": {}
+    },
+    "1081": {
+     "name": "PC41Q M.2 2280 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "1083": {
+     "name": "PC41Q M.2 2242 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "1101": {
+     "name": "PC450 M.2 2280 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "1103": {
+     "name": "PC450 M.2 2242 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "1111": {
+     "name": "PC42Q M.2 2280 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "1113": {
+     "name": "PC42Q M.2 2242 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "1121": {
+     "name": "PC550 M.2 2280 NVMe SSD",
+     "subsystems": {}
+    },
+    "1123": {
+     "name": "PC550 M.2 2242 NVMe SSD",
+     "subsystems": {}
+    },
+    "1a28": {
+     "name": "PE511 U.2 NVMe SSD",
+     "subsystems": {}
+    }
+   },
+   "name": "Yangtze Memory Technologies Co.,Ltd"
+  },
+  "1e4b": {
+   "devices": {
+    "1001": {
+     "name": "NVMe SSD Controller MAP1001",
+     "subsystems": {}
+    },
+    "1002": {
+     "name": "NVMe SSD Controller MAP1002 (DRAM-less)",
+     "subsystems": {}
+    },
+    "1003": {
+     "name": "NVMe SSD Controller MAP1003",
+     "subsystems": {}
+    },
+    "1201": {
+     "name": "NVMe SSD Controller MAP1201",
+     "subsystems": {}
+    },
+    "1202": {
+     "name": "NVMe SSD Controller MAP1202 (DRAM-less)",
+     "subsystems": {}
+    },
+    "1601": {
+     "name": "NVMe SSD Controller MAP1601",
+     "subsystems": {}
+    },
+    "1602": {
+     "name": "NVMe SSD Controller MAP1602 (DRAM-less)",
+     "subsystems": {}
+    },
+    "1608": {
+     "name": "NVMe SSD Controller MAP1608 (DRAM-less)",
+     "subsystems": {}
+    }
+   },
+   "name": "MAXIO Technology (Hangzhou) Ltd."
+  },
+  "1e68": {
+   "devices": {
+    "8111": {
+     "name": "EP2000Pro PCIe 3 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    }
+   },
+   "name": "Jiangsu Xinsheng Intelligent Technology Co., Ltd"
+  },
+  "1e7f": {
+   "devices": {
+    "6002": {
+     "name": "MMY MMSP350 PCIe 3 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "6003": {
+     "name": "MMY HC512GP3KH2T PCIe 3 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    }
+   },
+   "name": "Jiangsu Huacun Elec. Tech. Co., Ltd."
+  },
+  "1e81": {
+   "devices": {
+    "1203": {
+     "name": "NVMe SSD Controller UHXXXa series",
+     "subsystems": {
+      "1e81:a121": "NVMe SSD UHXXXa series U.2 960GB",
+      "1e81:a122": "NVMe SSD UHXXXa series U.2 1920GB",
+      "1e81:a123": "NVMe SSD UHXXXa series U.2 3840GB",
+      "1e81:a124": "NVMe SSD UHXXXa series U.2 7680GB",
+      "1e81:a125": "NVMe SSD UHXXXa series U.2 15360GB",
+      "1e81:a211": "NVMe SSD UHXXXa series U.2 800GB",
+      "1e81:a212": "NVMe SSD UHXXXa series U.2 1600GB",
+      "1e81:a213": "NVMe SSD UHXXXa series U.2 3200GB",
+      "1e81:a214": "NVMe SSD UHXXXa series U.2 6400GB",
+      "1e81:f123": "NVMe SSD TP6500 series U.2 3840GB"
+     }
+    },
+    "6206": {
+     "name": "AM620 NVMe SSD",
+     "subsystems": {}
+    },
+    "6a02": {
+     "name": "AM6A0 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "6c14": {
+     "name": "RPEYJ1T24 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    }
+   },
+   "name": "Ramaxel Technology(Shenzhen) Limited"
+  },
+  "1e95": {
+   "devices": {
+    "1000": {
+     "name": "XA1 Series NVMe SSD M.2 (DRAM-less)",
+     "subsystems": {}
+    },
+    "1001": {
+     "name": "CA6-8D512 NVMe SSD M.2",
+     "subsystems": {}
+    },
+    "1002": {
+     "name": "NVMe SSD [3DNAND] 2.5\" U.2 (LJ1)",
+     "subsystems": {
+      "1e95:1101": "NVMe SSD [3DNAND] 2.5\" U.2 (LJ1)",
+      "1ea0:5636": "TP1500 Series U.2 NVMe Datacenter SSD"
+     }
+    },
+    "1003": {
+     "name": "CLR-8W512 NVMe SSD M.2 (DRAM-less)",
+     "subsystems": {}
+    },
+    "1005": {
+     "name": "PLEXTOR M10P(GN) NVMe SSD M.2",
+     "subsystems": {}
+    },
+    "1006": {
+     "name": "CA8 Series NVMe SSD M.2",
+     "subsystems": {}
+    },
+    "1007": {
+     "name": "CL4 Series NVMe SSD M.2 (DRAM-less)",
+     "subsystems": {}
+    },
+    "1008": {
+     "name": "CL5-8D512 NVMe SSD M.2 (DRAM-less)",
+     "subsystems": {}
+    },
+    "100b": {
+     "name": "XB2-311024 NVMe SSD M.2 (DRAM-less)",
+     "subsystems": {}
+    },
+    "100c": {
+     "name": "CL6 Series NVMe SSD M.2 (DRAM-less)",
+     "subsystems": {}
+    },
+    "100d": {
+     "name": "PJ1 Series NVMe SSD",
+     "subsystems": {
+      "1e95:0000": "M.2 2280 480 GB",
+      "1e95:0001": "M.2 2280 960 GB",
+      "1e95:0002": "M.2 2280 1920 GB",
+      "1e95:0003": "M.2 22110 3840 GB",
+      "1e95:0004": "U.2 1920 GB",
+      "1e95:0005": "U.2 3840 GB",
+      "1e95:0006": "U.2 7680 GB",
+      "1e95:0007": "U.2 1600 GB",
+      "1e95:0008": "U.2 3200 GB",
+      "1e95:0009": "U.2 6400 GB"
+     }
+    },
+    "100f": {
+     "name": "EJ5-2W3840 NVMe SSD U.2",
+     "subsystems": {}
+    },
+    "1010": {
+     "name": "CX3 Series NVMe SSD",
+     "subsystems": {
+      "1e95:0000": "M.2 2280 480 GB",
+      "1e95:0001": "M.2 2280 960 GB",
+      "1e95:0002": "M.2 2280 1,920 GB",
+      "1e95:0003": "M.2 2280 3,840 GB"
+     }
+    },
+    "3500": {
+     "name": "CA5-8D256 NVMe SSD M.2",
+     "subsystems": {}
+    },
+    "35f1": {
+     "name": "PLEXTOR M9PGN Plus NVMe SSD M.2",
+     "subsystems": {}
+    },
+    "9100": {
+     "name": "CL1-3D256-Q11 NVMe SSD M.2",
+     "subsystems": {}
+    }
+   },
+   "name": "Solid State Storage Technology Corporation"
+  },
+  "1eab": {
+   "devices": {
+    "300a": {
+     "name": "NVMe SSD Controller 300A",
+     "subsystems": {}
+    },
+    "300b": {
+     "name": "NVMe SSD Controller 300B (DRAM-less)",
+     "subsystems": {}
+    }
+   },
+   "name": "Hefei DATANG Storage Technology Co.,LTD."
+  },
+  "1eb0": {
+   "devices": {
+    "1901": {
+     "name": "NVMe SSD Controller (DRAM-less)",
+     "subsystems": {}
+    }
+   },
+   "name": "Shenzhen Electrical Appliances CO."
+  },
+  "1eb4": {
+   "devices": {
+    "3401": {
+     "name": "SSD Contoller",
+     "subsystems": {}
+    }
+   },
+   "name": "Quantum Nebula Microelectronics Technology Co.,Ltd."
+  },
+  "1ed0": {
+   "devices": {
+    "2283": {
+     "name": "Patriot P300 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    }
+   },
+   "name": "Hosin Global Electronics"
+  },
+  "1ee1": {
+   "devices": {
+    "0050": {
+     "name": "Aurora NVMe SSD Controller",
+     "subsystems": {
+      "1ee1:0009": "Airglow A430 NVMe SSD U.2 1.6TB",
+      "1ee1:000a": "Airglow A430 NVMe SSD U.2 3.2TB",
+      "1ee1:000b": "Airglow A430 NVMe SSD U.2 4.8TB",
+      "1ee1:0012": "Airglow Z400 NVMe ZNS SSD U.2 5.76TB"
+     }
+    }
+   },
+   "name": "Suzhou Kuhan Information Technologies"
+  },
+  "1ee4": {
+   "devices": {
+    "1180": {
+     "name": "PETA8118 NVMe SSD Series",
+     "subsystems": {
+      "1ee4:0015": "NVMe SSD U.2 1.92TB (P8118E)",
+      "1ee4:0016": "NVMe SSD U.2 3.84TB (P8118E)",
+      "1ee4:0017": "NVMe SSD U.2 7.68TB (P8118E)",
+      "1ee4:0025": "NVMe SSD U.2 1.6TB (P8118E)",
+      "1ee4:0026": "NVMe SSD U.2 3.2TB (P8118E)",
+      "1ee4:0027": "NVMe SSD U.2 6.4TB (P8118E)",
+      "1ee4:0115": "NVMe SSD U.2 1.92TB (P8118Z)",
+      "1ee4:0116": "NVMe SSD U.2 3.84TB (P8118Z)",
+      "1ee4:0117": "NVMe SSD U.2 7.68TB (P8118Z)",
+      "1ee4:0125": "NVMe SSD U.2 1.6TB (P8118Z)",
+      "1ee4:0126": "NVMe SSD U.2 3.2TB (P8118Z)",
+      "1ee4:0127": "NVMe SSD U.2 6.4TB (P8118Z)",
+      "1ee4:0215": "NVMe SSD U.2 1.92TB (P8118X)",
+      "1ee4:0216": "NVMe SSD U.2 3.84TB (P8118X)",
+      "1ee4:0217": "NVMe SSD U.2 7.68TB (P8118X)",
+      "1ee4:0225": "NVMe SSD U.2 1.6TB (P8118X)",
+      "1ee4:0226": "NVMe SSD U.2 3.2TB (P8118X)",
+      "1ee4:0227": "NVMe SSD U.2 6.4TB (P8118X)",
+      "1ee4:0315": "NVMe SSD U.2 1.92TB (P8118E4)",
+      "1ee4:0316": "NVMe SSD U.2 3.84TB (P8118E4)",
+      "1ee4:0317": "NVMe SSD U.2 7.68TB (P8118E4)",
+      "1ee4:0325": "NVMe SSD U.2 1.6TB (P8118E4)",
+      "1ee4:0326": "NVMe SSD U.2 3.2TB (P8118E4)",
+      "1ee4:0327": "NVMe SSD U.2 6.4TB (P8118E4)",
+      "1ee4:0415": "NVMe SSD U.2 1.92TB (P8118Z3)",
+      "1ee4:0416": "NVMe SSD U.2 3.84TB (P8118Z3)",
+      "1ee4:0417": "NVMe SSD U.2 7.68TB (P8118Z3)",
+      "1ee4:0418": "NVMe SSD U.2 15.36TB (P8118Z3)",
+      "1ee4:0425": "NVMe SSD U.2 1.6TB (P8118Z3)",
+      "1ee4:0426": "NVMe SSD U.2 3.2TB (P8118Z3)",
+      "1ee4:0427": "NVMe SSD U.2 6.4TB (P8118Z3)",
+      "1ee4:0428": "NVMe SSD U.2 12.8TB (P8118Z3)",
+      "1ee4:0515": "NVMe SSD U.2 1.92TB (P8118Z4)",
+      "1ee4:0516": "NVMe SSD U.2 3.84TB (P8118Z4)",
+      "1ee4:0517": "NVMe SSD U.2 7.68TB (P8118Z4)",
+      "1ee4:0525": "NVMe SSD U.2 1.6TB (P8118Z4)",
+      "1ee4:0526": "NVMe SSD U.2 3.2TB (P8118Z4)",
+      "1ee4:0527": "NVMe SSD U.2 6.4TB (P8118Z4)",
+      "1ee4:0615": "NVMe SSD U.2 1.92TB (P8128Z3)",
+      "1ee4:0616": "NVMe SSD U.2 3.84TB (P8128Z3)",
+      "1ee4:0617": "NVMe SSD U.2 7.68TB (P8128Z3)",
+      "1ee4:0625": "NVMe SSD U.2 1.6TB (P8128Z3)",
+      "1ee4:0626": "NVMe SSD U.2 3.2TB (P8128Z3)",
+      "1ee4:0627": "NVMe SSD U.2 6.4TB (P8128Z3)",
+      "1ee4:0715": "NVMe SSD U.2 1.92TB (P8118Z4)",
+      "1ee4:0716": "NVMe SSD U.2 3.84TB (P8118Z4)",
+      "1ee4:0717": "NVMe SSD U.2 7.68TB (P8118Z4)",
+      "1ee4:0718": "NVMe SSD U.2 15.36TB (P8118Z4)",
+      "1ee4:0725": "NVMe SSD U.2 1.6TB (P8118Z4)",
+      "1ee4:0726": "NVMe SSD U.2 3.2TB (P8118Z4)",
+      "1ee4:0727": "NVMe SSD U.2 6.4TB (P8118Z4)",
+      "1ee4:0728": "NVMe SSD U.2 12.8TB (P8118Z4)",
+      "1ee4:0815": "NVMe SSD U.2 1.92TB (P8118H4)",
+      "1ee4:0816": "NVMe SSD U.2 3.84TB (P8118H4)",
+      "1ee4:0817": "NVMe SSD U.2 7.68TB (P8118H4)",
+      "1ee4:0825": "NVMe SSD U.2 1.6TB (P8118H4)",
+      "1ee4:0826": "NVMe SSD U.2 3.2TB (P8118H4)",
+      "1ee4:0827": "NVMe SSD U.2 6.4TB (P8118H4)",
+      "1ee4:0915": "NVMe SSD U.2 1.92TB (P8118E2)",
+      "1ee4:0916": "NVMe SSD U.2 3.84TB (P8118E2)",
+      "1ee4:0917": "NVMe SSD U.2 7.68TB (P8118E2)",
+      "1ee4:0925": "NVMe SSD U.2 1.6TB (P8118E2)",
+      "1ee4:0926": "NVMe SSD U.2 3.2TB (P8118E2)",
+      "1ee4:0927": "NVMe SSD U.2 6.4TB (P8118E2)",
+      "1ee4:0a15": "NVMe SSD U.2 1.92TB (P8118H2)",
+      "1ee4:0a16": "NVMe SSD U.2 3.84TB (P8118H2)",
+      "1ee4:0a17": "NVMe SSD U.2 7.68TB (P8118H2)",
+      "1ee4:0a25": "NVMe SSD U.2 1.6TB (P8118H2)",
+      "1ee4:0a26": "NVMe SSD U.2 3.2TB (P8118H2)",
+      "1ee4:0a27": "NVMe SSD U.2 6.4TB (P8118H2)",
+      "1ee4:0b15": "NVMe SSD U.2 1.92TB (P8118H3)",
+      "1ee4:0b16": "NVMe SSD U.2 3.84TB (P8118H3)",
+      "1ee4:0b17": "NVMe SSD U.2 7.68TB (P8118H3)",
+      "1ee4:0b25": "NVMe SSD U.2 1.6TB (P8118H3)",
+      "1ee4:0b26": "NVMe SSD U.2 3.2TB (P8118H3)",
+      "1ee4:0b27": "NVMe SSD U.2 6.4TB (P8118H3)",
+      "1ee4:3013": "NVMe SSD AIC 480GB (P8118E)",
+      "1ee4:3014": "NVMe SSD AIC 960GB (P8118E)",
+      "1ee4:3015": "NVMe SSD AIC 1.92TB (P8118E)",
+      "1ee4:3016": "NVMe SSD AIC 3.84TB (P8118E)",
+      "1ee4:3017": "NVMe SSD AIC 7.68TB (P8118E)",
+      "1ee4:3025": "NVMe SSD AIC 1.6TB (P8118E)",
+      "1ee4:3026": "NVMe SSD AIC 3.2TB (P8118E)",
+      "1ee4:3027": "NVMe SSD AIC 6.4TB (P8118E)",
+      "1ee4:3113": "NVMe SSD AIC 480GB (P8118Z)",
+      "1ee4:3114": "NVMe SSD AIC 960GB (P8118Z)",
+      "1ee4:3115": "NVMe SSD AIC 1.92TB (P8118Z)",
+      "1ee4:3116": "NVMe SSD AIC 3.84TB (P8118Z)",
+      "1ee4:3117": "NVMe SSD AIC 7.68TB (P8118Z)",
+      "1ee4:3125": "NVMe SSD AIC 1.6TB (P8118Z)",
+      "1ee4:3126": "NVMe SSD AIC 3.2TB (P8118Z)",
+      "1ee4:3127": "NVMe SSD AIC 6.4TB (P8118Z)",
+      "1ee4:3213": "NVMe SSD AIC 480GB (P8118X)",
+      "1ee4:3214": "NVMe SSD AIC 960GB (P8118X)",
+      "1ee4:3215": "NVMe SSD AIC 1.92TB (P8118X)",
+      "1ee4:3216": "NVMe SSD AIC 3.84TB (P8118X)",
+      "1ee4:3217": "NVMe SSD AIC 7.68TB (P8118X)",
+      "1ee4:3225": "NVMe SSD AIC 1.6TB (P8118X)",
+      "1ee4:3226": "NVMe SSD AIC 3.2TB (P8118X)",
+      "1ee4:3227": "NVMe SSD AIC 6.4TB (P8118X)",
+      "1ee4:3315": "NVMe SSD AIC 1.92TB (P8118E4)",
+      "1ee4:3316": "NVMe SSD AIC 3.84TB (P8118E4)",
+      "1ee4:3317": "NVMe SSD AIC 7.68TB (P8118E4)",
+      "1ee4:3325": "NVMe SSD AIC 1.6TB (P8118E4)",
+      "1ee4:3326": "NVMe SSD AIC 3.2TB (P8118E4)",
+      "1ee4:3327": "NVMe SSD AIC 6.4TB (P8118E4)",
+      "1ee4:3415": "NVMe SSD AIC 1.92TB (P8118Z3)",
+      "1ee4:3416": "NVMe SSD AIC 3.84TB (P8118Z3)",
+      "1ee4:3417": "NVMe SSD AIC 7.68TB (P8118Z3)",
+      "1ee4:3425": "NVMe SSD AIC 1.6TB (P8118Z3)",
+      "1ee4:3426": "NVMe SSD AIC 3.2TB (P8118Z3)",
+      "1ee4:3427": "NVMe SSD AIC 6.4TB (P8118Z3)",
+      "1ee4:3515": "NVMe SSD AIC 1.92TB (P8118Z4)",
+      "1ee4:3516": "NVMe SSD AIC 3.84TB (P8118Z4)",
+      "1ee4:3517": "NVMe SSD AIC 7.68TB (P8118Z4)",
+      "1ee4:3525": "NVMe SSD AIC 1.6TB (P8118Z4)",
+      "1ee4:3526": "NVMe SSD AIC 3.2TB (P8118Z4)",
+      "1ee4:3527": "NVMe SSD AIC 6.4TB (P8118Z4)",
+      "1ee4:3615": "NVMe SSD AIC 1.92TB (P8128Z3)",
+      "1ee4:3616": "NVMe SSD AIC 3.84TB (P8128Z3)",
+      "1ee4:3617": "NVMe SSD AIC 7.68TB (P8128Z3)",
+      "1ee4:3625": "NVMe SSD AIC 1.6TB (P8128Z3)",
+      "1ee4:3626": "NVMe SSD AIC 3.2TB (P8128Z3)",
+      "1ee4:3627": "NVMe SSD AIC 6.4TB (P8128Z3)",
+      "1ee4:3715": "NVMe SSD AIC 1.92TB (P8118Z4)",
+      "1ee4:3716": "NVMe SSD AIC 3.84TB (P8118Z4)",
+      "1ee4:3717": "NVMe SSD AIC 7.68TB (P8118Z4)",
+      "1ee4:3718": "NVMe SSD AIC 15.36TB (P8118Z4)",
+      "1ee4:3725": "NVMe SSD AIC 1.6TB (P8118Z4)",
+      "1ee4:3726": "NVMe SSD AIC 3.2TB (P8118Z4)",
+      "1ee4:3727": "NVMe SSD AIC 6.4TB (P8118Z4)",
+      "1ee4:3728": "NVMe SSD AIC 12.8TB (P8118Z4)",
+      "1ee4:abcd": "NVMe SSD U.2"
+     }
+    },
+    "1181": {
+     "name": "PETA8118 NVMe E1S Series",
+     "subsystems": {
+      "1ee4:2015": "NVMe SSD E1.S 1.92TB (P8118E)",
+      "1ee4:2016": "NVMe SSD E1.S 3.84TB (P8118E)",
+      "1ee4:2017": "NVMe SSD E1.S 7.68TB (P8118E)",
+      "1ee4:2025": "NVMe SSD E1.S 1.6TB (P8118E)",
+      "1ee4:2026": "NVMe SSD E1.S 3.2TB (P8118E)",
+      "1ee4:2027": "NVMe SSD E1.S 6.4TB (P8118E)",
+      "1ee4:2115": "NVMe SSD E1.S 1.92TB (P8118Z)",
+      "1ee4:2116": "NVMe SSD E1.S 3.84TB (P8118Z)",
+      "1ee4:2117": "NVMe SSD E1.S 7.68TB (P8118Z)",
+      "1ee4:2125": "NVMe SSD E1.S 1.6TB (P8118Z)",
+      "1ee4:2126": "NVMe SSD E1.S 3.2TB (P8118Z)",
+      "1ee4:2127": "NVMe SSD E1.S 6.4TB (P8118Z)",
+      "1ee4:2215": "NVMe SSD E1.S 1.92TB (P8118X)",
+      "1ee4:2216": "NVMe SSD E1.S 3.84TB (P8118X)",
+      "1ee4:2217": "NVMe SSD E1.S 7.68TB (P8118X)",
+      "1ee4:2225": "NVMe SSD E1.S 1.6TB (P8118X)",
+      "1ee4:2226": "NVMe SSD E1.S 3.2TB (P8118X)",
+      "1ee4:2227": "NVMe SSD E1.S 6.4TB (P8118X)",
+      "1ee4:2315": "NVMe SSD E1.S 1.92TB (P8118E4)",
+      "1ee4:2316": "NVMe SSD E1.S 3.84TB (P8118E4)",
+      "1ee4:2317": "NVMe SSD E1.S 7.68TB (P8118E4)",
+      "1ee4:2325": "NVMe SSD E1.S 1.6TB (P8118E4)",
+      "1ee4:2326": "NVMe SSD E1.S 3.2TB (P8118E4)",
+      "1ee4:2327": "NVMe SSD E1.S 6.4TB (P8118E4)",
+      "1ee4:2415": "NVMe SSD E1.S 1.92TB (P8118Z3)",
+      "1ee4:2416": "NVMe SSD E1.S 3.84TB (P8118Z3)",
+      "1ee4:2417": "NVMe SSD E1.S 7.68TB (P8118Z3)",
+      "1ee4:2425": "NVMe SSD E1.S 1.6TB (P8118Z3)",
+      "1ee4:2426": "NVMe SSD E1.S 3.2TB (P8118Z3)",
+      "1ee4:2427": "NVMe SSD E1.S 6.4TB (P8118Z3)",
+      "1ee4:2515": "NVMe SSD E1.S 1.92TB (P8118Z4)",
+      "1ee4:2516": "NVMe SSD E1.S 3.84TB (P8118Z4)",
+      "1ee4:2517": "NVMe SSD E1.S 7.68TB (P8118Z4)",
+      "1ee4:2525": "NVMe SSD E1.S 1.6TB (P8118Z4)",
+      "1ee4:2526": "NVMe SSD E1.S 3.2TB (P8118Z4)",
+      "1ee4:2527": "NVMe SSD E1.S 6.4TB (P8118Z4)",
+      "1ee4:2615": "NVMe SSD E1.S 1.92TB (P8128Z3)",
+      "1ee4:2616": "NVMe SSD E1.S 3.84TB (P8128Z3)",
+      "1ee4:2617": "NVMe SSD E1.S 7.68TB (P8128Z3)",
+      "1ee4:2625": "NVMe SSD E1.S 1.6TB (P8128Z3)",
+      "1ee4:2626": "NVMe SSD E1.S 3.2TB (P8128Z3)",
+      "1ee4:2627": "NVMe SSD E1.S 6.4TB (P8128Z3)",
+      "1ee4:2715": "NVMe SSD E1.S 1.92TB (P8118Z4)",
+      "1ee4:2716": "NVMe SSD E1.S 3.84TB (P8118Z4)",
+      "1ee4:2717": "NVMe SSD E1.S 7.68TB (P8118Z4)",
+      "1ee4:2718": "NVMe SSD E1.S 15.36TB (P8118Z4)",
+      "1ee4:2725": "NVMe SSD E1.S 1.6TB (P8118Z4)",
+      "1ee4:2726": "NVMe SSD E1.S 3.2TB (P8118Z4)",
+      "1ee4:2727": "NVMe SSD E1.S 6.4TB (P8118Z4)",
+      "1ee4:2728": "NVMe SSD E1.S 12.8TB (P8118Z4)"
+     }
+    },
+    "1182": {
+     "name": "PETA8118 NVMe M2 Series",
+     "subsystems": {
+      "1ee4:1013": "NVMe SSD M.2 480GB (P8118E)",
+      "1ee4:1014": "NVMe SSD M.2 960GB (P8118E)",
+      "1ee4:1015": "NVMe SSD M.2 1.92TB (P8118E)",
+      "1ee4:1016": "NVMe SSD M.2 3.84TB (P8118E)",
+      "1ee4:1023": "NVMe SSD M.2 400GB (P8118E)",
+      "1ee4:1024": "NVMe SSD M.2 800GB (P8118E)",
+      "1ee4:1025": "NVMe SSD M.2 1.6TB (P8118E)",
+      "1ee4:1026": "NVMe SSD M.2 3.2TB (P8118E)",
+      "1ee4:1113": "NVMe SSD M.2 480GB (P8118Z)",
+      "1ee4:1114": "NVMe SSD M.2 960GB (P8118Z)",
+      "1ee4:1115": "NVMe SSD M.2 1.92TB (P8118Z)",
+      "1ee4:1116": "NVMe SSD M.2 3.84TB (P8118Z)",
+      "1ee4:1123": "NVMe SSD M.2 400GB (P8118Z)",
+      "1ee4:1124": "NVMe SSD M.2 800GB (P8118Z)",
+      "1ee4:1125": "NVMe SSD M.2 1.6TB (P8118Z)",
+      "1ee4:1126": "NVMe SSD M.2 3.2TB (P8118Z)",
+      "1ee4:1213": "NVMe SSD M.2 480GB (P8118X)",
+      "1ee4:1214": "NVMe SSD M.2 960GB (P8118X)",
+      "1ee4:1215": "NVMe SSD M.2 1.92TB (P8118X)",
+      "1ee4:1216": "NVMe SSD M.2 3.84TB (P8118X)",
+      "1ee4:1223": "NVMe SSD M.2 400GB (P8118X)",
+      "1ee4:1224": "NVMe SSD M.2 800GB (P8118X)",
+      "1ee4:1225": "NVMe SSD M.2 1.6TB (P8118X)",
+      "1ee4:1226": "NVMe SSD M.2 3.2TB (P8118X)",
+      "1ee4:1313": "NVMe SSD M.2 480GB (P8118E4)",
+      "1ee4:1314": "NVMe SSD M.2 960GB (P8118E4)",
+      "1ee4:1315": "NVMe SSD M.2 1.92TB (P8118E4)",
+      "1ee4:1316": "NVMe SSD M.2 3.84TB (P8118E4)",
+      "1ee4:1317": "NVMe SSD M.2 7.68TB (P8118E4)",
+      "1ee4:1323": "NVMe SSD M.2 400GB (P8118E4)",
+      "1ee4:1324": "NVMe SSD M.2 800GB (P8118E4)",
+      "1ee4:1325": "NVMe SSD M.2 1.6TB (P8118E4)",
+      "1ee4:1326": "NVMe SSD M.2 3.2TB (P8118E4)",
+      "1ee4:1327": "NVMe SSD M.2 6.4TB (P8118E4)",
+      "1ee4:1413": "NVMe SSD M.2 480GB (P8118Z3)",
+      "1ee4:1414": "NVMe SSD M.2 960GB (P8118Z3)",
+      "1ee4:1415": "NVMe SSD M.2 1.92TB (P8118Z3)",
+      "1ee4:1416": "NVMe SSD M.2 3.84TB (P8118Z3)",
+      "1ee4:1417": "NVMe SSD M.2 7.68TB (P8118Z3)",
+      "1ee4:1423": "NVMe SSD M.2 400GB(P8118Z3)",
+      "1ee4:1424": "NVMe SSD M.2 800GB (P8118Z3)",
+      "1ee4:1425": "NVMe SSD M.2 1.6TB (P8118Z3)",
+      "1ee4:1426": "NVMe SSD M.2 3.2TB (P8118Z3)",
+      "1ee4:1427": "NVMe SSD M.2 6.4TB (P8118Z3)",
+      "1ee4:1513": "NVMe SSD M.2 480GB (P8118Z4)",
+      "1ee4:1514": "NVMe SSD M.2 960GB (P8118Z4)",
+      "1ee4:1515": "NVMe SSD M.2 1.92TB (P8118Z4)",
+      "1ee4:1516": "NVMe SSD M.2 3.84TB (P8118Z4)",
+      "1ee4:1517": "NVMe SSD M.2 7.68TB (P8118Z4)",
+      "1ee4:1523": "NVMe SSD M.2 400GB (P8118Z4)",
+      "1ee4:1524": "NVMe SSD M.2 800GB (P8118Z4)",
+      "1ee4:1525": "NVMe SSD M.2 1.6TB (P8118Z4)",
+      "1ee4:1526": "NVMe SSD M.2 3.2TB (P8118Z4)",
+      "1ee4:1527": "NVMe SSD M.2 6.4TB (P8118Z4)",
+      "1ee4:1613": "NVMe SSD M.2 480GB (P8128Z3)",
+      "1ee4:1614": "NVMe SSD M.2 960GB (P8128Z3)",
+      "1ee4:1615": "NVMe SSD M.2 1.92TB (P8128Z3)",
+      "1ee4:1616": "NVMe SSD M.2 3.84TB (P8128Z3)",
+      "1ee4:1617": "NVMe SSD M.2 7.68TB (P8128Z3)",
+      "1ee4:1623": "NVMe SSD M.2 400GB (P8128Z3)",
+      "1ee4:1624": "NVMe SSD M.2 800GB (P8128Z3)",
+      "1ee4:1625": "NVMe SSD M.2 1.6TB (P8128Z3)",
+      "1ee4:1626": "NVMe SSD M.2 3.2TB (P8128Z3)",
+      "1ee4:1627": "NVMe SSD M.2 6.4TB (P8128Z3)",
+      "1ee4:1714": "NVMe SSD M.2 960GB (P8118Z4)",
+      "1ee4:1715": "NVMe SSD M.2 1.92TB (P8118Z4)",
+      "1ee4:1716": "NVMe SSD M.2 3.84TB (P8118Z4)",
+      "1ee4:1717": "NVMe SSD M.2 7.68TB (P8118Z4)",
+      "1ee4:1724": "NVMe SSD M.2 800GB (P8118Z4)",
+      "1ee4:1725": "NVMe SSD M.2 1.6TB (P8118Z4)",
+      "1ee4:1726": "NVMe SSD M.2 3.2TB (P8118Z4)",
+      "1ee4:1727": "NVMe SSD M.2 6.4TB (P8118Z4)",
+      "1ee4:1814": "NVMe SSD M.2 960GB (P8118H4)",
+      "1ee4:1815": "NVMe SSD M.2 1.92TB (P8118H4)",
+      "1ee4:1816": "NVMe SSD M.2 3.84TB (P8118H4)",
+      "1ee4:1817": "NVMe SSD M.2 7.68TB (P8118H4)",
+      "1ee4:1824": "NVMe SSD M.2 800GB (P8118H4)",
+      "1ee4:1825": "NVMe SSD M.2 1.6TB (P8118H4)",
+      "1ee4:1826": "NVMe SSD M.2 3.2TB (P8118H4)",
+      "1ee4:1827": "NVMe SSD M.2 6.4TB (P8118H4)"
+     }
+    }
+   },
+   "name": "PETAIO INC"
+  },
+  "1f03": {
+   "devices": {
+    "1202": {
+     "name": "MAP1202-Based NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "1608": {
+     "name": "SCY C5000 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "2262": {
+     "name": "SM2262EN-based OEM SSD",
+     "subsystems": {}
+    },
+    "2263": {
+     "name": "SM2263XT-Based NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "2268": {
+     "name": "SM2268XT-Based NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "2269": {
+     "name": "SM2269XT-Based NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5216": {
+     "name": "IG5216-based NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5220": {
+     "name": "IG5220-Based NVMe SSD",
+     "subsystems": {}
+    },
+    "5236": {
+     "name": "IG5236-Based NVMe SSD",
+     "subsystems": {}
+    },
+    "5636": {
+     "name": "IG5636-Based NVMe SSD",
+     "subsystems": {}
+    }
+   },
+   "name": "Shenzhen Shichuangyi Electronics Co., Ltd"
+  },
+  "1f24": {
+   "devices": {
+    "1058": {
+     "name": "EP500/EP600 NVMe SSD",
+     "subsystems": {
+      "1f24:1114": "EP500 NVMe SSD(RI)",
+      "1f24:1115": "EP600 NVMe SSD(MU)"
+     }
+    }
+   },
+   "name": "xFusion Digital Technologies Co., Ltd."
+  },
+  "1f2f": {
+   "devices": {
+    "1513": {
+     "name": "DERA MENG NVMe Controller",
+     "subsystems": {
+      "1f2f:6113": "KM660 U.2 1.6TB NVMe SSD",
+      "1f2f:6114": "KM560 U.2 1.92TB NVMe SSD",
+      "1f2f:6115": "KM660 U.2 3.2TB NVMe SSD",
+      "1f2f:6116": "KM560 U.2 3.84TB NVMe SSD",
+      "1f2f:6118": "KM560 U.2 7.68TB NVMe SSD"
+     }
+    }
+   },
+   "name": "China Mobile (Hangzhou) Information Technology Co.Ltd."
+  },
+  "1f31": {
+   "devices": {
+    "4512": {
+     "name": "NE1N NVMe SSD",
+     "subsystems": {}
+    },
+    "451b": {
+     "name": "NN4LE NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "4622": {
+     "name": "NEM-PAC NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    }
+   },
+   "name": "Nextorage"
+  },
+  "1f32": {
+   "devices": {
+    "ed55": {
+     "name": "U800G NVMe SSD",
+     "subsystems": {}
+    }
+   },
+   "name": "Wuhan YuXin Semiconductor Co., Ltd."
+  },
+  "1f40": {
+   "devices": {
+    "0001": {
+     "name": "PCIe 4 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "1202": {
+     "name": "NV3000 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "1602": {
+     "name": "NV7000-t NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "1f40": {
+     "name": "PCIe 4 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "2263": {
+     "name": "PCIe 3 SM based NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5216": {
+     "name": "PCIe 3 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5236": {
+     "name": "NV7000 NVMe SSD",
+     "subsystems": {}
+    },
+    "5765": {
+     "name": "PCIe 3 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    }
+   },
+   "name": "Netac Technology Co.,Ltd"
+  },
+  "1f47": {
+   "devices": {
+    "1005": {
+     "name": "CONFLUX-2200P NVMe Controller",
+     "subsystems": {}
+    },
+    "1105": {
+     "name": "CONFLUX-2200P NVMe Controller [Virtual Function]",
+     "subsystems": {}
+    },
+    "5003": {
+     "name": "CONFLUX-2200P NVMe Controller",
+     "subsystems": {
+      "1f47:0001": "Ethernet 25G 2P CONFLUX-2200P",
+      "1f47:0003": "Ethernet 100G 2P CONFLUX-2200P",
+      "1f47:0004": "Ethernet 25G 2P CONFLUX-2200P",
+      "1f47:0006": "Ethernet 100G 2P CONFLUX-2200P",
+      "1f47:0007": "Ethernet 25G 2P CONFLUX-2200P",
+      "1f47:0009": "Ethernet 100G 2P CONFLUX-2200P",
+      "1f47:000a": "Ethernet 25G 2P CONFLUX-2200P",
+      "1f47:000c": "Ethernet 100G 2P CONFLUX-2200P"
+     }
+    },
+    "5004": {
+     "name": "CONFLUX-2200P NVMe Controller [Virtual Function]",
+     "subsystems": {}
+    }
+   },
+   "name": "YUSUR Technology"
+  },
+  "1f8c": {
+   "devices": {
+    "8008": {
+     "name": "SM8008 NVMe SSD [Px5 Series SSD]",
+     "subsystems": {
+      "1f8c:0001": "PD5 Series General",
+      "1f8c:0002": "Px5 Series General"
+     }
+    },
+    "8366": {
+     "name": "SM8366 NVMe SSD [PD5 Series SSD]",
+     "subsystems": {
+      "1f8c:0001": "PD5 Series General",
+      "1f8c:0002": "Px5 Series General"
+     }
+    }
+   },
+   "name": "Exascend,INC."
+  },
+  "1f99": {
+   "devices": {
+    "1202": {
+     "name": "TE3420 series / Patriot P320 M.2 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "2269": {
+     "name": "XE4403 Series NVMe PCIe Gen4x4 SSD",
+     "subsystems": {}
+    },
+    "3101": {
+     "name": "EP1021 Series M.2 2242 NVMe PCIe Gen3x4 SSD",
+     "subsystems": {}
+    },
+    "3105": {
+     "name": "EP2021 Series M.2 2242 NVMe PCIe Gen4x4 SSD",
+     "subsystems": {}
+    },
+    "3201": {
+     "name": "EP1021 Series M.2 2280 NVMe PCIe Gen3x4 SSD",
+     "subsystems": {}
+    },
+    "3202": {
+     "name": "EP1031 Series M.2 2280 NVMe PCIe Gen3x4 SSD",
+     "subsystems": {}
+    },
+    "3205": {
+     "name": "EP2021 Series M.2 2280 NVMe PCIe Gen4x4 SSD",
+     "subsystems": {}
+    },
+    "3206": {
+     "name": "EP2031 Series M.2 2280 NVMe PCIe Gen4x4 SSD",
+     "subsystems": {}
+    },
+    "3261": {
+     "name": "DP1421 Series M.2 2280 NVMe PCIe Gen3x4 SSD",
+     "subsystems": {}
+    },
+    "6100": {
+     "name": "TE3420 Series NVMe PCIe Gen3x4 SSD",
+     "subsystems": {}
+    },
+    "6101": {
+     "name": "XE3420 Series NVMe PCIe Gen3x4 SSD",
+     "subsystems": {}
+    },
+    "6102": {
+     "name": "TE4407 Series NVMe PCIe Gen4x4 SSD",
+     "subsystems": {}
+    },
+    "6103": {
+     "name": "XE4407 Series NVMe PCIe Gen4x4 SSD",
+     "subsystems": {}
+    },
+    "6104": {
+     "name": "TE4408 Series NVMe PCIe Gen4x4 SSD",
+     "subsystems": {}
+    },
+    "6105": {
+     "name": "XE4408 Series NVMe PCIe Gen4x4 SSD",
+     "subsystems": {}
+    },
+    "6106": {
+     "name": "TE4402 Series NVMe PCIe Gen4x4 SSD",
+     "subsystems": {}
+    },
+    "6107": {
+     "name": "XE4402 Series NVMe PCIe Gen4x4 SSD",
+     "subsystems": {}
+    },
+    "6108": {
+     "name": "TE4405 Series NVMe PCIe Gen4x4 SSD",
+     "subsystems": {}
+    },
+    "6109": {
+     "name": "XE4405 Series NVMe PCIe Gen4x4 SSD",
+     "subsystems": {}
+    },
+    "610a": {
+     "name": "TE4406 Series NVMe PCIe Gen4x4 SSD",
+     "subsystems": {}
+    },
+    "610b": {
+     "name": "XE4406 Series NVMe PCIe Gen4x4 SSD",
+     "subsystems": {}
+    },
+    "610c": {
+     "name": "TE3410 Series NVMe PCIe Gen3x4 SSD",
+     "subsystems": {}
+    },
+    "610d": {
+     "name": "TE4403 Series NVMe PCIe Gen4x4 SSD",
+     "subsystems": {}
+    },
+    "610e": {
+     "name": "TE5440 Series NVMe PCIe Gen5x4 SSD",
+     "subsystems": {}
+    },
+    "610f": {
+     "name": "TE5441 Series NVMe PCIe Gen5x4 SSD",
+     "subsystems": {}
+    },
+    "6110": {
+     "name": "TE5480 Series NVMe PCIe Gen5x4 SSD",
+     "subsystems": {}
+    },
+    "6111": {
+     "name": "TE5481 Series NVMe PCIe Gen5x4 SSD",
+     "subsystems": {}
+    }
+   },
+   "name": "Shenzhen Techwinsemi Technology Co., Ltd."
+  },
+  "1fe4": {
+   "devices": {
+    "1600": {
+     "name": "HP600 Series NVMe SSD",
+     "subsystems": {
+      "1fe4:0001": "Enterprise NVMe SSD U.2 15.36TB (HP600)",
+      "1fe4:0003": "Enterprise NVMe SSD U.2 12.80TB (HP630)",
+      "1fe4:0011": "Enterprise NVMe SSD U.2 30.72TB (HP620)",
+      "1fe4:0013": "Enterprise NVMe SSD U.2 61.44TB (HP620)",
+      "1fe4:0075": "Enterprise NVMe SSD U.2 3.84TB(HP610)",
+      "1fe4:0076": "Enterprise NVMe SSD U.2 7.68TB(HP610)",
+      "1fe4:0078": "Enterprise NVMe SSD U.2 3.20TB(HP630)",
+      "1fe4:0079": "Enterprise NVMe SSD U.2 6.40TB (HP630)"
+     }
+    }
+   },
+   "name": "HippStor Technology"
+  },
+  "205c": {
+   "devices": {
+    "1514": {
+     "name": "EP9410 U.2 1.92TB NVME SSD",
+     "subsystems": {}
+    },
+    "1515": {
+     "name": "EP9410 U.2 3.84TB NVME SSD",
+     "subsystems": {}
+    },
+    "1534": {
+     "name": "EP9430 U.2 1.6TB NVME SSD",
+     "subsystems": {}
+    },
+    "1535": {
+     "name": "EP9430 U.2 3.2TB NVME SSD",
+     "subsystems": {}
+    },
+    "1536": {
+     "name": "EP9430 U.2 6.4TB NVME SSD",
+     "subsystems": {}
+    }
+   },
+   "name": "Zhejiang VMing Semiconductor Co., Ltd."
+  },
+  "2061": {
+   "devices": {
+    "4200": {
+     "name": "E4200 NVMe Controller",
+     "subsystems": {
+      "2061:2021": "E4200 NVMe SSD 1.6TB PCIe 4.0 U.2",
+      "2061:2022": "E4200 NVMe SSD 1.92TB PCIe 4.0 U.2",
+      "2061:2023": "E4200 NVMe SSD 3.2TB PCIe 4.0 U.2",
+      "2061:2024": "E4200 NVMe SSD 3.84TB PCIe 4.0 U.2",
+      "2061:2025": "E4200 NVMe SSD 6.4TB PCIe 4.0 U.2",
+      "2061:2026": "E4200 NVMe SSD 7.68TB PCIe 4.0 U.2"
+     }
+    },
+    "5100": {
+     "name": "E5100 NVMe Controller",
+     "subsystems": {
+      "2061:2031": "E5100 NVMe SSD 3.2TB PCIe 5.0 U.2",
+      "2061:2032": "E5100 NVMe SSD 3.84TB PCIe 5.0 U.2",
+      "2061:2033": "E5100 NVMe SSD 6.4TB PCIe 5.0 U.2",
+      "2061:2034": "E5100 NVMe SSD 7.68TB PCIe 5.0 U.2",
+      "2061:2035": "E5100 NVMe SSD 12.8TB PCIe 5.0 U.2",
+      "2061:2036": "E5100 NVMe SSD 15.36TB PCIe 5.0 U.2",
+      "2061:2051": "E510Q NVMe SSD 30.72TB PCIe 5.0 U.2",
+      "2061:2052": "E510Q NVMe SSD 61.44TB PCIe 5.0 U.2",
+      "2061:2053": "E510Q NVMe SSD 122.88TB PCIe 5.0 U.2"
+     }
+    },
+    "5200": {
+     "name": "E5200 NVMe Controller",
+     "subsystems": {
+      "2061:2041": "E5200 NVMe SSD 3.2TB PCIe 5.0 U.2",
+      "2061:2042": "E5200 NVMe SSD 3.84TB PCIe 5.0 U.2",
+      "2061:2043": "E5200 NVMe SSD 6.4TB PCIe 5.0 U.2",
+      "2061:2044": "E5200 NVMe SSD 7.68TB PCIe 5.0 U.2",
+      "2061:2045": "E5200 NVMe SSD 12.8TB PCIe 5.0 U.2",
+      "2061:2046": "E5200 NVMe SSD 15.36TB PCIe 5.0 U.2",
+      "2061:2061": "E520Q NVMe SSD 30.72TB PCIe 5.0 U.2",
+      "2061:2062": "E520Q NVMe SSD 61.44TB PCIe 5.0 U.2",
+      "2061:2063": "E520Q NVMe SSD 122.88TB PCIe 5.0 U.2"
+     }
+    },
+    "5300": {
+     "name": "E5300 NVMe Controller",
+     "subsystems": {
+      "2061:2085": "E5300 NVMe SSD 3.2TB PCIe 5.0 U.2",
+      "2061:2086": "E5300 NVMe SSD 3.84TB PCIe 5.0 U.2",
+      "2061:2087": "E5300 NVMe SSD 6.4TB PCIe 5.0 U.2",
+      "2061:2088": "E5300 NVMe SSD 7.68TB PCIe 5.0 U.2",
+      "2061:2089": "E5300 NVMe SSD 12.8TB PCIe 5.0 U.2",
+      "2061:208a": "E5300 NVMe SSD 15.36TB PCIe 5.0 U.2",
+      "2061:2090": "E5300 NVMe SSD 25.6TB PCIe 5.0 U.2",
+      "2061:2091": "E5300 NVMe SSD 30.72TB PCIe 5.0 U.2"
+     }
+    }
+   },
+   "name": "Unis Flash Memory"
+  },
+  "2063": {
+   "devices": {
+    "1406": {
+     "name": "ME7000 NVMe SSD",
+     "subsystems": {}
+    },
+    "36b0": {
+     "name": "ME14000 NVMe SSD",
+     "subsystems": {
+      "2063:1000": "NVMe SSD ME14000 U.2 3.2TB",
+      "2063:1001": "NVMe SSD ME14000 U.2 3.84TB",
+      "2063:1002": "NVMe SSD ME14000 U.2 6.4TB",
+      "2063:1003": "NVMe SSD ME14000 U.2 7.68TB",
+      "2063:1004": "NVMe SSD ME14000 U.2 12.8TB",
+      "2063:1005": "NVMe SSD ME14000 U.2 15.36TB",
+      "2063:1006": "NVMe SSD ME14000 U.2 25.6TB",
+      "2063:1007": "NVMe SSD ME14000 U.2 30.72TB",
+      "2063:1008": "NVMe SSD ME14000 U.2 61.44TB",
+      "2063:1009": "NVMe SSD ME14000 U.2 122.88TB",
+      "2063:1010": "NVMe SSD ME14000 U.2 3.2TB",
+      "2063:1011": "NVMe SSD ME14000 U.2 3.84TB",
+      "2063:1012": "NVMe SSD ME14000 U.2 6.4TB",
+      "2063:1013": "NVMe SSD ME14000 U.2 7.68TB",
+      "2063:1014": "NVMe SSD ME14000 U.2 12.8TB",
+      "2063:1015": "NVMe SSD ME14000 U.2 15.36TB",
+      "2063:1016": "NVMe SSD ME14000 U.2 25.6TB",
+      "2063:1017": "NVMe SSD ME14000 U.2 30.72TB",
+      "2063:1018": "NVMe SSD ME14000 U.2 61.44TB",
+      "2063:1019": "NVMe SSD ME14000 U.2 122.88TB"
+     }
+    }
+   },
+   "name": "Hubei Yangtze Mason Semiconductor Technology Co., Ltd."
+  },
+  "20a8": {
+   "devices": {
+    "1202": {
+     "name": "RS512GSSD510 PCIe 3 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    }
+   },
+   "name": "Rayson HI-TECH(SZ) Co., Ltd."
+  },
+  "20b4": {
+   "devices": {
+    "a20c": {
+     "name": "PT200A PCIe 5.0 NVMe SSD",
+     "subsystems": {}
+    },
+    "c25c": {
+     "name": "MQ205 PCIe 5.0 NVMe SSD",
+     "subsystems": {}
+    },
+    "c28c": {
+     "name": "MQ208 PCIe 5.0 NVMe SSD",
+     "subsystems": {}
+    },
+    "d15b": {
+     "name": "PT150 PCIe 4.0 NVMe SSD",
+     "subsystems": {}
+    },
+    "d20c": {
+     "name": "PT200 PCIe 5.0 NVMe SSD",
+     "subsystems": {}
+    },
+    "d25c": {
+     "name": "PT205 PCIe 5.0 NVMe SSD",
+     "subsystems": {}
+    },
+    "d28c": {
+     "name": "PT208 PCIe 5.0 NVMe SSD",
+     "subsystems": {}
+    }
+   },
+   "name": "Genstoraige Technology Co., Ltd."
+  },
+  "20ba": {
+   "devices": {
+    "1202": {
+     "name": "NAND memory controller",
+     "subsystems": {
+      "20ba:1202": "NVMe SSD V2000 (DRAM-less)"
+     }
+    }
+   },
+   "name": "Hangzhou Hikstorage Technology Co., Ltd."
+  },
+  "20bc": {
+   "devices": {
+    "2001": {
+     "name": "Solid State Storage",
+     "subsystems": {}
+    }
+   },
+   "name": "Xinsheng Technology Co., Ltd."
+  },
+  "20d0": {
+   "devices": {
+    "2001": {
+     "name": "PACIFIC-S1 NVMe SSD",
+     "subsystems": {}
+    }
+   },
+   "name": "Telin Semiconductor (Wuhan) Co., Ltd."
+  },
+  "20dc": {
+   "devices": {
+    "5000": {
+     "name": "E5000 U.2 15mm 3.84TB NVMe SSD",
+     "subsystems": {}
+    },
+    "5101": {
+     "name": "E5000 U.2 15mm 7.68TB NVMe SSD",
+     "subsystems": {}
+    }
+   },
+   "name": "Sharetronic Data Technology Co., Ltd."
+  },
+  "2136": {
+   "devices": {
+    "6600": {
+     "name": "NX6600U0 NVME SSD",
+     "subsystems": {}
+    },
+    "7500": {
+     "name": "NX7500U0 NVME SSD",
+     "subsystems": {}
+    },
+    "7600": {
+     "name": "NX7600U0 NVME SSD",
+     "subsystems": {}
+    }
+   },
+   "name": "Dongguan Xincun Chengbang Technology Co., Ltd."
+  },
+  "2178": {
+   "devices": {
+    "4000": {
+     "name": "M.2 Gen4 NVMe SSD",
+     "subsystems": {}
+    },
+    "4200": {
+     "name": "N400 M.2 Gen4 NVMe SSD",
+     "subsystems": {}
+    },
+    "5000": {
+     "name": "M.2 Gen4 NVMe SSD",
+     "subsystems": {}
+    },
+    "5200": {
+     "name": "N500 M.2 Gen5 NVMe SSD",
+     "subsystems": {}
+    },
+    "e400": {
+     "name": "U.2 Gen4 SSD",
+     "subsystems": {}
+    },
+    "e410": {
+     "name": "U.2 Gen4 SSD",
+     "subsystems": {}
+    },
+    "e500": {
+     "name": "U.2 Gen5 SSD",
+     "subsystems": {}
+    },
+    "e510": {
+     "name": "U.2 Gen5 SSD",
+     "subsystems": {}
+    },
+    "e520": {
+     "name": "U.2 Gen5 SSD",
+     "subsystems": {}
+    },
+    "e600": {
+     "name": "U.2 Gen4 SSD",
+     "subsystems": {}
+    },
+    "e660": {
+     "name": "U.2 Gen4 SSD",
+     "subsystems": {}
+    },
+    "e800": {
+     "name": "U.2 Gen5 SSD",
+     "subsystems": {}
+    },
+    "e820": {
+     "name": "U.2 Gen5 SSD",
+     "subsystems": {}
+    },
+    "e830": {
+     "name": "U.2 Gen5 SSD",
+     "subsystems": {}
+    }
+   },
+   "name": "Baovix Technology Co., Ltd"
+  },
+  "217a": {
+   "devices": {
+    "0042": {
+     "name": "PCIE 4.0 SSD 1.6TB",
+     "subsystems": {}
+    },
+    "0514": {
+     "name": "SQ005 U.2 SSD 3.2TB",
+     "subsystems": {}
+    },
+    "0515": {
+     "name": "SQ005 U.2 SSD 3.84TB",
+     "subsystems": {}
+    },
+    "0516": {
+     "name": "SQ005 U.2 SSD 6.4TB",
+     "subsystems": {}
+    },
+    "0517": {
+     "name": "SQ005 U.2 SSD 7.68TB",
+     "subsystems": {}
+    },
+    "0518": {
+     "name": "SQ005 U.2 SSD 12.8TB",
+     "subsystems": {}
+    },
+    "0519": {
+     "name": "SQ005 U.2 SSD 15.36TB",
+     "subsystems": {}
+    }
+   },
+   "name": "Huaxun Group Limited"
+  },
+  "22db": {
+   "devices": {
+    "1200": {
+     "name": "NVMe Streamer EP ERD",
+     "subsystems": {}
+    }
+   },
+   "name": "Missing Link Electronics, Inc."
+  },
+  "2646": {
+   "devices": {
+    "0010": {
+     "name": "HyperX Predator PCIe AHCI SSD",
+     "subsystems": {}
+    },
+    "2262": {
+     "name": "KC2000/KC2500 NVMe SSD [SM2262EN]",
+     "subsystems": {}
+    },
+    "2263": {
+     "name": "A2000 NVMe SSD [SM2263EN]",
+     "subsystems": {}
+    },
+    "5008": {
+     "name": "A1000/U-SNS8154P3 x2 NVMe SSD [E8]",
+     "subsystems": {}
+    },
+    "500a": {
+     "name": "DC1000B NVMe SSD [E12DC]",
+     "subsystems": {}
+    },
+    "500b": {
+     "name": "DC1000M NVMe SSD [SM2270]",
+     "subsystems": {}
+    },
+    "500c": {
+     "name": "OM8PCP3 PCIe 3 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "500d": {
+     "name": "OM3PDP3 PCIe 3 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "500e": {
+     "name": "NV1 NVMe SSD [E13T] (DRAM-less)",
+     "subsystems": {}
+    },
+    "500f": {
+     "name": "NV1 NVMe SSD [SM2263XT] (DRAM-less)",
+     "subsystems": {}
+    },
+    "5010": {
+     "name": "OM8SBP NVMe PCIe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5012": {
+     "name": "DC1500M NVMe SSD [SM2270]",
+     "subsystems": {}
+    },
+    "5013": {
+     "name": "KC3000/FURY Renegade NVMe SSD [E18]",
+     "subsystems": {}
+    },
+    "5014": {
+     "name": "OM8SEP4 PCIe 4 NVMe SSD (TLC) (DRAM-less)",
+     "subsystems": {}
+    },
+    "5016": {
+     "name": "OM3PGP4 PCIe 4 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5017": {
+     "name": "NV2 NVMe SSD [SM2267XT] (DRAM-less)",
+     "subsystems": {}
+    },
+    "5018": {
+     "name": "OM8SFP4 PCIe 4 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5019": {
+     "name": "NV2 NVMe SSD [E21T] (DRAM-less)",
+     "subsystems": {}
+    },
+    "501a": {
+     "name": "OM8PGP4 PCIe 4 NVMe SSD (TLC) (DRAM-less)",
+     "subsystems": {}
+    },
+    "501b": {
+     "name": "OM8PGP4 NVMe PCIe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "501c": {
+     "name": "NV2 NVMe SSD [E19T] (DRAM-less)",
+     "subsystems": {}
+    },
+    "501d": {
+     "name": "NV2 NVMe SSD [TC2200] (DRAM-less)",
+     "subsystems": {}
+    },
+    "501e": {
+     "name": "OM3PGP4 NVMe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "501f": {
+     "name": "FURY Renegade NVMe SSD [E18] (Heatsink)",
+     "subsystems": {}
+    },
+    "5021": {
+     "name": "OM8SEP4 PCIe 4 NVMe SSD (QLC) (DRAM-less)",
+     "subsystems": {}
+    },
+    "5022": {
+     "name": "OM8PGP4 PCIe 4 NVMe SSD (QLC) (DRAM-less)",
+     "subsystems": {}
+    },
+    "5023": {
+     "name": "NV2 NVMe SSD [SM2269XT] (DRAM-less)",
+     "subsystems": {}
+    },
+    "5024": {
+     "name": "DC2000B NVMe SSD [E18DC]",
+     "subsystems": {}
+    },
+    "5025": {
+     "name": "NV3 NVMe SSD [TC2201] (DRAM-less)",
+     "subsystems": {}
+    },
+    "5026": {
+     "name": "NV3 NVMe SSD [E21T] (DRAM-less)",
+     "subsystems": {}
+    },
+    "5027": {
+     "name": "NV3 NVMe SSD [E27T] (DRAM-less)",
+     "subsystems": {}
+    },
+    "5028": {
+     "name": "NV3 NVMe SSD [SM2268XT2] (DRAM-less)",
+     "subsystems": {}
+    },
+    "5029": {
+     "name": "OM8SGP4 PCIe 4 NVMe SSD (TLC) (DRAM-less)",
+     "subsystems": {}
+    },
+    "502a": {
+     "name": "FURY Renegade G5 NVMe SSD [SM2508]",
+     "subsystems": {}
+    },
+    "502b": {
+     "name": "NV3 NVMe SSD [E29T] (DRAM-less)",
+     "subsystems": {}
+    },
+    "502c": {
+     "name": "DC3000ME NVMe SSD [SC5]",
+     "subsystems": {}
+    },
+    "502d": {
+     "name": "OM8TAP4 PCIe 4 NVMe SSD (QLC) (DRAM-less)",
+     "subsystems": {}
+    },
+    "502f": {
+     "name": "OM3SGP4 PCIe 4 NVMe SSD (TLC)",
+     "subsystems": {}
+    },
+    "5030": {
+     "name": "NV3 2230 NVMe SSD [SM2268XT2] (DRAM-less)",
+     "subsystems": {}
+    },
+    "5034": {
+     "name": "NV3 NVMe SSD [E33T] (DRAM-less)",
+     "subsystems": {}
+    }
+   },
+   "name": "Kingston Technology Company, Inc."
+  },
+  "4e58": {
+   "devices": {
+    "0001": {
+     "name": "Virtual NVMe Controller",
+     "subsystems": {}
+    }
+   },
+   "name": "Nutanix, Inc."
+  },
+  "7526": {
+   "devices": {
+    "0082": {
+     "name": "HQ SSD M.2",
+     "subsystems": {}
+    },
+    "0083": {
+     "name": "HQ SSD 2TB M.2 NVMe",
+     "subsystems": {}
+    }
+   },
+   "name": "HongQin (Beijing) Technology Co., Ltd."
+  },
+  "8080": {
+   "devices": {
+    "4016": {
+     "name": "CX4016A NVMe SSD Controller",
+     "subsystems": {}
+    }
+   },
+   "name": "Chengdu Storeswift Technology Co., Ltd."
+  },
+  "8086": {
+   "devices": {
+    "0953": {
+     "name": "PCIe Data Center SSD",
+     "subsystems": {
+      "8086:3702": "DC P3700 SSD",
+      "8086:3703": "DC P3700 SSD [2.5\" SFF]",
+      "8086:3704": "DC P3500 SSD [Add-in Card]",
+      "8086:3705": "DC P3500 SSD [2.5\" SFF]",
+      "8086:3709": "DC P3600 SSD [Add-in Card]",
+      "8086:370a": "DC P3600 SSD [2.5\" SFF]",
+      "8086:370d": "SSD 750 Series [Add-in Card]",
+      "8086:370e": "SSD 750 Series [2.5\" SFF]"
+     }
+    },
+    "0975": {
+     "name": "Optane NVME SSD H10 with Solid State Storage [Teton Glacier]",
+     "subsystems": {}
+    },
+    "09ad": {
+     "name": "Optane NVME SSD H20 with Solid State Storage [Pyramid Glacier]",
+     "subsystems": {}
+    },
+    "0a53": {
+     "name": "DC P3520 SSD",
+     "subsystems": {}
+    },
+    "0a54": {
+     "name": "NVMe Datacenter SSD [3DNAND, Beta Rock Controller]",
+     "subsystems": {
+      "1028:1fe1": "Express Flash NVMe 1TB 2.5\" U.2 (P4500)",
+      "1028:1fe2": "Express Flash NVMe 2TB 2.5\" U.2 (P4500)",
+      "1028:1fe3": "Express Flash NVMe 4TB 2.5\" U.2 (P4500)",
+      "1028:1fe4": "Express Flash NVMe 4TB HHHL AIC (P4500)",
+      "1028:1fee": "Express Flash NVMe 1.6TB 2.5\" U.2 (P4610)",
+      "1028:1fef": "Express Flash NVMe 3.2TB 2.5\" U.2 (P4610)",
+      "1028:1ff0": "Express Flash NVMe 6.4TB 2.5\" U.2 (P4610)",
+      "1028:1fff": "Express Flash NVMe 8.0TB 2.5\" U.2 (P4510)",
+      "1028:2003": "Express Flash NVMe 1.0 TB 2.5\" U.2 (P4510)",
+      "1028:2004": "Express Flash NVMe 2.0TB 2.5\" U.2 (P4510)",
+      "1028:2005": "Express Flash NVMe 4.0TB 2.5\" U.2 (P4510)",
+      "108e:4870": "NVMe PCIe 3.0 SSD 6.4TB AIC (P4608)",
+      "108e:4871": "NVMe PCIe 3.0 SSD 6.4TB 2.5-inch (P4600)",
+      "108e:4879": "NVMe PCIe 3.0 SSD v2 6.4TB AIC (P4618)",
+      "108e:487a": "NVMe PCIe 3.0 SSD v2 6.4TB 2.5-inch (P4610)",
+      "1137:0227": "NVMe Datacenter SSD [3DNAND] 1.6TB 2.5\" U.2 (P4600)",
+      "1137:0228": "NVMe Datacenter SSD [3DNAND] 2.0TB 2.5\" U.2 (P4600)",
+      "1137:0229": "NVMe Datacenter SSD [3DNAND] 3.2TB 2.5\" U.2 (P4600)",
+      "1137:022b": "NVMe Datacenter SSD [3DNAND] 1.0TB 2.5\" U.2 (P4500)",
+      "1137:022c": "NVMe Datacenter SSD [3DNAND] 2.0TB 2.5\" U.2 (P4500)",
+      "1137:022d": "NVMe Datacenter SSD [3DNAND] 4.0TB 2.5\" U.2 (P4500)",
+      "1137:0231": "NVMe Datacenter SSD [3DNAND] 0.5TB 2.5\" U.2 (P4501)",
+      "1137:0232": "NVMe Datacenter SSD [3DNAND] 1.0TB 2.5\" U.2 (P4501)",
+      "1137:0233": "NVMe Datacenter SSD [3DNAND] 2.0TB 2.5\" U.2 (P4501)",
+      "1137:0258": "NVMe Datacenter SSD [3DNAND] 1.6TB 2.5\" U.2 (P4610)",
+      "1137:025a": "NVMe Datacenter SSD [3DNAND] 3.2TB 2.5\" U.2 (P4610)",
+      "1137:025b": "NVMe Datacenter SSD [3DNAND] 1.0TB 2.5\" U.2 (P4510)",
+      "1137:025c": "NVMe Datacenter SSD [3DNAND] 2.0TB 2.5\" U.2 (P4510)",
+      "1137:025d": "NVMe Datacenter SSD [3DNAND] 4.0TB 2.5\" U.2 (P4510)",
+      "1137:025e": "NVMe Datacenter SSD [3DNAND] 8.0TB 2.5\" U.2 (P4510)",
+      "1590:025d": "NVMe Datacenter SSD [3DNAND] 1.0TB 2.5\" U.2 (P4500)",
+      "1590:025e": "NVMe Datacenter SSD [3DNAND] 2.0TB 2.5\" U.2 (P4500)",
+      "1590:025f": "NVMe Datacenter SSD [3DNAND] 4.0TB 2.5\" U.2 (P4500)",
+      "1590:0262": "NVMe Datacenter SSD [3DNAND] 1.6TB 2.5\" U.2 (P4600)",
+      "1590:0264": "NVMe Datacenter SSD [3DNAND] 3.2TB 2.5\" U.2 (P4600)",
+      "1590:0265": "NVMe Datacenter SSD [3DNAND] 6.4TB 2.5\" U.2 (P4600)",
+      "1590:026c": "NVMe Datacenter SSD [3DNAND] 4.0TB AIC (P4500)",
+      "1d49:4702": "Thinksystem Intel P4500 NVMe U.2",
+      "1d49:4704": "Thinksystem Intel P4500 NVMe AIC",
+      "1d49:4712": "Thinksystem Intel P4600 NVMe U.2",
+      "1d49:4714": "Thinksystem Intel P4600 NVMe AIC",
+      "1d49:4802": "Thinksystem U.2 P4510 NVMe SSD",
+      "1d49:4812": "Thinksystem U.2 P4610 NVMe SSD",
+      "8086:4308": "SSD D5-P4320 and D5-P4326",
+      "8086:4702": "NVMe Datacenter SSD [3DNAND] SE 2.5\" U.2 (P4500)",
+      "8086:4704": "NVMe Datacenter SSD [3DNAND] SE AIC (P4500)",
+      "8086:4712": "NVMe Datacenter SSD [3DNAND] ME 2.5\" U.2 (P4600)",
+      "8086:4714": "NVMe Datacenter SSD [3DNAND] ME AIC (P4600)",
+      "8086:4802": "NVMe Datacenter SSD [3DNAND] SE 2.5\" U.2 (P4510)",
+      "8086:4804": "NVMe Datacenter SSD [3DNAND] SE AIC (P4510)",
+      "8086:4805": "NVMe Datacenter SSD [3DNAND] SE M.2 (P4511)",
+      "8086:4812": "NVMe Datacenter SSD [3DNAND] ME 2.5\" U.2 (P4610)",
+      "8086:4814": "NVMe Datacenter SSD [3DNAND] ME AIC (P4610)"
+     }
+    },
+    "0a55": {
+     "name": "NVMe DC SSD [3DNAND, Beta Rock Controller]",
+     "subsystems": {
+      "1028:1fe5": "Express Flash NVMe 1.6TB 2.5\" U.2 (P4600)",
+      "1028:1fe6": "Express Flash NVMe 2TB 2.5\" U.2 (P4600)",
+      "1028:1fe7": "Express Flash NVMe 3.2TB 2.5\" U.2 (P4600)",
+      "1028:1fe8": "Express Flash NVMe 2.0TB HHHL AIC (P4600)",
+      "1028:1fe9": "Express Flash NVMe 4.0TB HHHL AIC (P4600)"
+     }
+    },
+    "0b60": {
+     "name": "NVMe DC SSD [3DNAND, Sentinel Rock Controller]",
+     "subsystems": {
+      "1028:2060": "NVMe SED MU U.2 1.6TB (P5600)",
+      "1028:2061": "NVMe SED MU U.2 3.2TB (P5600)",
+      "1028:2062": "NVMe SED MU U.2 6.4TB (P5600)",
+      "1028:2064": "NVMe SED RI U.2 1.92TB (P5500)",
+      "1028:2065": "NVMe SED RI U.2 3.84TB (P5500)",
+      "1028:2066": "NVMe SED RI U.2 7.68TB (P5500)",
+      "1028:209e": "NVMe MU U.2 1.6TB (P5600)",
+      "1028:209f": "NVMe MU U.2 3.2TB (P5600)",
+      "1028:2100": "NVMe MU U.2 6.4TB (P5600)",
+      "1028:2102": "NVMe RI U.2 1.92TB (P5500)",
+      "1028:2103": "NVMe RI U.2 3.84TB (P5500)",
+      "1028:2104": "NVMe RI U.2 7.68TB (P5500)",
+      "1028:219a": "NVMe P5316 RI 15.36TB",
+      "1028:219b": "NVMe P5316 RI 30.72TB",
+      "1028:219c": "NVMe SED P5316 RI 15.36",
+      "1028:219d": "NVMe SED P5316 RI 30.72",
+      "1028:219e": "NVMe FIPS P5316 RI 15.36TB",
+      "1028:219f": "NVMe FIPS P5316 RI 30.72",
+      "8086:8008": "NVMe Datacenter SSD [3DNAND] SE 2.5\" U.2 (P5510)",
+      "8086:8d08": "NVMe Datacenter SSD [3DNAND] VE 2.5\" U.2 (P5316)",
+      "8086:8d1d": "NVMe Datacenter SSD [3DNAND] VE E1.L 9.5/18mm (P5316)",
+      "8086:c008": "NVMe Datacenter SSD [3DNAND] SE U.2 15mm (P5530)"
+     }
+    },
+    "11eb": {
+     "name": "Simics NVMe Controller",
+     "subsystems": {}
+    },
+    "1457": {
+     "name": "NVMe Data Path Function",
+     "subsystems": {}
+    },
+    "201d": {
+     "name": "Volume Management Device NVMe RAID Controller",
+     "subsystems": {}
+    },
+    "2522": {
+     "name": "NVMe Optane Memory Series",
+     "subsystems": {
+      "8086:0000": "NVMe Optane Memory Series",
+      "8086:3800": "Optane Memory M15 16GB/32GB",
+      "8086:3806": "Optane Memory 16GB",
+      "8086:3810": "Optane Memory M10 16GB"
+     }
+    },
+    "2524": {
+     "name": "NVMe Optane Memory M15 Series",
+     "subsystems": {
+      "8086:3800": "Optane Memory M15 16GB/32GB"
+     }
+    },
+    "2525": {
+     "name": "Optane NVME SSD P1600X Series",
+     "subsystems": {}
+    },
+    "2700": {
+     "name": "Optane SSD 900P Series",
+     "subsystems": {
+      "8086:3900": "900P Series [Add-in Card]",
+      "8086:3901": "900P Series [2.5\" SFF]"
+     }
+    },
+    "2701": {
+     "name": "NVMe Datacenter SSD [Optane]",
+     "subsystems": {
+      "1028:2000": "Express Flash NVMe [Optane] 375GB 2.5\" U.2 (P4800X)",
+      "1028:2001": "Express Flash NVMe [Optane] 750GB 2.5\" U.2 (P4800X)",
+      "1028:2002": "Express Flash NVMe [Optane] 750GB AIC (P4800X)",
+      "1028:200a": "Express Flash NVMe [Optane] 375GB AIC (P4800X)",
+      "8086:3904": "NVMe Datacenter SSD [Optane] x4 AIC (P4800X)",
+      "8086:3905": "NVMe Datacenter SSD [Optane] 15mm 2.5\" U.2 (P4800X)"
+     }
+    },
+    "28c0": {
+     "name": "Volume Management Device (VMD)",
+     "subsystems": {
+      "1d49:011a": "Intel VROC (VMD NVMe RAID) for ThinkSystem V4 PL"
+     }
+    },
+    "4041": {
+     "name": "NVMe Datacenter SSD [Optane]",
+     "subsystems": {}
+    },
+    "4140": {
+     "name": "NVMe Datacenter SSD [Optane]",
+     "subsystems": {
+      "1028:2134": "NVMe Datacenter SSD [Optane] SED 400GB 2.5\" U.2 (P5800X)",
+      "1028:2135": "NVMe Datacenter SSD [Optane] SED 800GB 2.5\" U.2 (P5800X)",
+      "1028:2136": "NVMe Datacenter SSD [Optane] SED 1.6TB 2.5\" U.2 (P5800X)",
+      "1028:2137": "NVMe Datacenter SSD [Optane] 400GB 2.5\" U.2 (P5800X)",
+      "1028:2138": "NVMe Datacenter SSD [Optane] 800GB 2.5\" U.2 (P5800X)",
+      "1028:2139": "NVMe Datacenter SSD [Optane] 1.6TB 2.5\" U.2 (P5800X)"
+     }
+    },
+    "467f": {
+     "name": "Volume Management Device NVMe RAID Controller",
+     "subsystems": {}
+    },
+    "4c3d": {
+     "name": "Volume Management Device NVMe RAID Controller",
+     "subsystems": {}
+    },
+    "5845": {
+     "name": "QEMU NVM Express Controller",
+     "subsystems": {
+      "1af4:1100": "QEMU Virtual Machine"
+     }
+    },
+    "f1a5": {
+     "name": "SSD 600P Series",
+     "subsystems": {
+      "8086:390a": "SSDPEKKW256G7 256GB"
+     }
+    },
+    "f1a6": {
+     "name": "SSD DC P4101/Pro 7600p/760p/E 6100p Series",
+     "subsystems": {
+      "8086:390b": "SSD Pro 7600p/760p/E 6100p Series [NVM Express]"
+     }
+    },
+    "f1a7": {
+     "name": "SSD 700p Series",
+     "subsystems": {}
+    },
+    "f1a8": {
+     "name": "SSD 660P Series",
+     "subsystems": {}
+    },
+    "f1aa": {
+     "name": "SSD 670p Series [Keystone Harbor]",
+     "subsystems": {}
+    },
+    "faf0": {
+     "name": "SSD 665p Series [Neptune Harbor Refresh]",
+     "subsystems": {}
+    }
+   },
+   "name": "Intel Corporation"
+  },
+  "8164": {
+   "devices": {
+    "1600": {
+     "name": "HP600 U.2 NVME SSD",
+     "subsystems": {}
+    }
+   },
+   "name": "HippStor Technology Co., Ltd"
+  },
+  "9d32": {
+   "devices": {
+    "0000": {
+     "name": "STAR1000 PCIe NVMe SSD Controller",
+     "subsystems": {}
+    },
+    "1000": {
+     "name": "STAR1000 PCIe NVMe SSD Controller",
+     "subsystems": {}
+    },
+    "1001": {
+     "name": "STAR1000P PCIe NVMe SSD Controller",
+     "subsystems": {}
+    },
+    "1201": {
+     "name": "STAR1200C NVMe SSD",
+     "subsystems": {}
+    },
+    "1202": {
+     "name": "STAR1200I NVMe SSD",
+     "subsystems": {}
+    },
+    "1203": {
+     "name": "STAR1200L NVMe SSD",
+     "subsystems": {}
+    },
+    "1204": {
+     "name": "STAR1200E NVMe SSD",
+     "subsystems": {}
+    },
+    "1500": {
+     "name": "STAR1500 PCIe NVMe SSD Controller",
+     "subsystems": {}
+    },
+    "1501": {
+     "name": "STAR1500C NVMe SSD",
+     "subsystems": {}
+    },
+    "1502": {
+     "name": "STAR1500E NVMe SSD",
+     "subsystems": {}
+    },
+    "1504": {
+     "name": "STAR1500L NVMe SSD",
+     "subsystems": {}
+    },
+    "1505": {
+     "name": "STAR1500K NVMe SSD",
+     "subsystems": {}
+    },
+    "1516": {
+     "name": "STAR1516 PCIe NVMe SSD Controller",
+     "subsystems": {}
+    },
+    "2000": {
+     "name": "STAR2000 NVMe Controller",
+     "subsystems": {}
+    },
+    "2001": {
+     "name": "STAR2000E NVMe SSD",
+     "subsystems": {}
+    },
+    "2002": {
+     "name": "STAR2000C NVMe SSD",
+     "subsystems": {}
+    },
+    "2003": {
+     "name": "STAR2000L NVMe SSD",
+     "subsystems": {}
+    },
+    "2004": {
+     "name": "EAST 2000K SSD",
+     "subsystems": {}
+    },
+    "2008": {
+     "name": "STAR2008 PCIE NVMe SSD Controller",
+     "subsystems": {}
+    },
+    "2010": {
+     "name": "STAR2010 PCIE NVMe Secure SSD Controller",
+     "subsystems": {}
+    },
+    "bb5b": {
+     "name": "Asgard AN3+ NVMe SSD",
+     "subsystems": {}
+    },
+    "fc22": {
+     "name": "Asgard AN3+ NVMe SSD",
+     "subsystems": {}
+    }
+   },
+   "name": "Beijing Starblaze Technology Co. Ltd."
+  },
+  "c0a9": {
+   "devices": {
+    "2263": {
+     "name": "P1 NVMe PCIe SSD[Frampton]",
+     "subsystems": {}
+    },
+    "5403": {
+     "name": "P1 NVMe PCIe SSD[Frampton2]",
+     "subsystems": {}
+    },
+    "5407": {
+     "name": "P5 Plus NVMe PCIe SSD",
+     "subsystems": {}
+    },
+    "540a": {
+     "name": "P2 [Nick P2] / P3 / P3 Plus NVMe PCIe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5412": {
+     "name": "P5 NVMe PCIe SSD[SlashP5]",
+     "subsystems": {}
+    },
+    "5415": {
+     "name": "T500 NVMe PCIe SSD",
+     "subsystems": {}
+    },
+    "5419": {
+     "name": "T700 NVMe PCIe SSD",
+     "subsystems": {}
+    },
+    "5420": {
+     "name": "P3 NVMe PCIe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5421": {
+     "name": "P3 Plus NVMe PCIe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5426": {
+     "name": "P310 M.2 2230/2280 NVMe PCIe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5427": {
+     "name": "P310 NVMe PCIe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "5428": {
+     "name": "T710 NVMe PCIe SSD",
+     "subsystems": {}
+    },
+    "5429": {
+     "name": "P310 NVMe PCIe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "542b": {
+     "name": "T705 NVMe PCIe SSD",
+     "subsystems": {}
+    },
+    "560a": {
+     "name": "P510 NVMe PCIe SSD (DRAM-less)",
+     "subsystems": {}
+    },
+    "560b": {
+     "name": "E100 NVMe PCIe SSD (DRAM-less)",
+     "subsystems": {}
+    }
+   },
+   "name": "Micron/Crucial Technology"
+  },
+  "d063": {
+   "devices": {
+    "1500": {
+     "name": "Emulated NVMe",
+     "subsystems": {}
+    }
+   },
+   "name": "SolidRun"
+  },
+  "fe19": {
+   "devices": {
+    "0001": {
+     "name": "TC2200/TC2201 NVMe Controller (DRAM-less)",
+     "subsystems": {}
+    }
+   },
+   "name": "TenaFe, Inc."
+  }
+ },
+ "version": "2026.11.21"
+}

@@ -1,5 +1,13 @@
 # Änderungsprotokoll
 
+## 2026-11-21 – Controller-Vorlagen aller Hersteller
+- `data/catalog/`: 121 Hersteller und 835 NVMe-Controller/-Produkte aus pci.ids (Stand 21.11.2026) inkl. Produkt-Zuordnungen, 223 USB-Speicher-/Bridge-Einträge aus usb.ids, Fachwissen zu 14 Controllerfamilien (Phison, Silicon Motion, Realtek, Maxio, InnoGrit, Samsung, WD/SanDisk, Kioxia, SK hynix/Solidigm, Micron/Crucial, Intel, Marvell, weitere), USB-NVMe-Bridges und belegte Firmwarefehler (Samsung 980 PRO/990 PRO, WD/SanDisk HMB 24H2).
+- `tools/generate_catalog.py`: Vorlagen jederzeit aus den aktuellen Datenbanken neu erzeugen.
+- `native/controller_catalog.h`: KI erkennt Controller-Hersteller (NVMe-Identify-VID), Controller/Produkt (exakte PCI-ID oder Namensabgleich), Bridge, SATA-Gehäuse, bekannte Firmwarefehler und leitet bewertete Reparaturwege ab.
+- Neue Diagnose „SSD meldet sich nicht“ (Bridge ohne Medium) mit Reparaturwegen.
+- Unbekannte Controller werden als Vorlagen-Vorschläge in Quarantäne gesammelt.
+- Nicht gebaut und nicht auf Hardware getestet.
+
 ## 2026-11-21 – Lernende KI ab Programmstart
 - KI-Agent startet mit dem Programm, überwacht USB-Anschlüsse (alle 4 s) und diagnostiziert neu angeschlossene SSDs automatisch.
 - `native/knowledge_base.h`: lokale Wissensbasis (`ki-wissen.json` im AppData-Ordner) mit allen Diagnosen, Rettungen und Benutzeraktionen; Erfahrung je Gerät (Seriennummer nur als Hash), USB-Bridge und Controller-Modell.

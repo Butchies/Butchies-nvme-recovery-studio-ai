@@ -1,0 +1,1122 @@
+{
+ "devices": {
+  "0080:a001": {
+   "name": "JMS578 based SATA bridge",
+   "typ": "sata",
+   "vendor": "Unknown"
+  },
+  "03e8:0015": {
+   "name": "ATAPI Enclosure",
+   "typ": "unbekannt",
+   "vendor": "EndPoints, Inc."
+  },
+  "0402:5627": {
+   "name": "Welland ME-740PS USB2 3.5\" Power Saving Enclosure",
+   "typ": "unbekannt",
+   "vendor": "ALi Corp."
+  },
+  "0403:6015": {
+   "name": "Bridge(I2C/SPI/UART/FIFO)",
+   "typ": "unbekannt",
+   "vendor": "Future Technology Devices International, Ltd"
+  },
+  "0403:e889": {
+   "name": "USB-RS232 OptoBridge",
+   "typ": "unbekannt",
+   "vendor": "Future Technology Devices International, Ltd"
+  },
+  "0409:0056": {
+   "name": "uPD720133 IDE bridge",
+   "typ": "unbekannt",
+   "vendor": "NEC Corp."
+  },
+  "040d:6204": {
+   "name": "Vectro VT6204 IDE bridge",
+   "typ": "unbekannt",
+   "vendor": "VIA Technologies, Inc."
+  },
+  "0411:001c": {
+   "name": "USB-IDE Bridge: DUB-PxxG",
+   "typ": "unbekannt",
+   "vendor": "BUFFALO INC. (formerly MelCo., Inc.)"
+  },
+  "0411:012c": {
+   "name": "SATA Bridge",
+   "typ": "sata",
+   "vendor": "BUFFALO INC. (formerly MelCo., Inc.)"
+  },
+  "0411:01ba": {
+   "name": "SATA Bridge",
+   "typ": "sata",
+   "vendor": "BUFFALO INC. (formerly MelCo., Inc.)"
+  },
+  "0411:01ea": {
+   "name": "SATA Bridge",
+   "typ": "sata",
+   "vendor": "BUFFALO INC. (formerly MelCo., Inc.)"
+  },
+  "0411:01f1": {
+   "name": "SATA Adapter [HD-LBU3]",
+   "typ": "sata",
+   "vendor": "BUFFALO INC. (formerly MelCo., Inc.)"
+  },
+  "0451:625f": {
+   "name": "TUSB6250 ATA Bridge",
+   "typ": "unbekannt",
+   "vendor": "Texas Instruments, Inc."
+  },
+  "0451:9261": {
+   "name": "TUSB9261 SerialATA-Bridge",
+   "typ": "unbekannt",
+   "vendor": "Texas Instruments, Inc."
+  },
+  "045b:0229": {
+   "name": "mSATA Adapter [renkforce Pi-102]",
+   "typ": "sata",
+   "vendor": "Hitachi, Ltd"
+  },
+  "0471:2021": {
+   "name": "SDE3273FC/97 2.5\" SATA HDD Enclosure [INIC-1608L]",
+   "typ": "sata",
+   "vendor": "Philips (or NXP)"
+  },
+  "0474:0230": {
+   "name": "C5 Digital Media Camera (PictBridge mode)",
+   "typ": "unbekannt",
+   "vendor": "Sanyo Electric Co., Ltd"
+  },
+  "0483:0adb": {
+   "name": "Android Debug Bridge (ADB) device",
+   "typ": "unbekannt",
+   "vendor": "STMicroelectronics"
+  },
+  "0483:7270": {
+   "name": "ST Micro Serial Bridge",
+   "typ": "unbekannt",
+   "vendor": "STMicroelectronics"
+  },
+  "048d:ff59": {
+   "name": "Hdmi-CEC Bridge",
+   "typ": "unbekannt",
+   "vendor": "Integrated Technology Express, Inc."
+  },
+  "04a5:6003": {
+   "name": "ATA/ATAPI Adapter",
+   "typ": "sata",
+   "vendor": "Acer Peripherals Inc. (now BenQ Corp.)"
+  },
+  "04b4:4717": {
+   "name": "West Bridge",
+   "typ": "unbekannt",
+   "vendor": "Cypress Semiconductor Corp."
+  },
+  "04b4:6830": {
+   "name": "CY7C68300A EZ-USB AT2 USB 2.0 to ATA/ATAPI",
+   "typ": "sata",
+   "vendor": "Cypress Semiconductor Corp."
+  },
+  "04bb:0101": {
+   "name": "USB2-IDE/ATAPI Bridge Adapter",
+   "typ": "unbekannt",
+   "vendor": "I-O Data Device, Inc."
+  },
+  "04bb:0201": {
+   "name": "USB2-IDE/ATAPI Bridge Adapter",
+   "typ": "unbekannt",
+   "vendor": "I-O Data Device, Inc."
+  },
+  "04bb:0319": {
+   "name": "USB2-IDE/ATAPI Bridge Adapter",
+   "typ": "unbekannt",
+   "vendor": "I-O Data Device, Inc."
+  },
+  "04bb:031a": {
+   "name": "USB2-IDE/ATAPI Bridge Adapter",
+   "typ": "unbekannt",
+   "vendor": "I-O Data Device, Inc."
+  },
+  "04bb:031b": {
+   "name": "USB2-IDE/ATAPI Bridge Adapter",
+   "typ": "unbekannt",
+   "vendor": "I-O Data Device, Inc."
+  },
+  "04c5:2010": {
+   "name": "Sigma DP2 (PictBridge)",
+   "typ": "unbekannt",
+   "vendor": "Fujitsu, Ltd"
+  },
+  "04c5:201d": {
+   "name": "SATA 3.0 6Gbit/s Adaptor [GROOVY]",
+   "typ": "sata",
+   "vendor": "Fujitsu, Ltd"
+  },
+  "04ce:0002": {
+   "name": "SL11R-IDE IDE Bridge",
+   "typ": "unbekannt",
+   "vendor": "ScanLogic Corp."
+  },
+  "04cf:8818": {
+   "name": "USB2.0 to ATAPI Bridge Controller",
+   "typ": "unbekannt",
+   "vendor": "Myson Century, Inc."
+  },
+  "04d8:00dd": {
+   "name": "MCP2221(a) UART/I2C Bridge",
+   "typ": "unbekannt",
+   "vendor": "Microchip Technology, Inc."
+  },
+  "04e6:0001": {
+   "name": "E-USB ATA Bridge",
+   "typ": "unbekannt",
+   "vendor": "SCM Microsystems, Inc."
+  },
+  "04e6:0002": {
+   "name": "eUSCSI SCSI Bridge",
+   "typ": "unbekannt",
+   "vendor": "SCM Microsystems, Inc."
+  },
+  "04e6:0009": {
+   "name": "eUSB ATA/ATAPI Adapter",
+   "typ": "sata",
+   "vendor": "SCM Microsystems, Inc."
+  },
+  "04e6:000b": {
+   "name": "eUSCSI Bridge",
+   "typ": "unbekannt",
+   "vendor": "SCM Microsystems, Inc."
+  },
+  "04e6:000c": {
+   "name": "eUSCSI Bridge",
+   "typ": "unbekannt",
+   "vendor": "SCM Microsystems, Inc."
+  },
+  "04e6:0101": {
+   "name": "eUSB ATA Bridge (Sony Spressa USB CDRW)",
+   "typ": "unbekannt",
+   "vendor": "SCM Microsystems, Inc."
+  },
+  "04e6:1020": {
+   "name": "USBAT ATA/ATAPI Adapter",
+   "typ": "sata",
+   "vendor": "SCM Microsystems, Inc."
+  },
+  "04e8:4001": {
+   "name": "PSSD T7",
+   "typ": "unbekannt",
+   "vendor": "Samsung Electronics Co., Ltd"
+  },
+  "04e8:61f3": {
+   "name": "Portable SSD T3 (MU-PT250B, MU-PT500B)",
+   "typ": "unbekannt",
+   "vendor": "Samsung Electronics Co., Ltd"
+  },
+  "04e8:61f5": {
+   "name": "Portable SSD T5",
+   "typ": "unbekannt",
+   "vendor": "Samsung Electronics Co., Ltd"
+  },
+  "04e8:8002": {
+   "name": "Portable SSD 500GB Model Number: MU - P8500B",
+   "typ": "unbekannt",
+   "vendor": "Samsung Electronics Co., Ltd"
+  },
+  "04e8:8003": {
+   "name": "Portable SSD T1",
+   "typ": "unbekannt",
+   "vendor": "Samsung Electronics Co., Ltd"
+  },
+  "04fc:0c15": {
+   "name": "SPIF215A SATA bridge",
+   "typ": "sata",
+   "vendor": "Sunplus Technology Co., Ltd"
+  },
+  "04fc:0c25": {
+   "name": "SATALink SPIF225A",
+   "typ": "sata",
+   "vendor": "Sunplus Technology Co., Ltd"
+  },
+  "0525:1080": {
+   "name": "NET1080 USB-USB Bridge",
+   "typ": "unbekannt",
+   "vendor": "Netchip Technology, Inc."
+  },
+  "0525:1200": {
+   "name": "SSDC Adapter II",
+   "typ": "unbekannt",
+   "vendor": "Netchip Technology, Inc."
+  },
+  "0525:a0f0": {
+   "name": "Cambridge Electronic Devices Power1401 mk 2",
+   "typ": "unbekannt",
+   "vendor": "Netchip Technology, Inc."
+  },
+  "0547:2720": {
+   "name": "AN2720 USB-USB Bridge",
+   "typ": "unbekannt",
+   "vendor": "Anchor Chips, Inc."
+  },
+  "0547:2727": {
+   "name": "Xircom PGUNET USB-USB Bridge",
+   "typ": "unbekannt",
+   "vendor": "Anchor Chips, Inc."
+  },
+  "0547:2810": {
+   "name": "Cypress ATAPI Bridge",
+   "typ": "unbekannt",
+   "vendor": "Anchor Chips, Inc."
+  },
+  "0557:2600": {
+   "name": "IDE Bridge",
+   "typ": "unbekannt",
+   "vendor": "ATEN International Co., Ltd"
+  },
+  "056c:8101": {
+   "name": "KwikLink USB-USB Bridge",
+   "typ": "unbekannt",
+   "vendor": "eTEK Labs"
+  },
+  "0583:2050": {
+   "name": "PX-205 PSX Bridge",
+   "typ": "unbekannt",
+   "vendor": "Padix Co., Ltd (Rockfire)"
+  },
+  "058f:6390": {
+   "name": "USB 2.0-IDE bridge",
+   "typ": "unbekannt",
+   "vendor": "Alcor Micro Corp."
+  },
+  "058f:6391": {
+   "name": "IDE Bridge",
+   "typ": "unbekannt",
+   "vendor": "Alcor Micro Corp."
+  },
+  "059b:0040": {
+   "name": "SCSI Bridge",
+   "typ": "unbekannt",
+   "vendor": "Iomega Corp."
+  },
+  "059b:0056": {
+   "name": "External CD-RW Drive Enclosure",
+   "typ": "unbekannt",
+   "vendor": "Iomega Corp."
+  },
+  "059b:0173": {
+   "name": "Hi-Speed USB-to-IDE Bridge Controller",
+   "typ": "unbekannt",
+   "vendor": "Iomega Corp."
+  },
+  "059b:0174": {
+   "name": "Hi-Speed USB-to-IDE Bridge Controller",
+   "typ": "unbekannt",
+   "vendor": "Iomega Corp."
+  },
+  "059b:0176": {
+   "name": "Hi-Speed USB-to-IDE Bridge Controller",
+   "typ": "unbekannt",
+   "vendor": "Iomega Corp."
+  },
+  "059b:0177": {
+   "name": "Hi-Speed USB-to-IDE Bridge Controller",
+   "typ": "unbekannt",
+   "vendor": "Iomega Corp."
+  },
+  "059b:0178": {
+   "name": "Hi-Speed USB-to-IDE Bridge Controller",
+   "typ": "unbekannt",
+   "vendor": "Iomega Corp."
+  },
+  "059b:0179": {
+   "name": "Hi-Speed USB-to-IDE Bridge Controller",
+   "typ": "unbekannt",
+   "vendor": "Iomega Corp."
+  },
+  "059b:0278": {
+   "name": "LDHD-UPS [Professional Desktop Hard Drive eSATA / USB2.0]",
+   "typ": "sata",
+   "vendor": "Iomega Corp."
+  },
+  "05ab:0031": {
+   "name": "ATA Bridge",
+   "typ": "unbekannt",
+   "vendor": "In-System Design"
+  },
+  "05ab:0060": {
+   "name": "USB 2.0 ATA Bridge",
+   "typ": "unbekannt",
+   "vendor": "In-System Design"
+  },
+  "05ab:0200": {
+   "name": "USS725 ATA Bridge",
+   "typ": "unbekannt",
+   "vendor": "In-System Design"
+  },
+  "05ab:0202": {
+   "name": "ATA Bridge",
+   "typ": "unbekannt",
+   "vendor": "In-System Design"
+  },
+  "05ab:081a": {
+   "name": "ATA Bridge",
+   "typ": "unbekannt",
+   "vendor": "In-System Design"
+  },
+  "05ab:0cda": {
+   "name": "ATA Bridge for CD-R/RW",
+   "typ": "unbekannt",
+   "vendor": "In-System Design"
+  },
+  "05ac:8233": {
+   "name": "iBridge",
+   "typ": "unbekannt",
+   "vendor": "Apple, Inc."
+  },
+  "05ac:8600": {
+   "name": "iBridge",
+   "typ": "unbekannt",
+   "vendor": "Apple, Inc."
+  },
+  "05e3:0502": {
+   "name": "GL620USB-A GeneLink USB-USB Bridge",
+   "typ": "unbekannt",
+   "vendor": "Genesys Logic, Inc."
+  },
+  "05e3:0718": {
+   "name": "IDE/SATA Adapter",
+   "typ": "sata",
+   "vendor": "Genesys Logic, Inc."
+  },
+  "05e3:0719": {
+   "name": "SATA adapter",
+   "typ": "sata",
+   "vendor": "Genesys Logic, Inc."
+  },
+  "05e3:0731": {
+   "name": "GL3310 SATA 3Gb/s Bridge Controller",
+   "typ": "sata",
+   "vendor": "Genesys Logic, Inc."
+  },
+  "0634:0655": {
+   "name": "Embedded Mass Storage Drive [RealSSD]",
+   "typ": "unbekannt",
+   "vendor": "Micron Technology, Inc."
+  },
+  "066f:4200": {
+   "name": "STIr4200 IrDA Bridge",
+   "typ": "unbekannt",
+   "vendor": "SigmaTel, Inc."
+  },
+  "066f:4210": {
+   "name": "STIr4210 IrDA Bridge",
+   "typ": "unbekannt",
+   "vendor": "SigmaTel, Inc."
+  },
+  "067b:0000": {
+   "name": "PL2301 USB-USB Bridge",
+   "typ": "unbekannt",
+   "vendor": "Prolific Technology, Inc."
+  },
+  "067b:0001": {
+   "name": "PL2302 USB-USB Bridge",
+   "typ": "unbekannt",
+   "vendor": "Prolific Technology, Inc."
+  },
+  "067b:0600": {
+   "name": "IDE Bridge",
+   "typ": "unbekannt",
+   "vendor": "Prolific Technology, Inc."
+  },
+  "067b:1231": {
+   "name": "Orico SATA External Hard Disk Drive Lay-Flat Docking Station with USB 3.0 & eSATA interfaces.",
+   "typ": "sata",
+   "vendor": "Prolific Technology, Inc."
+  },
+  "067b:2306": {
+   "name": "Raylink Bridge Controller",
+   "typ": "unbekannt",
+   "vendor": "Prolific Technology, Inc."
+  },
+  "067b:2307": {
+   "name": "PL2307 USB-ATAPI4 Bridge",
+   "typ": "unbekannt",
+   "vendor": "Prolific Technology, Inc."
+  },
+  "067b:23a3": {
+   "name": "ATEN Serial Bridge",
+   "typ": "unbekannt",
+   "vendor": "Prolific Technology, Inc."
+  },
+  "067b:2501": {
+   "name": "PL2501 USB-USB Bridge (USB 2.0)",
+   "typ": "unbekannt",
+   "vendor": "Prolific Technology, Inc."
+  },
+  "067b:2507": {
+   "name": "PL2507 Hi-speed USB to IDE bridge controller",
+   "typ": "unbekannt",
+   "vendor": "Prolific Technology, Inc."
+  },
+  "067b:25a1": {
+   "name": "PL25A1 Host-Host Bridge",
+   "typ": "unbekannt",
+   "vendor": "Prolific Technology, Inc."
+  },
+  "067b:2773": {
+   "name": "PL2773 SATAII bridge controller",
+   "typ": "sata",
+   "vendor": "Prolific Technology, Inc."
+  },
+  "067b:3507": {
+   "name": "PL3507 ATAPI6 Bridge",
+   "typ": "unbekannt",
+   "vendor": "Prolific Technology, Inc."
+  },
+  "06d0:0622": {
+   "name": "LapLink Gold USB-USB Bridge [net1080]",
+   "typ": "unbekannt",
+   "vendor": "LapLink, Inc."
+  },
+  "0708:047e": {
+   "name": "USB-1284 BRIDGE",
+   "typ": "unbekannt",
+   "vendor": "Putercom Co., Ltd"
+  },
+  "0781:558c": {
+   "name": "Extreme Portable SSD",
+   "typ": "unbekannt",
+   "vendor": "SanDisk Corp."
+  },
+  "0781:6500": {
+   "name": "uSSD 5000",
+   "typ": "unbekannt",
+   "vendor": "SanDisk Corp."
+  },
+  "0789:0578": {
+   "name": "JMS583 Gen 2 - PCIe Gen3x2 Bridge",
+   "typ": "nvme",
+   "vendor": "Logitec Corp."
+  },
+  "07ab:fc01": {
+   "name": "IDE bridge",
+   "typ": "unbekannt",
+   "vendor": "Freecom Technologies"
+  },
+  "07ab:fc03": {
+   "name": "USB2-IDE IDE bridge",
+   "typ": "unbekannt",
+   "vendor": "Freecom Technologies"
+  },
+  "07af:0004": {
+   "name": "SCSI-DB25 SCSI Bridge [shuttle]",
+   "typ": "unbekannt",
+   "vendor": "Microtech"
+  },
+  "07af:0005": {
+   "name": "SCSI-HD50 SCSI Bridge [shuttle]",
+   "typ": "unbekannt",
+   "vendor": "Microtech"
+  },
+  "07cf:1225": {
+   "name": "Exilim EX-H10 Digital Camera (PictBridge mode)",
+   "typ": "unbekannt",
+   "vendor": "Casio Computer Co., Ltd"
+  },
+  "07cf:1233": {
+   "name": "Exilim EX-Z350 Digital Camera (PictBridge mode)",
+   "typ": "unbekannt",
+   "vendor": "Casio Computer Co., Ltd"
+  },
+  "07f7:011e": {
+   "name": "Century USB Disk Enclosure",
+   "typ": "unbekannt",
+   "vendor": "Century Corp."
+  },
+  "0840:0060": {
+   "name": "Storage Adapter Bridge Module",
+   "typ": "unbekannt",
+   "vendor": "Argosy Research, Inc."
+  },
+  "08e3:0002": {
+   "name": "USB-RS232 Bridge",
+   "typ": "unbekannt",
+   "vendor": "Olitec, Inc."
+  },
+  "0930:a002": {
+   "name": "SunplusIT SATA bridge",
+   "typ": "sata",
+   "vendor": "Toshiba Corp."
+  },
+  "0984:0040": {
+   "name": "SATA Wire (2.5\")",
+   "typ": "sata",
+   "vendor": "Apricorn"
+  },
+  "09cc:0404": {
+   "name": "BAFO USB-ATA/ATAPI Bridge Controller",
+   "typ": "sata",
+   "vendor": "Workbit Corp."
+  },
+  "0b39:0801": {
+   "name": "USB-Parallel Bridge",
+   "typ": "unbekannt",
+   "vendor": "Omnidirectional Control Technology, Inc."
+  },
+  "0bc2:2320": {
+   "name": "USB 3.0 bridge [Portable Expansion Drive]",
+   "typ": "unbekannt",
+   "vendor": "Seagate RSS LLC"
+  },
+  "0bc2:5032": {
+   "name": "SATA cable",
+   "typ": "sata",
+   "vendor": "Seagate RSS LLC"
+  },
+  "0bda:9210": {
+   "name": "RTL9210 M.2 NVME Adapter",
+   "typ": "nvme",
+   "vendor": "Realtek Semiconductor Corp."
+  },
+  "0bf6:a002": {
+   "name": "IDE Bridge",
+   "typ": "unbekannt",
+   "vendor": "Addonics Technologies, Inc."
+  },
+  "0caf:2507": {
+   "name": "Hi-Speed USB-to-IDE Bridge Controller",
+   "typ": "unbekannt",
+   "vendor": "Buslink"
+  },
+  "0caf:25c7": {
+   "name": "Hi-Speed USB-to-IDE Bridge Controller",
+   "typ": "unbekannt",
+   "vendor": "Buslink"
+  },
+  "0d49:3100": {
+   "name": "Hi-Speed USB-IDE Bridge Controller",
+   "typ": "unbekannt",
+   "vendor": "Maxtor"
+  },
+  "0d7d:110e": {
+   "name": "NEC uPD720121/130 USB-ATA/ATAPI Bridge",
+   "typ": "sata",
+   "vendor": "Phison Electronics Corp."
+  },
+  "0d7e:2507": {
+   "name": "Hi-Speed USB-to-IDE Bridge Controller",
+   "typ": "unbekannt",
+   "vendor": "American Computer & Digital Components"
+  },
+  "0d7e:25c7": {
+   "name": "Hi-Speed USB-to-IDE Bridge Controller",
+   "typ": "unbekannt",
+   "vendor": "American Computer & Digital Components"
+  },
+  "0dc4:020a": {
+   "name": "Oyen Digital MiniPro 2.5\" hard drive enclosure",
+   "typ": "unbekannt",
+   "vendor": "inXtron, Inc."
+  },
+  "0dd8:0562": {
+   "name": "Netac Portable SSD Z6s",
+   "typ": "unbekannt",
+   "vendor": "Netac Technology Co., Ltd"
+  },
+  "0dda:2007": {
+   "name": "USB to ATAPI bridge",
+   "typ": "unbekannt",
+   "vendor": "Integrated Circuit Solution, Inc."
+  },
+  "0df6:214a": {
+   "name": "IDE/SATA Combo Adapter [CN-330]",
+   "typ": "sata",
+   "vendor": "Sitecom Europe B.V."
+  },
+  "0e55:110b": {
+   "name": "MS3303H USB-to-Serial Bridge",
+   "typ": "unbekannt",
+   "vendor": "Speed Dragon Multimedia, Ltd"
+  },
+  "0e6a:0101": {
+   "name": "MA100 [USB-UART Bridge IC]",
+   "typ": "unbekannt",
+   "vendor": "Megawin Technology Co., Ltd"
+  },
+  "0ee4:0690": {
+   "name": "SATA 3 Adapter",
+   "typ": "sata",
+   "vendor": "Sunrich Technology, Ltd"
+  },
+  "0fce:10af": {
+   "name": "V640i Phone [PictBridge]",
+   "typ": "unbekannt",
+   "vendor": "Sony Ericsson Mobile Communications AB"
+  },
+  "0fce:10d4": {
+   "name": "C902 Phone [PictBridge]",
+   "typ": "unbekannt",
+   "vendor": "Sony Ericsson Mobile Communications AB"
+  },
+  "0fce:e000": {
+   "name": "K810 (PictBridge mode)",
+   "typ": "unbekannt",
+   "vendor": "Sony Ericsson Mobile Communications AB"
+  },
+  "1058:25f3": {
+   "name": "My Passport SSD (WDBK3E)",
+   "typ": "unbekannt",
+   "vendor": "Western Digital Technologies, Inc."
+  },
+  "1058:30a0": {
+   "name": "SATA adapter cable",
+   "typ": "sata",
+   "vendor": "Western Digital Technologies, Inc."
+  },
+  "10c4:80a9": {
+   "name": "CP210x to UART Bridge Controller",
+   "typ": "unbekannt",
+   "vendor": "Silicon Labs"
+  },
+  "10c4:ea60": {
+   "name": "CP210x UART Bridge",
+   "typ": "unbekannt",
+   "vendor": "Silicon Labs"
+  },
+  "10c4:ea61": {
+   "name": "CP210x UART Bridge",
+   "typ": "unbekannt",
+   "vendor": "Silicon Labs"
+  },
+  "10c4:ea63": {
+   "name": "CP210x UART Bridge",
+   "typ": "unbekannt",
+   "vendor": "Silicon Labs"
+  },
+  "10c4:ea70": {
+   "name": "CP2105 Dual UART Bridge",
+   "typ": "unbekannt",
+   "vendor": "Silicon Labs"
+  },
+  "10c4:ea71": {
+   "name": "CP2108 Quad UART Bridge",
+   "typ": "unbekannt",
+   "vendor": "Silicon Labs"
+  },
+  "10c4:ea80": {
+   "name": "CP2110 HID UART Bridge",
+   "typ": "unbekannt",
+   "vendor": "Silicon Labs"
+  },
+  "10c4:ea90": {
+   "name": "CP2112 HID I2C Bridge",
+   "typ": "unbekannt",
+   "vendor": "Silicon Labs"
+  },
+  "10c4:ea91": {
+   "name": "CP2112 HID SMBus/I2C Bridge for CP2614 Evaluation Kit",
+   "typ": "unbekannt",
+   "vendor": "Silicon Labs"
+  },
+  "10c4:ea93": {
+   "name": "CP2112 HID SMBus/I2C Bridge for CP2615 Evaluation Kit",
+   "typ": "unbekannt",
+   "vendor": "Silicon Labs"
+  },
+  "1209:9999": {
+   "name": "Sandeepan Sengupta CodeBridge Infineo",
+   "typ": "unbekannt",
+   "vendor": "Generic"
+  },
+  "1209:abcd": {
+   "name": "Sandeepan Sengupta CodeBridge",
+   "typ": "unbekannt",
+   "vendor": "Generic"
+  },
+  "1209:b010": {
+   "name": "IObitZ CodeBridge",
+   "typ": "unbekannt",
+   "vendor": "Generic"
+  },
+  "1325:0c08": {
+   "name": "Embedded Linux Sensor Bridge",
+   "typ": "unbekannt",
+   "vendor": "ams AG"
+  },
+  "132b:0007": {
+   "name": "Minolta DiMAGE Z2 (PictBridge mode)",
+   "typ": "unbekannt",
+   "vendor": "Konica Minolta"
+  },
+  "132b:0018": {
+   "name": "Minolta DiMAGE Z3 (PictBridge mode)",
+   "typ": "unbekannt",
+   "vendor": "Konica Minolta"
+  },
+  "132b:0022": {
+   "name": "Minolta DiMAGE Z5 (PictBridge mode)",
+   "typ": "unbekannt",
+   "vendor": "Konica Minolta"
+  },
+  "13d7:0001": {
+   "name": "T5 PATA forensic bridge",
+   "typ": "unbekannt",
+   "vendor": "Guidance Software, Inc."
+  },
+  "13d7:000c": {
+   "name": "T8-R2 forensic bridge",
+   "typ": "unbekannt",
+   "vendor": "Guidance Software, Inc."
+  },
+  "13fd:0550": {
+   "name": "INIC-1530 PATA Bridge",
+   "typ": "unbekannt",
+   "vendor": "Initio Corporation"
+  },
+  "13fd:0840": {
+   "name": "INIC-1618L SATA",
+   "typ": "sata",
+   "vendor": "Initio Corporation"
+  },
+  "13fd:1040": {
+   "name": "INIC-1511L PATA Bridge",
+   "typ": "unbekannt",
+   "vendor": "Initio Corporation"
+  },
+  "13fd:1340": {
+   "name": "Hi-Speed USB to SATA Bridge",
+   "typ": "sata",
+   "vendor": "Initio Corporation"
+  },
+  "13fd:160f": {
+   "name": "RocketFish SATA Bridge [INIC-1611]",
+   "typ": "sata",
+   "vendor": "Initio Corporation"
+  },
+  "13fd:1640": {
+   "name": "INIC-1610L SATA Bridge",
+   "typ": "sata",
+   "vendor": "Initio Corporation"
+  },
+  "13fd:1840": {
+   "name": "INIC-1608 SATA bridge",
+   "typ": "sata",
+   "vendor": "Initio Corporation"
+  },
+  "13fd:1e40": {
+   "name": "INIC-1610P SATA bridge",
+   "typ": "sata",
+   "vendor": "Initio Corporation"
+  },
+  "13fd:3920": {
+   "name": "INIC-3619PN SATA Bridge",
+   "typ": "sata",
+   "vendor": "Initio Corporation"
+  },
+  "14cd:6116": {
+   "name": "M6116 SATA Bridge",
+   "typ": "sata",
+   "vendor": "Super Top"
+  },
+  "14cd:6600": {
+   "name": "M110E PATA bridge",
+   "typ": "unbekannt",
+   "vendor": "Super Top"
+  },
+  "152d:0539": {
+   "name": "JMS539/567 SuperSpeed SATA II/III 3.0G/6.0G Bridge",
+   "typ": "sata",
+   "vendor": "JMicron Technology Corp. / JMicron USA Technology Corp."
+  },
+  "152d:0551": {
+   "name": "JMS551 SuperSpeed two ports SATA 3Gb/s bridge",
+   "typ": "sata",
+   "vendor": "JMicron Technology Corp. / JMicron USA Technology Corp."
+  },
+  "152d:0561": {
+   "name": "JMS551 - Sharkoon SATA QuickPort Duo",
+   "typ": "sata",
+   "vendor": "JMicron Technology Corp. / JMicron USA Technology Corp."
+  },
+  "152d:0562": {
+   "name": "JMS567 SATA 6Gb/s bridge",
+   "typ": "sata",
+   "vendor": "JMicron Technology Corp. / JMicron USA Technology Corp."
+  },
+  "152d:0567": {
+   "name": "JMS567 SATA 6Gb/s bridge",
+   "typ": "sata",
+   "vendor": "JMicron Technology Corp. / JMicron USA Technology Corp."
+  },
+  "152d:0576": {
+   "name": "Gen1 SATA 6Gb/s Bridge",
+   "typ": "sata",
+   "vendor": "JMicron Technology Corp. / JMicron USA Technology Corp."
+  },
+  "152d:0578": {
+   "name": "JMS578 SATA 6Gb/s",
+   "typ": "sata",
+   "vendor": "JMicron Technology Corp. / JMicron USA Technology Corp."
+  },
+  "152d:0583": {
+   "name": "JMS583Gen 2 to PCIe Gen3x2 Bridge",
+   "typ": "nvme",
+   "vendor": "JMicron Technology Corp. / JMicron USA Technology Corp."
+  },
+  "152d:1561": {
+   "name": "JMS561U two ports SATA 6Gb/s bridge",
+   "typ": "sata",
+   "vendor": "JMicron Technology Corp. / JMicron USA Technology Corp."
+  },
+  "152d:2329": {
+   "name": "JM20329 SATA Bridge",
+   "typ": "sata",
+   "vendor": "JMicron Technology Corp. / JMicron USA Technology Corp."
+  },
+  "152d:2335": {
+   "name": "ATA/ATAPI Bridge",
+   "typ": "sata",
+   "vendor": "JMicron Technology Corp. / JMicron USA Technology Corp."
+  },
+  "152d:2337": {
+   "name": "ATA/ATAPI Bridge",
+   "typ": "sata",
+   "vendor": "JMicron Technology Corp. / JMicron USA Technology Corp."
+  },
+  "152d:2338": {
+   "name": "JM20337 Hi-Speed USB to SATA & PATA Combo Bridge",
+   "typ": "sata",
+   "vendor": "JMicron Technology Corp. / JMicron USA Technology Corp."
+  },
+  "152d:2339": {
+   "name": "JM20339 SATA Bridge",
+   "typ": "sata",
+   "vendor": "JMicron Technology Corp. / JMicron USA Technology Corp."
+  },
+  "152d:2352": {
+   "name": "ATA/ATAPI Bridge",
+   "typ": "sata",
+   "vendor": "JMicron Technology Corp. / JMicron USA Technology Corp."
+  },
+  "152d:2509": {
+   "name": "JMS539, JMS551 SATA 3Gb/s bridge",
+   "typ": "sata",
+   "vendor": "JMicron Technology Corp. / JMicron USA Technology Corp."
+  },
+  "152d:2551": {
+   "name": "JMS551 SATA 3Gb/s bridge",
+   "typ": "sata",
+   "vendor": "JMicron Technology Corp. / JMicron USA Technology Corp."
+  },
+  "152d:2566": {
+   "name": "JMS566 SATA 3Gb/s bridge",
+   "typ": "sata",
+   "vendor": "JMicron Technology Corp. / JMicron USA Technology Corp."
+  },
+  "152d:2590": {
+   "name": "JMS567 SATA 6Gb/s bridge",
+   "typ": "sata",
+   "vendor": "JMicron Technology Corp. / JMicron USA Technology Corp."
+  },
+  "152d:3562": {
+   "name": "JMS567 SATA 6Gb/s bridge",
+   "typ": "sata",
+   "vendor": "JMicron Technology Corp. / JMicron USA Technology Corp."
+  },
+  "152d:3569": {
+   "name": "JMS566 SATA 3Gb/s bridge",
+   "typ": "sata",
+   "vendor": "JMicron Technology Corp. / JMicron USA Technology Corp."
+  },
+  "152d:578e": {
+   "name": "JMS578 SATA 6Gb/s bridge",
+   "typ": "sata",
+   "vendor": "JMicron Technology Corp. / JMicron USA Technology Corp."
+  },
+  "152e:1640": {
+   "name": "INIC-1605 SATA Bridge",
+   "typ": "sata",
+   "vendor": "LG (HLDS)"
+  },
+  "154b:5408": {
+   "name": "2.5in drive enclosure",
+   "typ": "unbekannt",
+   "vendor": "PNY"
+  },
+  "174c:07d1": {
+   "name": "Transcend ESD400 Portable SSD (USB 3.0)",
+   "typ": "unbekannt",
+   "vendor": "ASMedia Technology Inc."
+  },
+  "174c:1153": {
+   "name": "ASM1153 SATA 3Gb/s bridge",
+   "typ": "sata",
+   "vendor": "ASMedia Technology Inc."
+  },
+  "174c:5106": {
+   "name": "ASM1051 SATA 3Gb/s bridge",
+   "typ": "sata",
+   "vendor": "ASMedia Technology Inc."
+  },
+  "174c:5136": {
+   "name": "ASM1053 SATA 3Gb/s bridge",
+   "typ": "sata",
+   "vendor": "ASMedia Technology Inc."
+  },
+  "174c:51d6": {
+   "name": "ASM1051W SATA 3Gb/s bridge",
+   "typ": "sata",
+   "vendor": "ASMedia Technology Inc."
+  },
+  "174c:55aa": {
+   "name": "ASM1051E SATA 6Gb/s bridge, ASM1053E SATA 6Gb/s bridge, ASM1153 SATA 3Gb/s bridge, ASM1153E SATA 6Gb/s bridge",
+   "typ": "sata",
+   "vendor": "ASMedia Technology Inc."
+  },
+  "1bcf:0c31": {
+   "name": "SPIF30x Serial-ATA bridge",
+   "typ": "unbekannt",
+   "vendor": "Sunplus Innovation Technology Inc."
+  },
+  "1ca1:18ab": {
+   "name": "SATA bridge",
+   "typ": "sata",
+   "vendor": "Symwave"
+  },
+  "1d50:6062": {
+   "name": "WhiteRabbit console and Wishbone bridge",
+   "typ": "unbekannt",
+   "vendor": "OpenMoko, Inc."
+  },
+  "1ef6:5523": {
+   "name": "Cassidian SSDC Adapter II",
+   "typ": "unbekannt",
+   "vendor": "EADS Deutschland GmbH"
+  },
+  "1ef6:5545": {
+   "name": "Cassidian SSDC Adapter III",
+   "typ": "unbekannt",
+   "vendor": "EADS Deutschland GmbH"
+  },
+  "1f75:0611": {
+   "name": "IS611 SATA/PATA Bridge Controller",
+   "typ": "sata",
+   "vendor": "Innostor Technology Corporation"
+  },
+  "1f75:0621": {
+   "name": "IS621 SATA Storage Controller",
+   "typ": "sata",
+   "vendor": "Innostor Technology Corporation"
+  },
+  "1f75:0888": {
+   "name": "IS888 SATA Storage Controller",
+   "typ": "sata",
+   "vendor": "Innostor Technology Corporation"
+  },
+  "1fde:0001": {
+   "name": "UART Bridge",
+   "typ": "unbekannt",
+   "vendor": "ILX Lightwave Corporation"
+  },
+  "2109:0700": {
+   "name": "VL700 SATA 3Gb/s bridge",
+   "typ": "sata",
+   "vendor": "VIA Labs, Inc."
+  },
+  "2109:0701": {
+   "name": "VL701 SATA 3Gb/s bridge",
+   "typ": "sata",
+   "vendor": "VIA Labs, Inc."
+  },
+  "2109:0711": {
+   "name": "VL711 SATA 6Gb/s bridge",
+   "typ": "sata",
+   "vendor": "VIA Labs, Inc."
+  },
+  "2109:0715": {
+   "name": "VL817 SATA Adaptor",
+   "typ": "sata",
+   "vendor": "VIA Labs, Inc."
+  },
+  "2116:000a": {
+   "name": "IDE Hard Drive Enclosure",
+   "typ": "unbekannt",
+   "vendor": "KT Tech"
+  },
+  "2162:8001": {
+   "name": "Broadxent BritePort DSL Bridge 8010U",
+   "typ": "unbekannt",
+   "vendor": "Broadxent (Creative Labs)"
+  },
+  "2318:0011": {
+   "name": "CitiDISK Jr. IDE Enclosure",
+   "typ": "unbekannt",
+   "vendor": "Shining Technologies, Inc. [hex]"
+  },
+  "2537:1068": {
+   "name": "NS1068/NS1068X SATA Bridge Controller",
+   "typ": "sata",
+   "vendor": "Norelsys"
+  },
+  "2626:ea60": {
+   "name": "UART Bridge Controller [cp210x]",
+   "typ": "unbekannt",
+   "vendor": "Aruba Networks"
+  },
+  "357d:7788": {
+   "name": "JMicron JMS567 ATA/ATAPI Bridge",
+   "typ": "sata",
+   "vendor": "Sharkoon"
+  },
+  "3923:17b0": {
+   "name": "USB-ISA-Bridge",
+   "typ": "unbekannt",
+   "vendor": "National Instruments Corp."
+  },
+  "40bb:0a09": {
+   "name": "USB2.0-SCSI Bridge USB2-SC",
+   "typ": "unbekannt",
+   "vendor": "I-O Data"
+  },
+  "413c:9001": {
+   "name": "ATA Bridge",
+   "typ": "unbekannt",
+   "vendor": "Dell Computer Corp."
+  },
+  "413c:9500": {
+   "name": "USB CP210x UART Bridge Controller [DW700]",
+   "typ": "unbekannt",
+   "vendor": "Dell Computer Corp."
+  },
+  "4971:ce21": {
+   "name": "JMicron JM20329 SATA Bridge [eg. HITACHI SimpleDrive mini]",
+   "typ": "sata",
+   "vendor": "SimpleTech"
+  },
+  "55aa:1234": {
+   "name": "ATAPI Bridge",
+   "typ": "unbekannt",
+   "vendor": "OnSpec Electronic, Inc."
+  },
+  "7825:a2a4": {
+   "name": "External SATA Hard Drive Adapter cable PA023U3",
+   "typ": "sata",
+   "vendor": "Other World Computing"
+  },
+  "8086:2448": {
+   "name": "82801 PCI Bridge",
+   "typ": "unbekannt",
+   "vendor": "Intel Corp."
+  },
+  "ab12:34cd": {
+   "name": "JMICRON JMS578 SATA 6Gb/s bridge",
+   "typ": "sata",
+   "vendor": "aplic"
+  },
+  "abcd:6104": {
+   "name": "PCCloneEX Lite+ SATA docking station [QP0017]",
+   "typ": "sata",
+   "vendor": "LogiLink"
+  }
+ },
+ "lizenz": "GPL-2.0-or-later oder BSD-3-Clause",
+ "quelle": "usb.ids (usbids/usbids)",
+ "version": "2026.06.26"
+}

@@ -1,0 +1,38 @@
+{
+  "version": "2026-11-21",
+  "hinweis": "USB-zu-NVMe-Bridgechips und was sie durchreichen. VID:PID 'bestaetigt' = in usb.ids enthalten; sonst Praxiswissen. Gehäusehersteller verwenden oft eigene VID:PID; dann zählt der gemeldete Chip.",
+  "bridges": [
+    {
+      "chip": "JMicron JMS583",
+      "usbIds": {"152d:0583": "bestaetigt", "0789:0578": "bestaetigt (Logitec-Variante)"},
+      "nvmePassthrough": "ja, über herstellerspezifische SCSI-Befehle (smartmontools-Treiber 'sntjmicron')",
+      "smart": "ja (mit Passthrough)",
+      "ssdFirmwareUpdate": "nicht vorgesehen",
+      "notmodusSichtbar": false,
+      "vertrauen": "dokumentiert"
+    },
+    {
+      "chip": "Realtek RTL9210 / RTL9210B",
+      "usbIds": {"0bda:9210": "bestaetigt"},
+      "nvmePassthrough": "ja, über herstellerspezifische SCSI-Befehle (smartmontools-Treiber 'sntrealtek')",
+      "smart": "ja (mit Passthrough)",
+      "ssdFirmwareUpdate": "nicht vorgesehen",
+      "notmodusSichtbar": false,
+      "hinweis": "RTL9210B unterstützt zusätzlich SATA-M.2-SSDs.",
+      "vertrauen": "dokumentiert"
+    },
+    {
+      "chip": "ASMedia ASM2362 / ASM2364",
+      "usbIds": {"174c:2362": "unbestaetigt"},
+      "nvmePassthrough": "ja, über herstellerspezifische SCSI-Befehle (smartmontools-Treiber 'sntasmedia')",
+      "smart": "ja (mit Passthrough)",
+      "ssdFirmwareUpdate": "nicht vorgesehen",
+      "notmodusSichtbar": false,
+      "vertrauen": "dokumentiert"
+    }
+  ],
+  "allgemein": {
+    "notmodus": "Ein SSD-Controller im ROM-/Safe-Mode meldet sich nicht als NVMe-Laufwerk. USB-Bridges zeigen dann kein Medium oder Kapazität 0. Firmware-Recovery im Notmodus ist nur mit direktem PCIe-Anschluss (Linux-Boot-Edition) möglich.",
+    "windowsHinweis": "Windows reicht NVMe-Protokollabfragen (IOCTL_STORAGE_QUERY_PROPERTY mit ProtocolTypeNvme) nur über den eigenen NVMe-Treiber durch. Bei USB-Gehäusen sind dafür die herstellerspezifischen SCSI-Befehle der Bridge nötig."
+  }
+}
