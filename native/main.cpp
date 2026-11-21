@@ -14,15 +14,18 @@
 #include <QStandardPaths>
 #include <QRegularExpression>
 #include "usb_bridge.h"
+#include "recovery_agent.h"
 
 class RecoveryController final : public QObject {
     Q_OBJECT
     Q_PROPERTY(QVariantList devices READ devices NOTIFY devicesChanged)
     Q_PROPERTY(QString status READ status NOTIFY statusChanged)
+    Q_PROPERTY(QVariantMap aiReport READ aiReport NOTIFY aiReportChanged)
 public:
     explicit RecoveryController(QObject *parent=nullptr):QObject(parent) {}
     QVariantList devices() const { return m_devices; }
     QString status() const { return m_status; }
+    QVariantMap aiReport() const { return m_aiReport; }
     Q_INVOKABLE void refresh() {
 #ifdef Q_OS_WIN
         QProcess ps;
@@ -90,12 +93,40 @@ public:
             found.append(d);
         }
         m_devices=found;
+        m_aiReport.clear();
+        emit aiReportChanged();
         emit devicesChanged();
         setStatus(QStringLiteral("%1 externe USB-Geräte erkannt. Interne Laufwerke ausgeschlossen.").arg(found.size()));
 #else
         m_devices.clear();emit devicesChanged();
         setStatus(QStringLiteral("Diese native Edition ist für Windows 10/11 vorgesehen."));
 #endif
+    }
+    Q_INVOKABLE void autoDiagnose(int index) {
+        if(index<0 || index>=m_devices.size()) {
+            m_aiReport.clear();
+            emit aiReportChanged();
+            setStatus(QStringLiteral("KI-Diagnose: Kein externes USB-Gerät ausgewählt."));
+            return;
+        }
+        const auto device=m_devices.at(index).toMap();
+        // Fresh hardware query, not stale inventory data.
+        const auto fresh=UsbBridge::inspect(device.value("devicePath").toString());
+        if(!fresh.value("usbConfirmed").toBool()) {
+            m_aiReport.clear();
+            emit aiReportChanged();
+            setStatus(QStringLiteral("KI-Diagnose gestoppt: USB-Gerät nicht mehr bestätigt."));
+            return;
+        }
+        QVariantMap verified=device;
+        for(auto it=fresh.constBegin();it!=fresh.constEnd();++it)
+            verified[it.key()]=it.value();
+        verified["connection"]="USB";
+        verified["readOnly"]=true;
+        m_aiReport=RecoveryAgent::analyze(verified);
+        emit aiReportChanged();
+        setStatus(QStringLiteral("Automatische Diagnose abgeschlossen: %1")
+            .arg(m_aiReport.value("diagnosis").toString()));
     }
     Q_INVOKABLE void selectDevice(int index) {
         if(index<0 || index>=m_devices.size()) {
@@ -141,9 +172,11 @@ public:
 signals:
     void devicesChanged();
     void statusChanged();
+    void aiReportChanged();
 private:
     void setStatus(const QString &text){m_status=text;emit statusChanged();}
     QVariantList m_devices;
+    QVariantMap m_aiReport;
     QString m_status=QStringLiteral("Bereit. Keine Schreibzugriffe auf SSDs.");
 };
 int main(int argc,char *argv[]) {
