@@ -27,6 +27,7 @@ def inspect(diagnostics):
         if frmw is not None:
             count=(frmw>>1)&7
             result["advertised_firmware_slots"]=count
+            if count==0: result["limitations"].append("Controller meldet keine Firmware-Slots; keine Firmwareaktion ableiten.")
             result["slot_1_read_only"]=bool(frmw&1)
             result["activation_without_reset_advertised"]=bool(frmw&16)
             result["observations"].append("Controller-Firmware-Slot-Fähigkeiten aus Identify Controller dekodiert.")
@@ -48,6 +49,8 @@ def inspect(diagnostics):
                 value=fw[key]
                 slots[str(i)]=str(value)[:128] if value is not None else None
         result["reported_slot_revisions"]=slots
+        if result.get("advertised_firmware_slots") is not None and len(slots)>result["advertised_firmware_slots"]:
+            result["limitations"].append("Mehr Slot-Einträge als angekündigt; Datenformat und Geräteantwort prüfen.")
     else:
         result["limitations"].append("Firmware-Slot-Log fehlt oder ist nicht lesbar.")
     if isinstance(ns,dict) and not ns.get("error"):
@@ -58,5 +61,7 @@ def inspect(diagnostics):
         result["observations"].append("Namespace-Größe und Format-Metadaten aus Identify Namespace verfügbar.")
     else:
         result["limitations"].append("Identify Namespace fehlt oder ist nicht lesbar.")
+    if result.get("active_firmware_slot") is not None and result.get("advertised_firmware_slots") is not None and result["active_firmware_slot"]>result["advertised_firmware_slots"]:
+        result["limitations"].append("Aktiver Firmware-Slot liegt außerhalb der angekündigten Slot-Anzahl.")
     result["limitations"].append("Firmware-Slots, FRMW und OACS beweisen weder Firmware-Kompatibilität noch Vendor-Recovery-Zugriff.")
     return result
