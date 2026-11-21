@@ -143,13 +143,23 @@ class App(tk.Tk):
     def plan_image_done(self,device,result,epoch):
         if epoch!=self.inventory_epoch or self.selected!=device:
             self.status.config(text="Geräteauswahl geändert; Abbildplanung verworfen.");return
-        self.last_report={"device":device,"imaging_plan":result}
+        previous=self.current_diagnostic()
+        if previous.get("device")==device:
+            self.last_report=dict(previous)
+        else:
+            self.last_report={"device":device}
+        self.last_report["imaging_plan"]=result
         self.show(json.dumps(self.last_report,ensure_ascii=False,indent=2))
         self.status.config(text="Abbildplanung beendet. Kein Gerät geöffnet, kein Abbild erstellt.")
+    def current_diagnostic(self):
+        report=self.last_report if isinstance(self.last_report,dict) else {}
+        if isinstance(report.get("report"),dict):
+            report=report["report"]
+        return report
     def triage_plan(self):
         if not self.last_report:
             messagebox.showinfo("Recovery-Leitfaden","Zuerst eine Diagnose oder Schutzprüfung durchführen.");return
-        report=self.last_report.get("report",self.last_report)
+        report=self.current_diagnostic()
         result=triage.plan(report)
         self.show(json.dumps(result,ensure_ascii=False,indent=2))
         self.status.config(text="Lesender Recovery-Leitfaden angezeigt. Keine Geräteaktion.")
@@ -225,7 +235,7 @@ class App(tk.Tk):
     def assess(self):
         if not self.last_report:
             messagebox.showinfo("Befund","Zuerst NVMe-Diagnose durchführen.");return
-        report=self.last_report.get("report",self.last_report)
+        report=self.current_diagnostic()
         if "diagnostics" not in report:
             messagebox.showinfo("Befund","Diese Fallakte enthält keine SSD-SMART-Diagnose.");return
         result=(ata_analysis.assess(report) if "smartctl" in report.get("diagnostics",{}) else analysis.assess(report))
