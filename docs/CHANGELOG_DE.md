@@ -1,11 +1,12 @@
 # Änderungsprotokoll
 
-## 2026-11-21 – KI-Entwicklerübergabe
-- `AGENTS.md` mit festen Produktregeln, Arbeitsablauf und Definition of Done ergänzt.
-- `docs/AI_ENTWICKLUNGSPLAN_DE.md` mit Modulplan, Aufgaben A01–A15, Abhängigkeiten und Abnahmekriterien erstellt.
-- `docs/CHANGELOG_DE.md` für nachvollziehbare Weiterentwicklung angelegt.
+## 2026-11-21 – Übergabe auf Produktentwurf reduziert
+- `AGENTS.md` enthält jetzt die verbindlichen Produktwünsche statt eines vorgeschriebenen KI-Programmierablaufs.
+- `docs/AI_ENTWICKLUNGSPLAN_DE.md` beschreibt Vision, Funktionsumfang und noch offene Programmierarbeiten.
+- Testpläne, Abnahmevorgaben und methodische Anweisungen für andere KIs aus diesen beiden Übergabedokumenten entfernt.
+- Die konkrete technische Umsetzung und alle Prüfentscheidungen liegen bei der weiterentwickelnden KI.
 
 ## Vorheriger Stand
-- Projektanforderungen und Sicherheitskonzept dokumentiert.
-- Erste lesende Linux-NVMe-Erkennung, konservative Autorisierungs-Planungsprüfung und lokale SQLite-Fallakten eingecheckt.
-- Keine vollständige App, kein echter Flash-Executor, kein Boot-Image und keine Hardwarevalidierung.
+- Projektkonzept, Architektur und Sicherheitsanforderungen dokumentiert.
+- Erste Linux-Inventarisierung, Planungslogik und SQLite-Fallakten als Codebasis vorhanden.
+- Windows-/Linux-Komplettanwendungen und Installationspakete noch nicht fertig.
