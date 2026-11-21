@@ -44,7 +44,7 @@ public:
             const QString path=obj.value("DeviceID").toString();
             if(!path.startsWith(QStringLiteral("\\\\.\\PHYSICALDRIVE"),Qt::CaseInsensitive)) continue;
             bool valid=false;
-            const auto number=path.mid(17).toUInt(&valid);
+            const auto number=path.mid(QStringLiteral("\\\\.\\PHYSICALDRIVE").size()).toUInt(&valid);
             Q_UNUSED(number);
             if(!valid) continue;
             const QString pnp=obj.value("PNPDeviceID").toString();
