@@ -37,7 +37,8 @@ def scan(path, progress=None, cancelled=None):
                     break
                 chunk=stream.read(CHUNK)
                 if not chunk:
-                    result["completed"]=True
+                    result["completed"]=result["scanned_bytes"]==info.st_size
+                    if not result["completed"]:result["error"]="Image vorzeitig beendet."
                     break
                 data=previous+chunk
                 base=result["scanned_bytes"]-len(previous)
@@ -47,17 +48,20 @@ def scan(path, progress=None, cancelled=None):
                         pos=data.find(signature,offset)
                         if pos<0: break
                         absolute=base+pos
-                        if absolute>=0:
+                        if absolute>=0 and absolute+len(signature)>result["scanned_bytes"]:
                             result["matches"].append({"offset_bytes":absolute,"signature":name})
                         offset=pos+1
                 result["scanned_bytes"]+=len(chunk)
+                if result["scanned_bytes"]>info.st_size:
+                    result["error"]="Image-Dateigröße während der Analyse verändert."
+                    break
                 previous=data[-overlap:]
                 if progress and (result["scanned_bytes"]//(16*CHUNK)!=(result["scanned_bytes"]-len(chunk))//(16*CHUNK) or result["scanned_bytes"]>=info.st_size):
                     progress(result["scanned_bytes"],info.st_size,len(result["matches"]))
                 if len(result["matches"])>=MAX_RESULTS:
                     result["limit_reached"]=True
                     break
-        if result["matches"] and not result["cancelled"] and not (cancelled and cancelled()):
+        if result["matches"] and not result.get("error") and not result["cancelled"] and not (cancelled and cancelled()):
             # Reopen only the verified regular image, never a physical device.
             with os.fdopen(os.open(path,os.O_RDONLY|getattr(os,"O_CLOEXEC",0)|getattr(os,"O_NOFOLLOW",0)),"rb",buffering=0) as verify:
                 again=os.fstat(verify.fileno())
