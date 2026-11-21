@@ -9,6 +9,7 @@ import json
 import subprocess
 import time
 import struct
+import zlib
 
 PATH=re.compile(r"/dev/nvme[0-9]+n[0-9]+")
 MAX_SAMPLE=4096
@@ -81,6 +82,42 @@ def interpret_header(data):
         evidence["partition_table"]="protective_mbr" if any(e["type_hex"]=="0xee" for e in entries) else "mbr_possible"
         if evidence["partition_table"]=="protective_mbr":
             evidence["warning"]="GPT möglich; der GPT-Header bei LBA 1 wurde nicht separat geprüft."
+    # GPT primary header normally begins at logical block 1. Only parse when
+    # the candidate is already present in the bounded sample.
+    gpt_candidates=[]
+    for sector_size in (512,4096):
+        if len(data)>=sector_size+92 and data[sector_size:sector_size+8]==b"EFI PART":
+            header=data[sector_size:]
+            header_size=struct.unpack_from("<I",header,12)[0]
+            stored_crc=struct.unpack_from("<I",header,16)[0]
+            header_valid_size=92<=header_size<=sector_size and len(header)>=header_size
+            calculated_crc=None
+            if header_valid_size:
+                payload=bytearray(header[:header_size])
+                payload[16:20]=bytes(4)
+                calculated_crc=zlib.crc32(payload)&0xffffffff
+            current_lba=struct.unpack_from("<Q",header,24)[0]
+            backup_lba=struct.unpack_from("<Q",header,32)[0]
+            first_usable=struct.unpack_from("<Q",header,40)[0]
+            last_usable=struct.unpack_from("<Q",header,48)[0]
+            entries_lba=struct.unpack_from("<Q",header,72)[0]
+            entries_count=struct.unpack_from("<I",header,80)[0]
+            entry_size=struct.unpack_from("<I",header,84)[0]
+            gpt_candidates.append({
+                "assumed_logical_sector_bytes":sector_size,
+                "header_size":header_size,"header_crc32_stored":format(stored_crc,"08x"),
+                "header_crc32_calculated":format(calculated_crc,"08x") if calculated_crc is not None else None,
+                "header_crc_valid":header_valid_size and calculated_crc==stored_crc,
+                "current_lba":current_lba,"backup_lba":backup_lba,
+                "first_usable_lba":first_usable,"last_usable_lba":last_usable,
+                "partition_entry_start_lba":entries_lba,
+                "partition_entry_count":entries_count,"partition_entry_size":entry_size,
+                "layout_plausible":current_lba==1 and first_usable<=last_usable and entry_size>=128 and entry_size%8==0,
+                "note":"CRC bestätigt nur den Header, nicht Partitionseinträge, Backup-GPT oder Datenträgerintegrität."
+            })
+    if gpt_candidates:
+        evidence["gpt_primary_header_candidates"]=gpt_candidates
+        evidence["partition_table"]="gpt_header_candidate"
     if data[3:11]==b"NTFS    ":
         evidence["filesystem"]="ntfs_boot_sector_possible"
     elif data[3:11]==b"EXFAT   ":
