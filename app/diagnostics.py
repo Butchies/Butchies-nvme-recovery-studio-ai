@@ -67,7 +67,7 @@ def usb_report(device):
     """Read-only Windows USB inventory; does not claim NVMe passthrough."""
     if sys.platform!="win32":
         return {"error":"USB-Bridge-Bericht derzeit nur unter Windows verfügbar"}
-    if device.get("bus")!="USB":
+    if not isinstance(device,dict) or device.get("bus")!="USB":
         return {"error":"Nur USB-Geräte sind für diese Windows-Ansicht zulässig"}
     path=str(device.get("path") or "")
     # Validate the canonical Win32 physical-drive path without a permissive regex.
@@ -86,8 +86,12 @@ def usb_report(device):
     if not response["ok"]:
         return {"error":response["stderr"] or "USB-Gerät nicht auslesbar"}
     try: details=json.loads(response["stdout"])
-    except ValueError: return {"error":"Ungültige Geräteantwort"}
-    if str(details.get("SerialNumber") or "").strip()!=str(device.get("serial") or "").strip() or int(details.get("Size") or 0)!=int(device.get("size") or 0):
+    except (ValueError,TypeError): return {"error":"Ungültige Geräteantwort"}
+    if not isinstance(details,dict):return {"error":"Unerwartete Geräteantwort"}
+    try: same_size=int(details.get("Size") or 0)==int(device.get("size") or 0)>0
+    except (ValueError,TypeError,OverflowError):same_size=False
+    if (not str(device.get("serial") or "").strip() or
+        str(details.get("SerialNumber") or "").strip()!=str(device.get("serial") or "").strip() or not same_size):
         return {"error":"Geräteidentität hat sich verändert"}
     return {"device":path,"transport":"USB","inventory":details,
             "nvme_verified":False,
