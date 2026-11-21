@@ -54,13 +54,16 @@ def nvme_report(device):
     for key,args in {
         "smart":["nvme","smart-log",path,"-o","json"],
         "identify":["nvme","id-ctrl",path,"-o","json"],
-        "errors":["nvme","error-log",path,"-e","16","-o","json"]
+        "errors":["nvme","error-log",path,"-e","16","-o","json"],
+        "firmware_slots":["nvme","fw-log",path,"-o","json"],
+        "namespace":["nvme","id-ns",path,"-o","json"]
     }.items():
         response=run(args)
         if response["ok"]:
             try: result[key]=json.loads(response["stdout"])
             except ValueError: result[key]={"error":"Ungültige JSON-Antwort"}
         else: result[key]={"error":response["stderr"] or "Abfrage nicht möglich"}
+    result["firmware_note"]="Firmware-Slot-Informationen sind nur lesende Metadaten, keine Freigabe zum Flashen oder Aktivieren."
     return result
 
 def usb_report(device):
