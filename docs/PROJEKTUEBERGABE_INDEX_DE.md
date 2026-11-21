@@ -27,6 +27,9 @@
 
 ## Rechner und Hardware
 - `docs/RECHNER_HARDWARE_ANALYSE_ENTWURF_DE.md` – Rechneranalyse, USB-/PCIe-Topologie und KI-Hardwarebewertung.
+- `docs/HARDWARE_DIAGNOSE_ASSISTENT_ENTWURF_DE.md` – geführte Ursachenanalyse der Rechnerhardware.
+- `docs/SYSTEM_EIGNUNG_KI_RESSOURCEN_ENTWURF_DE.md` – Ressourcenprofil und Eignung für lokale KI.
+- `docs/VERBINDUNGSFEHLER_DIAGNOSE_ENTWURF_DE.md` – Verbindungsabbrüche, Fehlerverläufe und Ursachenvergleich.
 
 ## Diagnose, Firmware und Recovery
 - `docs/CONTROLLER_WISSEN_ENTWURF_DE.md`
