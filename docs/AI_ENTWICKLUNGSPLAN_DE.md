@@ -18,6 +18,12 @@ NVMe Recovery Studio AI soll möglichst viele Fehler von M.2-NVMe-SSDs erkennen 
 - Lokales KI-Modell, Controllerdatenbank, Firmwarebibliothek, Hilfedaten und persistenter Speicher.
 - Boot-USB-Stick und andere Datenträger schützen.
 
+## Rechneranalyse
+- Hardware des verwendeten PCs erfassen: CPU, RAM, Mainboard, BIOS/UEFI, Chipsatz und relevante Controller.
+- USB-/PCIe-Verbindungen, Treiber, Systemereignisse und verfügbare Temperaturwerte berücksichtigen.
+- KI soll mögliche Rechner- oder Anschlussprobleme von SSD-Defekten unterscheiden.
+- Eigener Bereich „Rechneranalyse“ mit Hardwareübersicht und KI-Einschätzung.
+
 ## KI und Lernfähigkeit
 - Controller und Fehlerbilder erkennen und erklären.
 - Firmwarekompatibilität berücksichtigen.
@@ -56,7 +62,8 @@ Dashboard, Geräteliste, Diagnose, KI-Live-Monitor, Firmware-Manager, Recovery-B
 9. Experimenteller Modus für selbst entwickelte Controller-Firmware.
 10. Linux-Bootmedium mit WLAN und Offline-Ressourcen.
 11. Windows-Installationspaket und Aktualisierungsfunktionen.
-12. Nach Fertigstellung: bebilderte PDF-Handbücher auf Deutsch und Englisch.
+12. Rechneranalyse und KI-gestützte Hardwarebewertung.
+13. Nach Fertigstellung: bebilderte PDF-Handbücher auf Deutsch und Englisch.
 
 ## Bisher vorhandene Projektdateien
 - Dokumentierte Anforderungen und Architektur.
