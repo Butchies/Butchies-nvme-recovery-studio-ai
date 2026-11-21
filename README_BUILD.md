@@ -1,10 +1,11 @@
-# NVMe Recovery Studio AI – Entwicklungsstand 0.5.0 (GitHub)
+# NVMe Recovery Studio AI – Entwicklungsstand 0.6.0 (GitHub)
 
 ## Tatsächlich vorhandene Funktionen
 - Grafische Desktopoberfläche und lesende Laufwerksinventarisierung.
 - Windows 10/11: ausschließlich USB-Laufwerke in der Geräteauswahl. Die USB-Anbindung allein beweist noch nicht, dass eine NVMe-SSD dahintersteckt.
 - Linux: direkte NVMe-Namespaces und USB-Laufwerke in der Inventarisierung.
 - Windows: zusätzlicher lesender USB-Verbindungsbericht mit erneuter Geräteidentitätsprüfung. USB-Anbindung ist kein Nachweis für NVMe-Passthrough.
+- Konservative Schutzprüfung für gewählte Datenträger: erneute Identitätsprüfung, Linux-Mountpoints und ausdrückliche Schreibsperre. Die Prüfung ist kein Freigabeverfahren für Schreibzugriffe.
 - Rechneranalyse mit Betriebssystem-, CPU- und optionalen PCI/USB-Informationen.
 - Linux-NVMe-Diagnose mit `nvme-cli`: SMART, Controller-Identify und Fehlerlog als JSON, sofern Berechtigungen und Gerätezugriff vorhanden sind.
 - Lokale SQLite-Fallakten: speichern, auflisten und öffnen.
