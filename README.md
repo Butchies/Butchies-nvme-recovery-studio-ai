@@ -6,7 +6,7 @@ KI-gestützte NVMe-Controllerdiagnose und Firmware-Wiederherstellung. **Projekts
 
 *Darstellung anhand der aktuellen Tkinter-Oberfläche und ihrer Schaltflächen. Die angezeigte SSD ist ein Beispiel. Dies ist kein echter Screenshot und kein Nachweis eines erfolgreichen Hardwaretests.*
 
-**Aktuelle Funktionen:** Laufwerke erfassen, Rechner- und SSD-Diagnose, Linux-NVMe-Controlleridentifikation, USB-Verbindungsprüfung, Schutzprüfung, lokale Firmwaredatei und Firmwarekatalog untersuchen, Recovery-Leitfaden, Abbildplanung, Befund und Vergleich sowie Fallakten.
+**NVMe-Diagnose unter Linux:** Zusätzlich werden jetzt die Firmware-Slot-Tabelle (`nvme fw-log`) und die Namespace-Identität (`nvme id-ns`) lesend abgefragt. Diese Angaben dienen der Controlleranalyse und erlauben keine Firmware-Schreiboperationen.\n\n**Aktuelle Funktionen:** Laufwerke erfassen, Rechner- und SSD-Diagnose, Linux-NVMe-Controlleridentifikation, USB-Verbindungsprüfung, Schutzprüfung, lokale Firmwaredatei und Firmwarekatalog untersuchen, Recovery-Leitfaden, Abbildplanung, Befund und Vergleich sowie Fallakten.
 
 **Noch nicht implementiert:** tatsächliche Datenrettung, Firmware-Recovery/Flash und bootfähige Linux-Edition.
 
