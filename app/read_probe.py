@@ -144,7 +144,7 @@ def interpret_header(data):
                 "partition_array_fully_sampled":table_fully_present,
                 "partition_entries_preview":entries_preview,
                 "layout_plausible":current_lba==1 and first_usable<=last_usable and entry_size>=128 and entry_size%8==0,
-                "note":"CRC bestätigt nur den Header, nicht Partitionseinträge, Backup-GPT oder Datenträgerintegrität."
+                "note":"Header-CRC und, falls vollständig erfasst, Eintragstabellen-CRC sind getrennte Prüfungen; die Backup-GPT und Nutzdaten bleiben ungeprüft."
             })
     if gpt_candidates:
         evidence["gpt_primary_header_candidates"]=gpt_candidates
