@@ -42,7 +42,7 @@ ApplicationWindow {
                     model: controller.devices
                     clip: true
                     delegate: Rectangle {
-                        width: ListView.view.width; height: 122
+                        width: ListView.view.width; height: 146
                         color: index%2 ? "#1c2939" : "#243346"
                         radius: 6
                         MouseArea {
@@ -61,6 +61,14 @@ ApplicationWindow {
                             Label {
                                 text: "NVMe-Passthrough: " + modelData.nvmePassthrough + " · Nur lesend"
                                 color: "#a5bed3"
+                            }
+                            Label {
+                                text: modelData.nvmeIdentifyAvailable
+                                      ? "Controller: " + modelData.nvmeControllerModel + " · Firmware: " + modelData.nvmeFirmware
+                                      : "NVMe-Controllerdaten nicht verfügbar"
+                                color: "#a5bed3"
+                                elide: Text.ElideRight
+                                width: parent.width
                             }
                         }
                     }
