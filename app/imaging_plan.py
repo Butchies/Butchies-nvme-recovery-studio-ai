@@ -4,6 +4,7 @@ No result from this module is permission to perform device I/O.
 """
 import os
 import sys
+import destination_evidence
 from pathlib import Path
 from datetime import datetime, timezone
 
@@ -38,7 +39,11 @@ def plan(device, destination_directory):
             if sys.platform.startswith("linux"):
                 # A directory on the selected source would overwrite recoverable data.
                 # Detecting this safely requires complete block-device dependency mapping.
-                issues.append("Ziel-Datenträgerzuordnung unter Linux noch nicht verifiziert.")
+                evidence=destination_evidence.destination_evidence(str(target),source)
+                result["destination_evidence"]=evidence
+                if evidence["same_device_detected"]:
+                    issues.append("KRITISCH: Das Zielverzeichnis liegt auf dem ausgewählten Quelldatenträger.")
+                issues.append("Ziel-Datenträgerzuordnung unter Linux nicht abschließend verifiziert.")
             stats=os.statvfs(str(target)) if hasattr(os,"statvfs") else None
             if stats is not None:
                 free=stats.f_bavail*stats.f_frsize
