@@ -43,8 +43,10 @@ class App(tk.Tk):
         self.label(top,("Windows 10/11 | Nur USB-Geräte" if sys.platform=="win32" else "Linux | NVMe und USB") +" | Nur lesende Inventarisierung",11).pack(anchor="w",pady=(6,0))
         bar=tk.Frame(self,bg="#101722",padx=22,pady=12);bar.pack(fill="x")
         buttons=tk.Frame(bar,bg="#101722");buttons.pack(fill="x")
-        for name,cb in [("Geräte aktualisieren",self.refresh),("Rechneranalyse",self.host_info),("NVMe-Diagnose",self.diagnose),("Befund",self.assess),("Vergleich",self.compare_case),("Fallakte speichern",self.save_case),("Fallakten",self.open_cases),("Fallakte exportieren",self.export)]:
-            tk.Button(buttons,text=name,command=cb,bg="#22566c",fg="white",relief="flat",padx=9,pady=7).pack(side="left",padx=(0,5))
+        actions=[("Geräte aktualisieren",self.refresh),("Rechneranalyse",self.host_info),("NVMe-Diagnose",self.diagnose),("Befund",self.assess),("Vergleich",self.compare_case),("Fallakte speichern",self.save_case),("Fallakten",self.open_cases),("Fallakte exportieren",self.export)]
+        for i,(name,cb) in enumerate(actions):
+            tk.Button(buttons,text=name,command=cb,bg="#22566c",fg="white",relief="flat",padx=9,pady=7).grid(row=i//4,column=i%4,sticky="ew",padx=4,pady=4)
+        for i in range(4): buttons.grid_columnconfigure(i,weight=1)
         main=tk.PanedWindow(self,orient="horizontal",bg="#101722",sashwidth=6,bd=0);main.pack(fill="both",expand=True,padx=22,pady=12)
         left=tk.Frame(main,bg="#192333",padx=12,pady=12);right=tk.Frame(main,bg="#192333",padx=12,pady=12);main.add(left,minsize=350);main.add(right,minsize=280)
         self.label(left,"Erkannte Datenträger",15,True).pack(anchor="w")
@@ -61,7 +63,10 @@ class App(tk.Tk):
         self.detail.config(state="normal");self.detail.delete("1.0","end");self.detail.insert("1.0",text);self.detail.config(state="disabled")
     def refresh(self):
         self.status.config(text="Geräte werden erfasst ...")
-        threading.Thread(target=lambda:self.after(0,self.loaded,discover()),daemon=True).start()
+        def worker():
+            devices=discover()
+            self.after(0,lambda:self.loaded(devices))
+        threading.Thread(target=worker,daemon=True).start()
     def loaded(self,devices):
         self.devices=devices;self.selected=None;self.last_report=None;self.tree.delete(*self.tree.get_children())
         for i,x in enumerate(devices):
@@ -74,8 +79,14 @@ class App(tk.Tk):
         x=self.devices[int(sel[0])];self.selected=x;self.last_report=None
         self.show(f'Modell: {x["name"]}\n\nGerätepfad: {x["path"]}\n\nSeriennummer: {x["serial"] or "Unbekannt"}\n\nGröße: {x["size"]/1e9:.1f} GB\n\nTransport: {x["bus"]}\n\nNVMe bestätigt: {"Ja" if x["nvme"] else "Nein, USB-Bridge nicht verifiziert"}\n\nNur lesende Inventarisierung. Keine Reparatur- oder Flashbefehle.')
     def host_info(self):
-        self.last_report={"hardware":diagnostics.hardware()}
-        self.show(json.dumps(self.last_report,ensure_ascii=False,indent=2))
+        self.status.config(text="Rechneranalyse läuft ...")
+        def worker():
+            report={"hardware":diagnostics.hardware()}
+            self.after(0,lambda:self.host_done(report))
+        threading.Thread(target=worker,daemon=True).start()
+    def host_done(self,report):
+        self.last_report=report
+        self.show(json.dumps(report,ensure_ascii=False,indent=2))
         self.status.config(text="Rechneranalyse erfasst (nur lesend).")
     def diagnose(self):
         if not self.selected:
@@ -131,7 +142,7 @@ class App(tk.Tk):
         except (OSError,ValueError) as exc:messagebox.showerror("Speicherfehler",str(exc))
     def open_cases(self):
         try: entries=cases.recent()
-        except OSError as exc:messagebox.showerror("Datenbankfehler",str(exc));return
+        except Exception as exc:messagebox.showerror("Datenbankfehler",str(exc));return
         window=tk.Toplevel(self);window.title("Gespeicherte Fallakten");window.geometry("680x400")
         listing=tk.Listbox(window,font=("Segoe UI",11));listing.pack(fill="both",expand=True,padx=14,pady=14)
         for item in entries:listing.insert("end",f"#{item[0]} | {item[1][:19]} | {item[2]} | {item[3]}")
@@ -146,8 +157,9 @@ class App(tk.Tk):
     def export(self):
         path=filedialog.asksaveasfilename(defaultextension=".json",filetypes=[("JSON","*.json")])
         if not path:return
+        anonymize=messagebox.askyesno("Datenschutz","Seriennummern und Gerätepfade ausblenden? (Empfohlen)")
         try:
-            Path(path).write_text(json.dumps({"app":"NVMe Recovery Studio AI","created":datetime.now().astimezone().isoformat(),"edition":platform.system(),"inventory":self.devices,"selected":self.selected,"report":self.last_report,"notice":"Inventarisierung, keine validierte Recovery-Diagnose."},indent=2,ensure_ascii=False),encoding="utf-8")
+            exporter.export_json(path,{"app":"NVMe Recovery Studio AI","created":datetime.now().astimezone().isoformat(),"edition":platform.system(),"inventory":self.devices,"selected":self.selected,"report":self.last_report,"notice":"Keine validierte Recovery-Diagnose."},anonymize=anonymize)
             self.status.config(text="Fallakte exportiert.")
         except OSError as e:messagebox.showerror("Fehler",str(e))
 
