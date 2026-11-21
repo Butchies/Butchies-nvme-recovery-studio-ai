@@ -1,4 +1,4 @@
-# NVMe Recovery Studio AI – Entwicklungsstand 0.22.0 (GitHub)
+# NVMe Recovery Studio AI – Entwicklungsstand 0.23.0 (GitHub)
 
 ## Tatsächlich vorhandene Funktionen
 - Grafische Desktopoberfläche und lesende Laufwerksinventarisierung.
@@ -102,3 +102,9 @@ Ein Hash-Treffer im selbst bereitgestellten Katalog bestätigt weder Echtheit no
 - ATA-SMART-Befund bewertet einen vorhandenen SMART-Gesamtstatus und auffällige Sektor-Rohzähler (Attribute 5, 197, 198) mit Belegen und Unsicherheiten.
 - Die Oberfläche zeigt den passenden ATA- oder NVMe-Befund, ohne SATA-Geräte fälschlich als NVMe zu bezeichnen.
 - Herstellerabhängige SMART-Werte werden nicht pauschal als gesund oder defekt eingestuft. Kein Schreibzugriff.
+
+## Wartung 0.23.0
+- Recovery-Leitfaden berücksichtigt SATA/ATA-SMART-Warnungen, unvollständige smartctl-Ergebnisse und erkannte Quell-/Zielkonflikte.
+- Der Leitfaden verarbeitet unvollständige oder unerwartete Berichtsstrukturen defensiver.
+- Eine neue Abbildplanung bewahrt den bisherigen Diagnosebefund desselben Geräts, damit SMART-Auswertung und Leitfaden erhalten bleiben.
+- Keine Datenträgeränderungen oder automatischen Reparaturen.
