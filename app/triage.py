@@ -54,6 +54,19 @@ def plan(report):
         if diagnostics.get("command_ok") is False:
             add(2,"ATA-SMART-Daten auf Vollständigkeit prüfen",
                 "smartctl meldete einen nicht erfolgreichen Rückgabestatus; vorhandene Teilinformationen sind keine Entwarnung.")
+    capabilities=report.get("nvme_capabilities") if isinstance(report.get("nvme_capabilities"),dict) else {}
+    if capabilities:
+        if capabilities.get("firmware_download_commit_advertised") is False:
+            add(2,"Firmware-Kommandos nicht angekündigt",
+                "Controller meldet keine Standard-Firmware-Download/Commit-Fähigkeit.")
+        if capabilities.get("slot_1_read_only"):
+            add(2,"Firmware-Slot 1 schreibgeschützt",
+                "Controller meldet Schreibschutz für Slot 1. Keine Umgehungsversuche.")
+        limits=capabilities.get("limitations")
+        if isinstance(limits,list):
+            for limitation in limits:
+                if isinstance(limitation,str) and ("außerhalb" in limitation or "Mehr Slot-Einträge" in limitation):
+                    add(2,"Widersprüchliche Firmware-Slot-Daten",limitation[:500])
     imaging=report.get("imaging_plan") if isinstance(report.get("imaging_plan"),dict) else {}
     if imaging:
         evidence=imaging.get("destination_evidence")
