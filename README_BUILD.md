@@ -1,4 +1,4 @@
-# NVMe Recovery Studio AI – Entwicklungsstand 0.21.0 (GitHub)
+# NVMe Recovery Studio AI – Entwicklungsstand 0.22.0 (GitHub)
 
 ## Tatsächlich vorhandene Funktionen
 - Grafische Desktopoberfläche und lesende Laufwerksinventarisierung.
@@ -97,3 +97,8 @@ Ein Hash-Treffer im selbst bereitgestellten Katalog bestätigt weder Echtheit no
 - Linux: SSD-Diagnose unterscheidet direkte NVMe- und SATA/ATA-Laufwerke und nutzt dafür jeweils nvme-cli bzw. smartctl.
 - ATA-Diagnose prüft Gerätepfad, Transport, Seriennummer und Kapazität vor dem rein lesenden Abruf.
 - USB-SATA-Bridges werden nicht als direktes ATA-Laufwerk ausgegeben. Keine SMART-Selbsttests, keine Reparatur und kein Schreiben.
+
+## Wartung 0.22.0
+- ATA-SMART-Befund bewertet einen vorhandenen SMART-Gesamtstatus und auffällige Sektor-Rohzähler (Attribute 5, 197, 198) mit Belegen und Unsicherheiten.
+- Die Oberfläche zeigt den passenden ATA- oder NVMe-Befund, ohne SATA-Geräte fälschlich als NVMe zu bezeichnen.
+- Herstellerabhängige SMART-Werte werden nicht pauschal als gesund oder defekt eingestuft. Kein Schreibzugriff.
