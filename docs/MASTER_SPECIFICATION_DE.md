@@ -4,7 +4,7 @@
 Ein herstellerübergreifendes Diagnose- und Recovery-System für M.2-NVMe-SSDs, das defekte oder falsch geflashte Controller soweit technisch möglich wieder ansprechbar macht.
 
 ## Windows Edition
-- Windows 11, C++20, Qt 6/QML.
+- Windows 10 und 11, C++20, Qt 6/QML.
 - **USB-only:** nur nachweislich extern über USB verbundene NVMe-SSDs. Interne SATA/NVMe/PCIe-Laufwerke werden vollständig von Zielauswahl und Befehlsausführung ausgeschlossen.
 - USB-Gerätetopologie, Bridge-Vendor/Product-ID, Bridge-Firmware, SCSI/UASP-Passthrough und unterstützte NVMe-Befehle prüfen.
 - Bei unbekannter Zuordnung Schreibzugriffe blockieren.
