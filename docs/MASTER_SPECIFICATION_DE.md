@@ -17,6 +17,12 @@ Ein herstellerübergreifendes Diagnose- und Recovery-System für M.2-NVMe-SSDs, 
 - Recovery-USB-Stick selbst niemals als Flashziel anbieten.
 - Alle internen Datenträger standardmäßig schreibgesperrt; ausschließlich ausdrücklich gewähltes Reparaturziel nach Prüfung freigeben.
 
+## Rechner- und Host-Hardwareanalyse
+- CPU, RAM, Mainboard, BIOS/UEFI, Chipsatz, USB-/PCIe-Controller und relevante Treiberinformationen soweit verfügbar erfassen.
+- Verbindungstopologie, Linkgeschwindigkeit, Systemereignisse und Temperaturhinweise in die KI-Einordnung einbeziehen.
+- Host-, Bridge- und SSD-Probleme in der Diagnose voneinander abgrenzen.
+- Rechneranalyse bleibt lesend; interne Windows-Laufwerke werden dadurch nicht zu Recovery-Zielen.
+
 ## Diagnose
 - PCI Vendor/Device/Subvendor/Subdevice IDs, Controller-/Namespace-Identify, Firmware-Revision und Slots.
 - SMART/Health, Temperatur, Media/Data Integrity Errors, Error Information Log, NVMe Statuscodes.
