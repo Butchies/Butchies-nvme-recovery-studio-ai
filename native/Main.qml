@@ -42,15 +42,23 @@ ApplicationWindow {
                     model: controller.devices
                     clip: true
                     delegate: Rectangle {
-                        width: ListView.view.width; height: 76
+                        width: ListView.view.width; height: 100
                         color: index%2 ? "#1c2939" : "#243346"
                         radius: 6
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: controller.selectDevice(index)
+                        }
                         Column {
                             anchors.fill: parent; anchors.margins: 12
                             spacing: 5
                             Label { text: modelData.name || "USB-Laufwerk"; color: "white"; font.bold: true }
                             Label {
-                                text: "USB · NVMe hinter Bridge nicht bestätigt · Nur lesend"
+                                text: "USB · VID " + modelData.bridgeVendorId + " · PID " + modelData.bridgeProductId
+                                color: "#a5bed3"
+                            }
+                            Label {
+                                text: "NVMe-Passthrough: " + modelData.nvmePassthrough + " · Nur lesend"
                                 color: "#a5bed3"
                             }
                         }
