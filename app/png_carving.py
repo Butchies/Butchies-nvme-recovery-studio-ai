@@ -79,16 +79,44 @@ def export_pngs(image_path,destination_directory,findings,cancelled=None,progres
                                 written+=n
                             digest.update(block)
                             copied+=len(block)
-                            if progress:progress(len(result["exported"]),copied,length)
+                            if progress and (copied==length or copied%(8*COPY_CHUNK)==0):
+                                progress(len(result["exported"]),copied,length)
                         os.fsync(output_fd)
+                        # Verify the exact bytes persisted in the output file.
+                        check_fd=os.open(filename,os.O_RDONLY|getattr(os,"O_NOFOLLOW",0),dir_fd=target_fd)
+                        try:
+                            check_info=os.fstat(check_fd)
+                            owned_info=os.fstat(output_fd)
+                            if (not stat.S_ISREG(check_info.st_mode) or check_info.st_dev!=owned_info.st_dev
+                                    or check_info.st_ino!=owned_info.st_ino or check_info.st_size!=length):
+                                raise OSError("Zieldatei nach Export verändert.")
+                            checked=hashlib.sha256()
+                            position=0
+                            while position<length:
+                                if cancelled and cancelled():
+                                    result["cancelled"]=True
+                                    raise InterruptedError("Prüfung abgebrochen.")
+                                block=os.read(check_fd,min(COPY_CHUNK,length-position))
+                                if not block:raise OSError("Zieldatei bei Nachprüfung unvollständig.")
+                                checked.update(block)
+                                position+=len(block)
+                            if checked.digest()!=digest.digest():
+                                raise OSError("SHA-256-Nachprüfung der Zieldatei fehlgeschlagen.")
+                        finally:
+                            os.close(check_fd)
                         if os.fstat(source_fd).st_size!=opened.st_size:
                             raise OSError("Quell-Image während des Exports verändert.")
                         result["exported"].append({"filename":filename,"offset_bytes":offset,
                                                    "bytes":copied,"sha256":digest.hexdigest()})
                     except (OSError,InterruptedError) as exc:
                         result["skipped"].append({"offset_bytes":offset,"reason":str(exc)})
-                        if created:
-                            try:os.unlink(filename,dir_fd=target_fd)
+                        if created and output_fd is not None:
+                            try:
+                                owned=os.fstat(output_fd)
+                                current=os.stat(filename,dir_fd=target_fd,follow_symlinks=False)
+                                if (stat.S_ISREG(current.st_mode) and owned.st_dev==current.st_dev
+                                        and owned.st_ino==current.st_ino):
+                                    os.unlink(filename,dir_fd=target_fd)
                             except OSError:pass
                     finally:
                         if output_fd is not None:os.close(output_fd)
