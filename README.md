@@ -3,7 +3,7 @@
 KI-gestützte NVMe-Controllerdiagnose und Firmware-Wiederherstellung. **Projektstatus: Architektur und Spezifikation, keine funktionsfähige Recovery-Software.**
 
 ## Zwei Editionen
-- **Windows 11:** Ausschließlich externe NVMe-SSDs über USB. Interne Laufwerke sind weder Diagnose- noch Flash-Ziele.
+- **Windows 10 und 11:** Ausschließlich externe NVMe-SSDs über USB. Interne Laufwerke sind weder Diagnose- noch Flash-Ziele.
 - **Linux Boot Edition:** Eigenständiges UEFI-USB-Recovery-System, das direkt in die Vollbildanwendung startet. Direkte PCIe/NVMe-Diagnose interner Ziel-SSDs, WLAN, lokales KI-Modell und Offline-Werkzeuge.
 
 ## Geplante Module
