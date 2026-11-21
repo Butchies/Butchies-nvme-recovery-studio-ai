@@ -66,28 +66,28 @@ inline QVariantMap inspect(const QString &path) {
     if(report.value("usbConfirmed").toBool()) {
         // Standard Windows storage protocol query: NVMe Identify Controller,
         // data-in only. Unsupported USB bridges fail without attempting writes.
-        struct ProtocolQuery {
-            STORAGE_PROPERTY_QUERY property;
-            STORAGE_PROTOCOL_SPECIFIC_DATA protocol;
-            unsigned char identify[4096];
-        };
-        ProtocolQuery request{};
-        request.property.PropertyId=StorageDeviceProtocolSpecificProperty;
-        request.property.QueryType=PropertyStandardQuery;
-        request.protocol.ProtocolType=ProtocolTypeNvme;
-        request.protocol.DataType=NVMeDataTypeIdentify;
-        request.protocol.ProtocolDataRequestValue=1; // CNS=1: Identify Controller
-        request.protocol.ProtocolDataOffset=sizeof(STORAGE_PROTOCOL_SPECIFIC_DATA);
-        request.protocol.ProtocolDataLength=4096;
+        constexpr size_t header=offsetof(STORAGE_PROPERTY_QUERY,AdditionalParameters);
+        std::vector<unsigned char> protocolBuffer(
+            header+sizeof(STORAGE_PROTOCOL_SPECIFIC_DATA)+4096,0);
+        auto *property=reinterpret_cast<STORAGE_PROPERTY_QUERY*>(protocolBuffer.data());
+        property->PropertyId=StorageDeviceProtocolSpecificProperty;
+        property->QueryType=PropertyStandardQuery;
+        auto *specific=reinterpret_cast<STORAGE_PROTOCOL_SPECIFIC_DATA*>(
+            protocolBuffer.data()+header);
+        specific->ProtocolType=ProtocolTypeNvme;
+        specific->DataType=NVMeDataTypeIdentify;
+        specific->ProtocolDataRequestValue=1; // CNS=1: Identify Controller
+        specific->ProtocolDataOffset=sizeof(STORAGE_PROTOCOL_SPECIFIC_DATA);
+        specific->ProtocolDataLength=4096;
         DWORD bytes=0;
         if(DeviceIoControl(handle,IOCTL_STORAGE_QUERY_PROPERTY,
-                &request,static_cast<DWORD>(offsetof(ProtocolQuery,identify)),
-                &request,sizeof(request),&bytes,nullptr)) {
+                protocolBuffer.data(),static_cast<DWORD>(header+sizeof(STORAGE_PROTOCOL_SPECIFIC_DATA)),
+                protocolBuffer.data(),static_cast<DWORD>(protocolBuffer.size()),&bytes,nullptr)) {
             const auto *protocol=reinterpret_cast<const STORAGE_PROTOCOL_SPECIFIC_DATA*>(
-                reinterpret_cast<const unsigned char*>(&request)+sizeof(STORAGE_PROPERTY_QUERY));
+                protocolBuffer.data()+header);
             const auto base=reinterpret_cast<const unsigned char*>(protocol);
-            const auto begin=reinterpret_cast<const unsigned char*>(&request);
-            const auto end=begin+qMin<size_t>(bytes,sizeof(request));
+            const auto begin=protocolBuffer.data();
+            const auto end=begin+qMin<size_t>(bytes,protocolBuffer.size());
             const auto data=base+protocol->ProtocolDataOffset;
             if(protocol->ProtocolType==ProtocolTypeNvme &&
                protocol->DataType==NVMeDataTypeIdentify &&
