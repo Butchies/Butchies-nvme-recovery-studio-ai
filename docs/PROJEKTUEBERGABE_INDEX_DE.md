@@ -33,6 +33,9 @@
 - `docs/RECHNER_HARDWARE_PROFIL_VERGLEICH_ENTWURF_DE.md` – Rechnerprofile und Anschlussvergleiche.
 
 ## Diagnose, Firmware und Recovery
+- `docs/DATEISYSTEM_PARTITION_ANALYSE_ENTWURF_DE.md` – Partitionen, Dateisysteme und logische Schäden.
+- `docs/VERSCHLUESSELUNG_ZUGRIFF_ENTWURF_DE.md` – Verschlüsselungsstatus und legitimer Datenzugriff.
+- `docs/DATENRETTUNG_DATEI_VORSCHAU_ENTWURF_DE.md` – Dateivorschau und priorisierte Rettung.
 - `docs/RECHNER_HARDWARE_BERICHT_ENTWURF_DE.md` – Hardwareberichte und anonymisierter Export.
 - `docs/NOTFALLMODUS_SSD_ENTWURF_DE.md` – vorsichtige Bedienung bei instabilen SSDs.
 - `docs/DATENRETTUNG_ZIELMEDIEN_ENTWURF_DE.md` – Zielmedien und Speicherplanung für gerettete Daten.
