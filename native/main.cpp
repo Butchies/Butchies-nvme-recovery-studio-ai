@@ -71,8 +71,12 @@ public:
             d["deviceProduct"]=bridge.value("deviceProduct");
             d["bridgeFirmware"]=bridge.value("deviceFirmware");
             d["bridgeInspectionError"]=bridge.value("error");
-            d["nvmePassthrough"]=QStringLiteral("Nicht nachgewiesen");
-            d["nvmeVerified"]=false; // USB bridge cannot prove underlying NVMe type.
+            d["nvmeIdentifyAvailable"]=bridge.value("nvmeIdentifyAvailable");
+            d["nvmeControllerModel"]=bridge.value("nvmeControllerModel");
+            d["nvmeControllerSerial"]=bridge.value("nvmeControllerSerial");
+            d["nvmeFirmware"]=bridge.value("nvmeFirmware");
+            d["nvmePassthrough"]=bridge.value("nvmePassthrough");
+            d["nvmeVerified"]=bridge.value("nvmeIdentifyAvailable").toBool(); // USB bridge cannot prove underlying NVMe type.
             d["readOnly"]=true;
             found.append(d);
         }
@@ -90,11 +94,12 @@ public:
             return;
         }
         const auto device=m_devices.at(index).toMap();
-        setStatus(QStringLiteral("%1 | USB VID:%2 PID:%3 | Revision:%4 | NVMe-Passthrough nicht bestätigt.")
+        setStatus(QStringLiteral("%1 | USB VID:%2 PID:%3 | Revision:%4 | %5")
             .arg(device.value("name").toString(),
                  device.value("bridgeVendorId").toString(),
                  device.value("bridgeProductId").toString(),
-                 device.value("bridgeFirmware").toString()));
+                 device.value("bridgeFirmware").toString(),
+                 device.value("nvmePassthrough").toString()));
     }
     Q_INVOKABLE void inspectDestination(const QString &path) {
         const QFileInfo info(path);
