@@ -5,6 +5,7 @@ from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 import cases
 import diagnostics
+import ata_diagnostics
 import analysis
 import exporter
 import safety
@@ -57,7 +58,7 @@ class App(tk.Tk):
         self.label(top,("Windows 10/11 | Nur USB-Geräte" if sys.platform=="win32" else "Linux | Alle physischen Laufwerke (intern und extern)") +" | Nur lesende Inventarisierung",11).pack(anchor="w",pady=(6,0))
         bar=tk.Frame(self,bg="#101722",padx=22,pady=12);bar.pack(fill="x")
         buttons=tk.Frame(bar,bg="#101722");buttons.pack(fill="x")
-        actions=[("Geräte aktualisieren",self.refresh),("Rechneranalyse",self.host_info),("NVMe-Diagnose",self.diagnose),("USB-Verbindung",self.usb_diagnose),("Schutzprüfung",self.safety_check),("Firmwaredatei prüfen",self.inspect_firmware),("Firmwarekatalog",self.catalog_lookup),("Recovery-Leitfaden",self.triage_plan),("Abbild planen",self.plan_image),("Befund",self.assess),("Vergleich",self.compare_case),("Fallakte speichern",self.save_case),("Fallakten",self.open_cases),("Fallakte exportieren",self.export)]
+        actions=[("Geräte aktualisieren",self.refresh),("Rechneranalyse",self.host_info),("SSD-Diagnose",self.diagnose),("USB-Verbindung",self.usb_diagnose),("Schutzprüfung",self.safety_check),("Firmwaredatei prüfen",self.inspect_firmware),("Firmwarekatalog",self.catalog_lookup),("Recovery-Leitfaden",self.triage_plan),("Abbild planen",self.plan_image),("Befund",self.assess),("Vergleich",self.compare_case),("Fallakte speichern",self.save_case),("Fallakten",self.open_cases),("Fallakte exportieren",self.export)]
         for i,(name,cb) in enumerate(actions):
             tk.Button(buttons,text=name,command=cb,bg="#22566c",fg="white",relief="flat",padx=9,pady=7).grid(row=i//5,column=i%5,sticky="ew",padx=4,pady=4)
         for i in range(5): buttons.grid_columnconfigure(i,weight=1)
@@ -120,7 +121,7 @@ class App(tk.Tk):
         device=dict(self.selected)
         self.status.config(text="Lesende NVMe-Diagnose läuft ...")
         def worker():
-            report=diagnostics.nvme_report(device)
+            report=(ata_diagnostics.report(device) if sys.platform.startswith("linux") and device.get("bus") in ("SATA","ATA") else diagnostics.nvme_report(device))
             self.post_ui(lambda:self.diagnose_done(device,report))
         threading.Thread(target=worker,daemon=True).start()
     def plan_image(self):
@@ -214,9 +215,10 @@ class App(tk.Tk):
         if self.selected is None or self.selected.get("path")!=device.get("path"):
             self.status.config(text="Diagnose abgeschlossen; Geräteauswahl geändert.");return
         self.last_report={"device":device,"diagnostics":report}
-        self.last_report["assessment"]=analysis.assess(self.last_report)
+        if "smart" in report:
+            self.last_report["assessment"]=analysis.assess(self.last_report)
         self.show(json.dumps(self.last_report,ensure_ascii=False,indent=2))
-        self.status.config(text="NVMe-Diagnose abgeschlossen. Fehler und fehlende Berechtigungen werden angezeigt.")
+        self.status.config(text="Lesende SSD-Diagnose abgeschlossen. Fehlende SMART-Daten und Berechtigungen werden angezeigt.")
     def assess(self):
         if not self.last_report:
             messagebox.showinfo("Befund","Zuerst NVMe-Diagnose durchführen.");return
