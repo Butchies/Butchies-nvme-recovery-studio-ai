@@ -6,6 +6,7 @@ from tkinter import filedialog, messagebox, ttk
 import cases
 import diagnostics
 import ata_diagnostics
+import ata_analysis
 import analysis
 import exporter
 import safety
@@ -104,7 +105,7 @@ class App(tk.Tk):
         sel=self.tree.selection()
         if not sel:return
         x=self.devices[int(sel[0])];self.selected=x;self.last_report=None
-        self.show(f'Modell: {x["name"]}\n\nGerätepfad: {x["path"]}\n\nSeriennummer: {x["serial"] or "Unbekannt"}\n\nGröße: {x["size"]/1e9:.1f} GB\n\nTransport: {x["bus"]}\n\nNVMe bestätigt: {"Ja" if x["nvme"] else "Nein, USB-Bridge nicht verifiziert"}\n\nNur lesende Inventarisierung. Keine Reparatur- oder Flashbefehle.')
+        self.show(f'Modell: {x["name"]}\n\nGerätepfad: {x["path"]}\n\nSeriennummer: {x["serial"] or "Unbekannt"}\n\nGröße: {x["size"]/1e9:.1f} GB\n\nTransport: {x["bus"]}\n\nNVMe bestätigt: {"Ja" if x["nvme"] else "Nein / bei USB nicht verifiziert"}\n\nNur lesende Inventarisierung. Keine Reparatur- oder Flashbefehle.')
     def host_info(self):
         self.status.config(text="Rechneranalyse läuft ...")
         def worker():
@@ -117,9 +118,9 @@ class App(tk.Tk):
         self.status.config(text="Rechneranalyse erfasst (nur lesend).")
     def diagnose(self):
         if not self.selected:
-            messagebox.showinfo("NVMe-Diagnose","Bitte zuerst ein Laufwerk auswählen.");return
+            messagebox.showinfo("SSD-Diagnose","Bitte zuerst ein Laufwerk auswählen.");return
         device=dict(self.selected)
-        self.status.config(text="Lesende NVMe-Diagnose läuft ...")
+        self.status.config(text="Lesende SSD-Diagnose läuft ...")
         def worker():
             report=(ata_diagnostics.report(device) if sys.platform.startswith("linux") and device.get("bus") in ("SATA","ATA") else diagnostics.nvme_report(device))
             self.post_ui(lambda:self.diagnose_done(device,report))
@@ -217,6 +218,8 @@ class App(tk.Tk):
         self.last_report={"device":device,"diagnostics":report}
         if "smart" in report:
             self.last_report["assessment"]=analysis.assess(self.last_report)
+        elif "smartctl" in report:
+            self.last_report["assessment"]=ata_analysis.assess(self.last_report)
         self.show(json.dumps(self.last_report,ensure_ascii=False,indent=2))
         self.status.config(text="Lesende SSD-Diagnose abgeschlossen. Fehlende SMART-Daten und Berechtigungen werden angezeigt.")
     def assess(self):
@@ -224,8 +227,8 @@ class App(tk.Tk):
             messagebox.showinfo("Befund","Zuerst NVMe-Diagnose durchführen.");return
         report=self.last_report.get("report",self.last_report)
         if "diagnostics" not in report:
-            messagebox.showinfo("Befund","Diese Fallakte enthält keine NVMe-SMART-Diagnose.");return
-        result=analysis.assess(report)
+            messagebox.showinfo("Befund","Diese Fallakte enthält keine SSD-SMART-Diagnose.");return
+        result=(ata_analysis.assess(report) if "smartctl" in report.get("diagnostics",{}) else analysis.assess(report))
         self.show(json.dumps(result,ensure_ascii=False,indent=2))
         self.status.config(text="Regelbasierter Befund angezeigt; kein KI-Modell.")
     def compare_case(self):
