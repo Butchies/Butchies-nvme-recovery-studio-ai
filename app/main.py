@@ -16,6 +16,7 @@ import triage
 import imaging_plan
 import controller_identity
 import nvme_capabilities
+import read_probe
 
 def cmd(args):
     try:
@@ -81,7 +82,7 @@ class App(tk.Tk):
         self.label(top,("Windows 10/11 | Nur USB-Geräte" if sys.platform=="win32" else "Linux | Alle physischen Laufwerke (intern und extern)") +" | Nur lesende Inventarisierung",11).pack(anchor="w",pady=(6,0))
         bar=tk.Frame(self,bg="#101722",padx=22,pady=12);bar.pack(fill="x")
         buttons=tk.Frame(bar,bg="#101722");buttons.pack(fill="x")
-        actions=[("Geräte aktualisieren",self.refresh),("Rechneranalyse",self.host_info),("SSD-Diagnose",self.diagnose),("NVMe-Controller",self.controller_info),("USB-Verbindung",self.usb_diagnose),("Schutzprüfung",self.safety_check),("Firmwaredatei prüfen",self.inspect_firmware),("Firmwarekatalog",self.catalog_lookup),("Recovery-Leitfaden",self.triage_plan),("Abbild planen",self.plan_image),("Befund",self.assess),("Vergleich",self.compare_case),("Fallakte speichern",self.save_case),("Fallakten",self.open_cases),("Fallakte exportieren",self.export)]
+        actions=[("Geräte aktualisieren",self.refresh),("Rechneranalyse",self.host_info),("SSD-Diagnose",self.diagnose),("NVMe-Controller",self.controller_info),("USB-Verbindung",self.usb_diagnose),("Schutzprüfung",self.safety_check),("Firmwaredatei prüfen",self.inspect_firmware),("Firmwarekatalog",self.catalog_lookup),("Recovery-Leitfaden",self.triage_plan),("Abbild planen",self.plan_image),("Leseprobe 4 KiB",self.read_probe_action),("Befund",self.assess),("Vergleich",self.compare_case),("Fallakte speichern",self.save_case),("Fallakten",self.open_cases),("Fallakte exportieren",self.export)]
         for i,(name,cb) in enumerate(actions):
             tk.Button(buttons,text=name,command=cb,bg="#22566c",fg="white",relief="flat",padx=9,pady=7).grid(row=i//5,column=i%5,sticky="ew",padx=4,pady=4)
         for i in range(5): buttons.grid_columnconfigure(i,weight=1)
@@ -174,6 +175,29 @@ class App(tk.Tk):
             report=(diagnostics.usb_report(device) if sys.platform=="win32" else ata_diagnostics.report(device) if device.get("bus") in ("SATA","ATA") else diagnostics.nvme_report(device))
             self.post_ui(lambda:self.diagnose_done(device,report,epoch))
         threading.Thread(target=worker,daemon=True).start()
+    def read_probe_action(self):
+        if not self.selected:
+            messagebox.showinfo("Leseprobe","Bitte zuerst ein Laufwerk auswählen.");return
+        device=dict(self.selected)
+        if not (sys.platform.startswith("linux") and device.get("bus")=="PCIe/NVMe" and device.get("nvme")):
+            messagebox.showwarning("Leseprobe","Nur direkte Linux-NVMe-Geräte sind zugelassen.");return
+        if not messagebox.askyesno("Leseprobe bestätigen",
+            "Es werden maximal 4096 Bytes am Anfang der ausgewählten SSD gelesen.\\n"
+            "Auch Lesezugriffe können eine instabile SSD belasten.\\n"
+            "Es erfolgt kein Schreiben. Fortfahren?"):
+            return
+        epoch=self.inventory_epoch
+        self.status.config(text="Begrenzte Leseprobe läuft ...")
+        def worker():
+            report=read_probe.probe(device)
+            self.post_ui(lambda:self.read_probe_done(device,report,epoch))
+        threading.Thread(target=worker,daemon=True).start()
+    def read_probe_done(self,device,report,epoch):
+        if not self.selection_is_current(device,epoch):
+            self.status.config(text="Leseprobe verworfen: Geräteauswahl geändert.");return
+        self.merge_device_report(device,"read_probe",report)
+        self.show(json.dumps(self.last_report,ensure_ascii=False,indent=2))
+        self.status.config(text="Leseprobe beendet; kein Abbild und keine Schreiboperation.")
     def plan_image(self):
         if not self.selected:
             messagebox.showinfo("Abbild planen","Zuerst einen Datenträger auswählen.");return
