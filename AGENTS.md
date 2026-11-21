@@ -1,6 +1,6 @@
 # NVMe Recovery Studio AI – Projektentwurf für die weiterentwickelnde KI
 
-Dieses Dokument übergibt ausschließlich unsere Produktidee und Anforderungen. Die andere KI entscheidet selbst über Programmierung, Umsetzung, Qualitätssicherung und ihren Arbeitsablauf. Hier werden **keine Tests vorgeschrieben oder durchgeführt**.
+Dieses Dokument enthält Produktanforderungen für die laufende Softwareentwicklung. Eine erste Desktop-Anwendung und ein Windows-Installer-Build sind im Repository angelegt. Der tatsächliche Funktionsumfang ist in `README_BUILD.md` beschrieben.
 
 ## Ziel
 Eine eigenständige, möglichst offlinefähige KI-Reparatursoftware für M.2-NVMe-SSDs mit zwei Editionen.
