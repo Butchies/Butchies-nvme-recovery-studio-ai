@@ -1,9 +1,9 @@
-# NVMe Recovery Studio AI – Entwicklungsstand 0.18.0 (GitHub)
+# NVMe Recovery Studio AI – Entwicklungsstand 0.19.0 (GitHub)
 
 ## Tatsächlich vorhandene Funktionen
 - Grafische Desktopoberfläche und lesende Laufwerksinventarisierung.
 - Windows 10/11: ausschließlich USB-Laufwerke in der Geräteauswahl. Die USB-Anbindung allein beweist noch nicht, dass eine NVMe-SSD dahintersteckt.
-- Linux: direkte NVMe-Namespaces und USB-Laufwerke in der Inventarisierung.
+- Linux: alle erkannten physischen Laufwerke (intern und extern), damit auch direkte NVMe-SSDs und potenzielle M.2-SATA-SSDs erscheinen. M.2-SATA ist nicht immer von anderen SATA-Bauformen unterscheidbar; keine M.2-Bauformgarantie.
 - Windows: zusätzlicher lesender USB-Verbindungsbericht mit erneuter Geräteidentitätsprüfung. USB-Anbindung ist kein Nachweis für NVMe-Passthrough.
 - Konservative Schutzprüfung für gewählte Datenträger: erneute Identitätsprüfung, Linux-Mountpoints, aktive Boot-/System-Mounts, Swap-Hinweise und ausdrückliche Schreibsperre. Die Prüfung ist kein Freigabeverfahren für Schreibzugriffe.
 - Lokaler Firmware-Metadatenkatalog (JSON, schema 1) mit SHA-256-Abgleich; Katalogeinträge sind nicht authentifiziert und erlauben keine Firmwareinstallation.
@@ -82,3 +82,8 @@ Ein Hash-Treffer im selbst bereitgestellten Katalog bestätigt weder Echtheit no
 - Hintergrundaufgaben übergeben GUI-Ergebnisse jetzt an eine zentrale Warteschlange; Tk-Widgets werden im Hauptthread aktualisiert.
 - Abbildplanung wird auch bei erneuter Inventarisierung verworfen, selbst wenn der Gerätepfad gleich geblieben ist.
 - Es werden weiterhin keine Datenträger beschrieben, keine Firmware geflasht und keine Installer automatisch gebaut.
+
+## Vorgabe 0.19.0: Linux intern und extern, Windows nur extern
+- Linux inventarisiert alle physischen Datenträger, auch interne SATA-Geräte, weil sich M.2-SATA nicht sicher anhand von lsblk erkennen lässt.
+- Windows bleibt bei externen USB-Datenträgern; interne Windows-Laufwerke werden nicht aufgelistet.
+- Das Auflisten erteilt keine Schreibfreigabe; System- und Bootlaufwerke bleiben geschützt.
