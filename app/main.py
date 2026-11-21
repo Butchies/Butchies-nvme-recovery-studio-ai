@@ -27,13 +27,22 @@ def discover():
         if isinstance(data,dict): data=[data]
         return [{"name":str(x.get("Model") or "USB-Laufwerk"),"path":str(x.get("DeviceID") or ""),"serial":str(x.get("SerialNumber") or ""),"size":int(x.get("Size") or 0),"bus":"USB","nvme":False} for x in data]
     if sys.platform.startswith("linux"):
-        try: data=json.loads(cmd(["lsblk","-J","-b","-d","-o","NAME,MODEL,SERIAL,SIZE,TRAN,TYPE,PATH"]))
+        try: data=json.loads(cmd(["lsblk","-J","-b","-d","-o","NAME,MODEL,SERIAL,SIZE,TRAN,TYPE,PATH,ROTA"]))
         except (ValueError,TypeError): return []
         out=[]
         for x in data.get("blockdevices",[]):
+            if not isinstance(x,dict) or x.get("type")!="disk":continue
             name=str(x.get("name") or "")
-            if x.get("type")!="disk" or not(name.startswith("nvme") or x.get("tran")=="usb"):continue
-            out.append({"name":str(x.get("model") or name),"path":str(x.get("path") or "/dev/"+name),"serial":str(x.get("serial") or ""),"size":int(x.get("size") or 0),"bus":"PCIe/NVMe" if name.startswith("nvme") else "USB","nvme":name.startswith("nvme")})
+            transport=str(x.get("tran") or "").lower()
+            is_nvme=name.startswith("nvme") and "n" in name
+            is_usb=transport=="usb"
+            bus="PCIe/NVMe" if is_nvme and not is_usb else "USB" if is_usb else transport.upper() if transport else "Unbekannt"
+            # SATA M.2 and SATA 2.5-inch drives are not reliably distinguishable via lsblk.
+            out.append({"name":str(x.get("model") or name),"path":str(x.get("path") or "/dev/"+name),
+                        "serial":str(x.get("serial") or ""),"size":int(x.get("size") or 0),
+                        "bus":bus,"nvme":bool(is_nvme and not is_usb),
+                        "m2_form_factor_verified":False,
+                        "connection":"extern (USB)" if is_usb else "intern/direkt oder nicht eindeutig"})
         return out
     return []
 
@@ -45,7 +54,7 @@ class App(tk.Tk):
         s=ttk.Style();s.theme_use("clam");s.configure("Treeview",background="#192333",fieldbackground="#192333",foreground="#e8eff8",rowheight=31);s.map("Treeview",background=[("selected","#20556b")]);s.configure("Treeview.Heading",background="#26364a",foreground="white")
         top=tk.Frame(self,bg="#131e2c",padx=22,pady=20);top.pack(fill="x")
         self.label(top,"NVMe Recovery Studio AI",22,True).pack(anchor="w")
-        self.label(top,("Windows 10/11 | Nur USB-Geräte" if sys.platform=="win32" else "Linux | NVMe und USB") +" | Nur lesende Inventarisierung",11).pack(anchor="w",pady=(6,0))
+        self.label(top,("Windows 10/11 | Nur USB-Geräte" if sys.platform=="win32" else "Linux | Alle physischen Laufwerke (intern und extern)") +" | Nur lesende Inventarisierung",11).pack(anchor="w",pady=(6,0))
         bar=tk.Frame(self,bg="#101722",padx=22,pady=12);bar.pack(fill="x")
         buttons=tk.Frame(bar,bg="#101722");buttons.pack(fill="x")
         actions=[("Geräte aktualisieren",self.refresh),("Rechneranalyse",self.host_info),("NVMe-Diagnose",self.diagnose),("USB-Verbindung",self.usb_diagnose),("Schutzprüfung",self.safety_check),("Firmwaredatei prüfen",self.inspect_firmware),("Firmwarekatalog",self.catalog_lookup),("Recovery-Leitfaden",self.triage_plan),("Abbild planen",self.plan_image),("Befund",self.assess),("Vergleich",self.compare_case),("Fallakte speichern",self.save_case),("Fallakten",self.open_cases),("Fallakte exportieren",self.export)]
@@ -89,7 +98,7 @@ class App(tk.Tk):
         for i,x in enumerate(devices):
             self.tree.insert("","end",iid=str(i),text=x["name"],values=(x["bus"],f'{x["size"]/1e9:.1f} GB'))
         self.status.config(text=f"{len(devices)} Datenträger erfasst. Keine Änderungen vorgenommen.")
-        self.show("Gerät auswählen.\n\nUSB-Bridges können NVMe-Informationen verbergen.\nFirmware-Recovery und Datenrettung sind noch nicht implementiert.\nNVMe-Diagnose benötigt unter Linux nvme-cli und entsprechende Leseberechtigungen.")
+        self.show("Gerät auswählen.\n\nUnter Linux werden auch SATA-Laufwerke angezeigt, da M.2-SATA nicht immer eindeutig erkennbar ist.\nUSB-Bridges können NVMe-Informationen verbergen.\nFirmware-Recovery und Datenrettung sind noch nicht implementiert.\nNVMe-Diagnose benötigt unter Linux nvme-cli und entsprechende Leseberechtigungen.")
     def choose(self,event=None):
         sel=self.tree.selection()
         if not sel:return
