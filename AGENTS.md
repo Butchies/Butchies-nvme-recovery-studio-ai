@@ -6,7 +6,7 @@ Dieses Dokument übergibt ausschließlich unsere Produktidee und Anforderungen. 
 Eine eigenständige, möglichst offlinefähige KI-Reparatursoftware für M.2-NVMe-SSDs mit zwei Editionen.
 
 ## Edition 1: Windows
-- Windows 11 mit moderner dunkler Oberfläche.
+- Windows 10 und 11 mit moderner dunkler Oberfläche.
 - Ausschließlich **extern per USB angeschlossene NVMe-SSDs** bearbeiten.
 - USB-Bridge erkennen und anzeigen, welche Diagnose- und Firmwarefunktionen durchgereicht werden.
 - Wenn eine Bridge nicht geeignet ist, Ursache und belegte Alternativen anzeigen.
