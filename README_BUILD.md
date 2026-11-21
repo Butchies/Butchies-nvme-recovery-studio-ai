@@ -1,4 +1,4 @@
-# NVMe Recovery Studio AI – Entwicklungsstand 0.16.0 (GitHub)
+# NVMe Recovery Studio AI – Entwicklungsstand 0.17.0 (GitHub)
 
 ## Tatsächlich vorhandene Funktionen
 - Grafische Desktopoberfläche und lesende Laufwerksinventarisierung.
@@ -72,3 +72,8 @@ Ein Hash-Treffer im selbst bereitgestellten Katalog bestätigt weder Echtheit no
 - Firmwaredateien werden über einen lesenden Dateideskriptor geöffnet, als reguläre Datei geprüft und auf 256 MiB begrenzt.
 - Firmwarekataloge werden begrenzt auf 2 MiB eingelesen; Symlinks und Änderungen während des Lesens werden soweit durch das Betriebssystem unterstützt abgewehrt.
 - Kein Firmware-Flash und keine Echtheits- oder Kompatibilitätsfreigabe.
+
+## Wartung 0.17.0
+- Windows-USB-Diagnose akzeptiert nur den kanonischen PHYSICALDRIVE-Pfad mit numerischer Laufwerksnummer.
+- Abbildplanung läuft im Hintergrund, sodass Mount- und Kapazitätsabfragen die Oberfläche nicht blockieren.
+- Ergebnisse werden verworfen, wenn zwischenzeitlich ein anderes Laufwerk ausgewählt wurde.
