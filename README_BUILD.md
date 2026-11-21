@@ -144,3 +144,9 @@ Ein Hash-Treffer im selbst bereitgestellten Katalog bestätigt weder Echtheit no
 - Rechneranalyse verwirft Ergebnisse, wenn sich zwischen Start und Rückmeldung die Geräteauswahl oder Inventarisierung verändert hat.
 - Der Recovery-Leitfaden zeigt ATA-Diagnosehinweise aus smartctl-Rückgabebits explizit an.
 - Keine Tests, kein Installer, kein ZIP und keine Schreibzugriffe auf Datenträger.
+
+## NVMe-Controlleridentifikation (Linux)
+- Neue Schaltfläche „NVMe-Controller“: liest PCI Vendor ID, Device ID, Subsystem-IDs, Controller-Modell, Seriennummer und Firmware-Revision aus sysfs.
+- Nur für direkte NVMe-Namespaces unter Linux; Windows-USB-Geräte erhalten keine erfundene PCIe-Controlleridentität.
+- Diese Hardwarekennung ist eine Grundlage für spätere controllerabhängige Recovery-Verfahren, aber keine Firmwarekompatibilitätsprüfung oder Schreibfreigabe.
+- Kein Test, Installer, ZIP oder Firmwareflash ausgeführt.
