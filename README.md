@@ -10,8 +10,6 @@ KI-gestützte NVMe-Controllerdiagnose und Firmware-Wiederherstellung. **Projekts
 
 **Noch nicht implementiert:** tatsächliche Datenrettung, Firmware-Recovery/Flash und bootfähige Linux-Edition.
 
-## Programmdateien\n- `app/main.py`: grafische, nur lesende Laufwerksinventarisierung und lokaler Fallaktenexport.\n- `.github/workflows/windows-installer.yml`: automatisierter Windows-Installer-Build.\n- `NVMeRecoveryStudioAI.iss`: Inno-Setup-Installationspaket.\n- `README_BUILD.md`: Build- und Funktionsstand.\n\n**Noch nicht fertig:** KI-Diagnose, SMART-/Controllerdiagnose, Datenrettung, Firmware-Flash und Linux-Bootimage.
-
 ## Zwei Editionen
 - **Windows 10 und 11:** Ausschließlich externe NVMe-SSDs über USB. Interne Laufwerke sind weder Diagnose- noch Flash-Ziele.
 - **Linux Boot Edition:** Eigenständiges UEFI-USB-Recovery-System, das direkt in die Vollbildanwendung startet. Direkte PCIe/NVMe-Diagnose interner Ziel-SSDs, WLAN, lokales KI-Modell und Offline-Werkzeuge.
