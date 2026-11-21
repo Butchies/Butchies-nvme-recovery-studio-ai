@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Dialogs
 ApplicationWindow {
     id: window
     width: 1120; height: 720
@@ -24,11 +25,102 @@ ApplicationWindow {
         }
         RowLayout {
             Button { text: "USB-Geräte erkennen"; onClicked: controller.refresh() }
+            Button { text: "Zielordner wählen"; enabled: !controller.recoveryRunning; onClicked: folderDialog.open() }
             Button { text: "Ziel prüfen"; onClicked: controller.inspectDestination(destination.text) }
             TextField {
                 id: destination
                 Layout.fillWidth: true
-                placeholderText: "Zielordner für spätere Recovery"
+                enabled: !controller.recoveryRunning
+                placeholderText: "Zielordner für das Rettungsabbild (anderes Laufwerk als die defekte SSD)"
+            }
+        }
+        FolderDialog {
+            id: folderDialog
+            title: "Zielordner für das Rettungsabbild"
+            onAccepted: {
+                var path = decodeURIComponent(selectedFolder.toString().replace(/^file:\/{3}/, ""))
+                destination.text = path.replace(/\//g, "\\")
+            }
+        }
+        Rectangle {
+            id: recoveryPanel
+            Layout.fillWidth: true
+            visible: controller.recoveryRunning || !!controller.recoveryResult.state
+            implicitHeight: recoveryColumn.implicitHeight + 24
+            color: "#1d3a2f"; radius: 10
+            ColumnLayout {
+                id: recoveryColumn
+                anchors.left: parent.left; anchors.right: parent.right
+                anchors.top: parent.top; anchors.margins: 12
+                spacing: 6
+                RowLayout {
+                    Layout.fillWidth: true
+                    Label {
+                        Layout.fillWidth: true
+                        text: controller.recoveryRunning ? "Automatische Rettung läuft" : "Rettung: " + (controller.recoveryResult.rating || "")
+                        font.bold: true; color: "white"; font.pixelSize: 17
+                    }
+                    Button {
+                        text: "Anhalten"
+                        visible: controller.recoveryRunning
+                        onClicked: controller.cancelRecovery()
+                    }
+                }
+                Label {
+                    Layout.fillWidth: true
+                    visible: controller.recoveryRunning
+                    text: controller.recoveryProgress.phase || "Vorbereitung …"
+                    color: "#cfeedd"; wrapMode: Text.WordWrap
+                }
+                RowLayout {
+                    Layout.fillWidth: true
+                    visible: controller.recoveryRunning
+                    ProgressBar {
+                        Layout.fillWidth: true
+                        from: 0; to: 100
+                        value: controller.recoveryProgress.percent || 0
+                    }
+                    Label {
+                        text: (controller.recoveryProgress.percent || 0).toFixed(1) + " %"
+                        color: "white"; font.bold: true
+                    }
+                }
+                Label {
+                    Layout.fillWidth: true
+                    visible: controller.recoveryRunning && !!controller.recoveryProgress.rescued
+                    text: "Gesichert: " + controller.recoveryProgress.rescued
+                          + " (" + (controller.recoveryProgress.rescuedPercent || 0).toFixed(2) + " %)"
+                          + " · Nicht lesbar: " + controller.recoveryProgress.bad
+                          + " · Offen: " + controller.recoveryProgress.pending
+                          + " · " + controller.recoveryProgress.rate
+                          + " · Restzeit Durchgang: " + controller.recoveryProgress.eta
+                    color: "#cfeedd"; wrapMode: Text.WordWrap
+                }
+                Label {
+                    Layout.fillWidth: true
+                    visible: !controller.recoveryRunning && !!controller.recoveryResult.summary
+                    text: controller.recoveryResult.summary || ""
+                    color: "#cfeedd"; wrapMode: Text.WordWrap
+                }
+                Repeater {
+                    model: controller.recoveryRunning ? [] : (controller.recoveryResult.nextSteps || [])
+                    Label { Layout.fillWidth: true; text: "→ " + modelData; color: "#b8e3cc"; wrapMode: Text.WordWrap }
+                }
+                Label {
+                    Layout.fillWidth: true
+                    visible: !controller.recoveryRunning && !!controller.recoveryResult.reportPath
+                    text: "Bericht: " + (controller.recoveryResult.reportPath || "")
+                    color: "#9fcfb6"; wrapMode: Text.WrapAnywhere
+                }
+                ListView {
+                    id: logView
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 110
+                    clip: true
+                    model: controller.recoveryLog
+                    delegate: Label { width: ListView.view.width; text: modelData; color: "#8fb8a3"; font.pixelSize: 12; elide: Text.ElideRight }
+                    onCountChanged: positionViewAtEnd()
+                }
             }
         }
         Rectangle {
@@ -84,7 +176,13 @@ ApplicationWindow {
                                 Label { text: modelData.name || "USB-Laufwerk"; color: "white"; font.bold: true }
                                 Button {
                                     text: "Automatisch diagnostizieren"
+                                    enabled: !controller.recoveryRunning
                                     onClicked: controller.autoDiagnose(index)
+                                }
+                                Button {
+                                    text: "Automatisch retten"
+                                    enabled: !controller.recoveryRunning
+                                    onClicked: controller.startAutoRecovery(index, destination.text)
                                 }
                             }
                             Label {
