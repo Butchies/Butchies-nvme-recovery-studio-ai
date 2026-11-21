@@ -1,5 +1,5 @@
 """NVMe Recovery Studio AI - read-only desktop application."""
-import json, platform, queue, sqlite3, subprocess, sys, threading, tkinter as tk
+import json, platform, queue, re, sqlite3, subprocess, sys, threading, tkinter as tk
 from datetime import datetime
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
@@ -34,7 +34,7 @@ def discover():
             if not isinstance(x,dict) or x.get("type")!="disk":continue
             name=str(x.get("name") or "")
             transport=str(x.get("tran") or "").lower()
-            is_nvme=name.startswith("nvme") and "n" in name
+            is_nvme=bool(re.fullmatch(r"nvme[0-9]+n[0-9]+",name))
             is_usb=transport=="usb"
             bus="PCIe/NVMe" if is_nvme and not is_usb else "USB" if is_usb else transport.upper() if transport else "Unbekannt"
             # SATA M.2 and SATA 2.5-inch drives are not reliably distinguishable via lsblk.
