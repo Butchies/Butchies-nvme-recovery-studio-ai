@@ -19,4 +19,4 @@ python3 tools/generate_catalog.py pciids/pci.ids usbids/usb.ids
 ```
 
 Herstellerwerkzeuge (MPTools) und Firmwaredateien sind nicht enthalten: Sie sind nicht frei verteilbar bzw. werden nur aus der offiziellen Quelle bezogen.
-Neue, unbekannte Controller landet die KI als Vorschlag in Quarantäne (`vorlagenVorschlaege` in `ki-wissen.json`); daraus entsteht nie automatisch eine Schreibfreigabe.
+Neue, unbekannte Controller legt die KI als Vorschlag in Quarantäne ab (`vorlagenVorschlaege` in `ki-wissen.json`); daraus entsteht nie automatisch eine Schreibfreigabe.
