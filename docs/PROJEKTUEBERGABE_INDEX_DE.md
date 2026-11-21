@@ -1,7 +1,7 @@
 # Projektübergabe – Inhaltsverzeichnis unseres Entwurfs
 
 ## Projekt
-**NVMe Recovery Studio AI** – Windows-11-Edition für externe USB-NVMe-SSDs und eigenständige Linux-USB-Edition für direkte PCIe/NVMe-Diagnose.
+**NVMe Recovery Studio AI** – Windows-10/11-Edition für externe USB-NVMe-SSDs und eigenständige Linux-USB-Edition für direkte PCIe/NVMe-Diagnose.
 
 ## Zentrale Dokumente
 - `README.md` – Projektüberblick.
