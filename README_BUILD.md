@@ -1,4 +1,4 @@
-# NVMe Recovery Studio AI – Entwicklungsstand 0.11.0 (GitHub)
+# NVMe Recovery Studio AI – Entwicklungsstand 0.12.0 (GitHub)
 
 ## Tatsächlich vorhandene Funktionen
 - Grafische Desktopoberfläche und lesende Laufwerksinventarisierung.
@@ -8,6 +8,7 @@
 - Konservative Schutzprüfung für gewählte Datenträger: erneute Identitätsprüfung, Linux-Mountpoints, aktive Boot-/System-Mounts, Swap-Hinweise und ausdrückliche Schreibsperre. Die Prüfung ist kein Freigabeverfahren für Schreibzugriffe.
 - Lokaler Firmware-Metadatenkatalog (JSON, schema 1) mit SHA-256-Abgleich; Katalogeinträge sind nicht authentifiziert und erlauben keine Firmwareinstallation.
 - Offline-Firmwaredatei-Inspektion: Dateigröße, SHA-256 und Header-Vorschau. Keine Ausführung, keine Signatur- oder Kompatibilitätsfreigabe und kein Flash.
+- Offline-Recovery-Leitfaden mit priorisierten, nicht ausführbaren Hinweisen auf Basis vorhandener Befunde.
 - Rechneranalyse mit Betriebssystem-, CPU- und optionalen PCI/USB-Informationen.
 - Linux-NVMe-Diagnose mit `nvme-cli`: SMART, Controller-Identify und Fehlerlog als JSON, sofern Berechtigungen und Gerätezugriff vorhanden sind.
 - Lokale SQLite-Fallakten: speichern, auflisten und öffnen.
@@ -46,3 +47,7 @@ Ein Hash-Treffer im selbst bereitgestellten Katalog bestätigt weder Echtheit no
 - Fallaktenvergleich nutzt den aktuellen Diagnosebericht statt einer gespeicherten Hülle.
 - Speichern ordnet die Geräteidentität dem tatsächlich erfassten Bericht zu, nicht einer eventuell später geänderten Auswahl.
 - Vergleich lehnt fehlende SMART-Messwerte ab und weist auf rückläufige Zähler sowie mögliche Resets hin.
+
+## Wartung 0.12.0
+- Installer-GitHub-Workflow nur noch manuell auslösbar; Code-Commits erzeugen nicht automatisch ein Setup.
+- Recovery-Leitfaden ist ausschließlich informativ. Keine Gerätebefehle oder automatischen Reparaturen.
