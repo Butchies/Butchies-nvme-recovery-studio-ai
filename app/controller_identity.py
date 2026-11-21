@@ -3,6 +3,8 @@
 This does not enter vendor recovery mode or authorize firmware operations.
 """
 import re
+import json
+import subprocess
 import sys
 from pathlib import Path
 
@@ -24,6 +26,22 @@ def report(device):
     match=NAMESPACE.fullmatch(Path(path).name) if path.startswith("/dev/") else None
     if not match or device.get("bus")!="PCIe/NVMe" or not device.get("nvme"):
         return dict(result,error="Kein direktes NVMe-Namespace ausgewählt.")
+    # Revalidate live namespace identity before associating a PCI controller.
+    try:
+        proc=subprocess.run(["lsblk","-J","-b","-d","-o","NAME,PATH,TYPE,TRAN,SERIAL,SIZE"],capture_output=True,text=True,timeout=10,check=False)
+        rows=json.loads(proc.stdout).get("blockdevices",[]) if proc.returncode==0 else []
+    except (OSError,ValueError,TypeError,subprocess.TimeoutExpired):
+        rows=[]
+    matches=[x for x in rows if isinstance(x,dict) and x.get("path")==path and x.get("type")=="disk"]
+    if len(matches)!=1 or str(matches[0].get("tran") or "").lower()=="usb":
+        return dict(result,error="Namespace nicht mehr eindeutig vorhanden.")
+    current=matches[0]
+    try:
+        same_size=int(current.get("size") or 0)==int(device.get("size") or 0)>0
+    except (ValueError,TypeError,OverflowError):
+        same_size=False
+    if not same_size or not str(device.get("serial") or "").strip() or str(current.get("serial") or "").strip()!=str(device.get("serial") or "").strip():
+        return dict(result,error="Geräteidentität hat sich verändert.")
     name="nvme"+match.group(1)
     controller=Path("/sys/class/nvme")/name
     try:
@@ -45,6 +63,6 @@ def report(device):
                   controller_serial=_read(controller/"serial"),
                   firmware_revision=_read(controller/"firmware_rev"),
                   driver=_read(pci/"driver_override"))
-    result["controller_verified"]=bool(vendor and product and HEX.fullmatch(vendor) and HEX.fullmatch(product))
+    result["controller_verified"]=bool(vendor and product and HEX.fullmatch(vendor) and HEX.fullmatch(product) and result.get("controller_serial")==str(device.get("serial") or "").strip())
     result["note"]="PCI-IDs identifizieren Hardware, aber keine sichere Firmware oder Vendor-Recovery-Befehle."
     return result
