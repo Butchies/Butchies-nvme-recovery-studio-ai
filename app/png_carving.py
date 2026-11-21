@@ -6,7 +6,6 @@ contiguous PNG candidates may be copied. Existing files are never overwritten.
 import os
 import stat
 import hashlib
-from pathlib import Path
 import png_inspection
 
 COPY_CHUNK=1024*1024
@@ -15,6 +14,10 @@ MAX_EXPORTS=32
 def export_pngs(image_path,destination_directory,findings,cancelled=None,progress=None):
     result={"mode":"offline_png_carving","source_writes_allowed":False,
             "physical_device_access":False,"exported":[],"skipped":[],"cancelled":False}
+    if os.name!="posix" or not hasattr(os,"pread") or os.open not in os.supports_dir_fd:
+        return dict(result,error="PNG-Export nur auf unterstützten POSIX-Systemen.")
+    if not isinstance(findings,(list,tuple)):
+        return dict(result,error="Ungültige Kandidatenliste.")
     source_fd=None
     try:
         source_info=os.lstat(image_path)
@@ -78,6 +81,8 @@ def export_pngs(image_path,destination_directory,findings,cancelled=None,progres
                             copied+=len(block)
                             if progress:progress(len(result["exported"]),copied,length)
                         os.fsync(output_fd)
+                        if os.fstat(source_fd).st_size!=opened.st_size:
+                            raise OSError("Quell-Image während des Exports verändert.")
                         result["exported"].append({"filename":filename,"offset_bytes":offset,
                                                    "bytes":copied,"sha256":digest.hexdigest()})
                     except (OSError,InterruptedError) as exc:
