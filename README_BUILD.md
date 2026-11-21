@@ -1,4 +1,4 @@
-# NVMe Recovery Studio AI – Entwicklungsstand 0.12.0 (GitHub)
+# NVMe Recovery Studio AI – Entwicklungsstand 0.13.0 (GitHub)
 
 ## Tatsächlich vorhandene Funktionen
 - Grafische Desktopoberfläche und lesende Laufwerksinventarisierung.
@@ -8,6 +8,7 @@
 - Konservative Schutzprüfung für gewählte Datenträger: erneute Identitätsprüfung, Linux-Mountpoints, aktive Boot-/System-Mounts, Swap-Hinweise und ausdrückliche Schreibsperre. Die Prüfung ist kein Freigabeverfahren für Schreibzugriffe.
 - Lokaler Firmware-Metadatenkatalog (JSON, schema 1) mit SHA-256-Abgleich; Katalogeinträge sind nicht authentifiziert und erlauben keine Firmwareinstallation.
 - Offline-Firmwaredatei-Inspektion: Dateigröße, SHA-256 und Header-Vorschau. Keine Ausführung, keine Signatur- oder Kompatibilitätsfreigabe und kein Flash.
+- Planung eines späteren Rohabbilds mit Kapazitätsprüfung und ausdrücklicher Sperre bis zur verifizierten Quell-/Zieltrennung; kein tatsächliches Imaging.
 - Offline-Recovery-Leitfaden mit priorisierten, nicht ausführbaren Hinweisen auf Basis vorhandener Befunde.
 - Rechneranalyse mit Betriebssystem-, CPU- und optionalen PCI/USB-Informationen.
 - Linux-NVMe-Diagnose mit `nvme-cli`: SMART, Controller-Identify und Fehlerlog als JSON, sofern Berechtigungen und Gerätezugriff vorhanden sind.
@@ -51,3 +52,7 @@ Ein Hash-Treffer im selbst bereitgestellten Katalog bestätigt weder Echtheit no
 ## Wartung 0.12.0
 - Installer-GitHub-Workflow nur noch manuell auslösbar; Code-Commits erzeugen nicht automatisch ein Setup.
 - Recovery-Leitfaden ist ausschließlich informativ. Keine Gerätebefehle oder automatischen Reparaturen.
+
+## Wartung 0.13.0
+- Neue Aktion »Abbild planen«: nur Größe und freien Speicher erfassen, keine Geräteöffnung, kein Schreiben, keine Abbilddatei.
+- Die sichere Trennung von Quell- und Zieldatenträgern ist noch nicht nachgewiesen; der Plan erteilt niemals eine Ausführungsfreigabe.
