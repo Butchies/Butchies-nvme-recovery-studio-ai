@@ -1,11 +1,11 @@
-# NVMe Recovery Studio AI – Entwicklungsstand 0.6.0 (GitHub)
+# NVMe Recovery Studio AI – Entwicklungsstand 0.7.0 (GitHub)
 
 ## Tatsächlich vorhandene Funktionen
 - Grafische Desktopoberfläche und lesende Laufwerksinventarisierung.
 - Windows 10/11: ausschließlich USB-Laufwerke in der Geräteauswahl. Die USB-Anbindung allein beweist noch nicht, dass eine NVMe-SSD dahintersteckt.
 - Linux: direkte NVMe-Namespaces und USB-Laufwerke in der Inventarisierung.
 - Windows: zusätzlicher lesender USB-Verbindungsbericht mit erneuter Geräteidentitätsprüfung. USB-Anbindung ist kein Nachweis für NVMe-Passthrough.
-- Konservative Schutzprüfung für gewählte Datenträger: erneute Identitätsprüfung, Linux-Mountpoints und ausdrückliche Schreibsperre. Die Prüfung ist kein Freigabeverfahren für Schreibzugriffe.
+- Konservative Schutzprüfung für gewählte Datenträger: erneute Identitätsprüfung, Linux-Mountpoints, aktive Boot-/System-Mounts, Swap-Hinweise und ausdrückliche Schreibsperre. Die Prüfung ist kein Freigabeverfahren für Schreibzugriffe.
 - Rechneranalyse mit Betriebssystem-, CPU- und optionalen PCI/USB-Informationen.
 - Linux-NVMe-Diagnose mit `nvme-cli`: SMART, Controller-Identify und Fehlerlog als JSON, sofern Berechtigungen und Gerätezugriff vorhanden sind.
 - Lokale SQLite-Fallakten: speichern, auflisten und öffnen.
@@ -29,3 +29,5 @@ Der GitHub-Actions-Workflow `Windows Installer` ist für PyInstaller und Inno Se
 - Rechneranalyse läuft ohne Blockieren der Oberfläche.
 - Bedienelemente sind in zwei Reihen angeordnet.
 - Der Installer-Workflow begrenzt die Ausgabe auf genau eine EXE mit maximal 250 MB.
+
+**Hinweis zur Schutzprüfung:** Die Erkennung von System- und Boot-Datenträgern ist bewusst konservativ und nicht vollständig (z. B. bei komplexen LVM-/RAID-/verschlüsselten Setups). Sie hebt niemals die Schreibsperre auf.
