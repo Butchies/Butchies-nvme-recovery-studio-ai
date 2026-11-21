@@ -30,8 +30,11 @@
 - `docs/HARDWARE_DIAGNOSE_ASSISTENT_ENTWURF_DE.md` – geführte Ursachenanalyse der Rechnerhardware.
 - `docs/SYSTEM_EIGNUNG_KI_RESSOURCEN_ENTWURF_DE.md` – Ressourcenprofil und Eignung für lokale KI.
 - `docs/VERBINDUNGSFEHLER_DIAGNOSE_ENTWURF_DE.md` – Verbindungsabbrüche, Fehlerverläufe und Ursachenvergleich.
+- `docs/RECHNER_HARDWARE_PROFIL_VERGLEICH_ENTWURF_DE.md` – Rechnerprofile und Anschlussvergleiche.
 
 ## Diagnose, Firmware und Recovery
+- `docs/SSD_ZUSTAND_RISIKO_ANZEIGE_ENTWURF_DE.md` – Zustands- und Risikodarstellung.
+- `docs/RECOVERY_SITZUNG_FORTSETZEN_ENTWURF_DE.md` – Sitzungen speichern und fortsetzen.
 - `docs/CONTROLLER_WISSEN_ENTWURF_DE.md`
 - `docs/FEHLERBILDER_RECOVERY_ENTWURF_DE.md`
 - `docs/DATENRETTUNG_ENTWURF_DE.md`
