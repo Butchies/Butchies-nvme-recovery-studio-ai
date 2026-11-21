@@ -1,4 +1,4 @@
-# NVMe Recovery Studio AI – Entwicklungsstand 0.20.0 (GitHub)
+# NVMe Recovery Studio AI – Entwicklungsstand 0.21.0 (GitHub)
 
 ## Tatsächlich vorhandene Funktionen
 - Grafische Desktopoberfläche und lesende Laufwerksinventarisierung.
@@ -13,6 +13,7 @@
 - Offline-Recovery-Leitfaden mit priorisierten, nicht ausführbaren Hinweisen auf Basis vorhandener Befunde.
 - Rechneranalyse mit Betriebssystem-, CPU- und optionalen PCI/USB-Informationen.
 - Linux-NVMe-Diagnose mit `nvme-cli`: SMART, Controller-Identify und Fehlerlog als JSON, sofern Berechtigungen und Gerätezugriff vorhanden sind.
+- Linux-SATA/ATA-Diagnose mit `smartctl` (smartmontools): lesende SMART-Informationen, Gesundheitsstatus, Attribute und Fehlerlog, auch für potenzielle M.2-SATA-SSDs; keine M.2-Bauformbestätigung.
 - Lokale SQLite-Fallakten: speichern, auflisten und öffnen.
 - JSON-Export mit optionaler konservativer Anonymisierung: bekannte Kennungen und rohe Freitext-/Identifikationsdaten werden ausgeblendet. Vollständige Anonymität ist nicht garantiert.
 - Regelbasierte Offline-Auswertung von NVMe-SMART-Werten mit Belegen und Unsicherheiten.
@@ -24,7 +25,7 @@ Noch kein generatives lokales KI-Modell, keine Datenrettung, kein Firmware-Flash
 ## Start
 `python app/main.py`
 
-Unter Linux ist für die NVMe-Diagnose zusätzlich `nvme-cli` erforderlich. Fehlende Berechtigungen und nicht unterstützte Geräte werden als Fehler angezeigt.
+Unter Linux ist für die NVMe-Diagnose zusätzlich `nvme-cli` und für SATA/ATA-SMART `smartmontools` erforderlich. Fehlende Berechtigungen und nicht unterstützte Geräte werden als Fehler angezeigt.
 
 ## Windows-Installer
 Der GitHub-Actions-Workflow `Windows Installer` ist für PyInstaller und Inno Setup vorgesehen. Ein Setup-EXE darf erst nach erfolgreichem Build als verfügbar bezeichnet werden. Die Zielgröße für das spätere einzelne Installationspaket beträgt maximal 250 MB; eine Überschreitung erfordert vorherige Freigabe.
@@ -91,3 +92,8 @@ Ein Hash-Treffer im selbst bereitgestellten Katalog bestätigt weder Echtheit no
 ## Wartung 0.20.0
 - Linux-Schutzprüfung unterstützt jetzt alle durch lsblk eindeutig als physischer Datenträger identifizierten Geräte, einschließlich SATA-M.2-Kandidaten; Schreibzugriffe bleiben immer gesperrt.
 - NVMe-Namespaces werden anhand eines eindeutigen Gerätenamens statt einer unscharfen Teilzeichenfolge erkannt.
+
+## Wartung 0.21.0
+- Linux: SSD-Diagnose unterscheidet direkte NVMe- und SATA/ATA-Laufwerke und nutzt dafür jeweils nvme-cli bzw. smartctl.
+- ATA-Diagnose prüft Gerätepfad, Transport, Seriennummer und Kapazität vor dem rein lesenden Abruf.
+- USB-SATA-Bridges werden nicht als direktes ATA-Laufwerk ausgegeben. Keine SMART-Selbsttests, keine Reparatur und kein Schreiben.
