@@ -33,6 +33,9 @@
 - `docs/RECHNER_HARDWARE_PROFIL_VERGLEICH_ENTWURF_DE.md` – Rechnerprofile und Anschlussvergleiche.
 
 ## Diagnose, Firmware und Recovery
+- `docs/TELEMETRIE_SNAPSHOT_KONSISTENZ_ENTWURF_DE.md` – Telemetrie-Snapshots, Generationsnummern und Konsistenz.
+- `docs/HERSTELLER_LOGS_DECODER_KATALOG_ENTWURF_DE.md` – herstellerspezifische Logformate und Decoder-Katalog.
+- `docs/RETTUNGSABBILD_QUELLENZUORDNUNG_ENTWURF_DE.md` – Herkunftszuordnung und Konfliktschutz für Rettungsabbilder.
 - `docs/NVME_COMMAND_EFFECTS_SICHERHEIT_ENTWURF_DE.md` – NVMe-Befehlswirkungen und Sicherheitskennzeichnung.
 - `docs/NVME_SUBSYSTEM_CONTROLLER_TOPOLOGIE_ENTWURF_DE.md` – Subsystem-, Controller- und Namespace-Zuordnung.
 - `docs/DIAGNOSE_EVIDENZ_WIDERSPRUECHE_ENTWURF_DE.md` – widersprüchliche Befunde und nachvollziehbare KI-Hypothesen.
