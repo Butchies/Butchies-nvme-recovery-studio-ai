@@ -33,6 +33,9 @@
 - `docs/RECHNER_HARDWARE_PROFIL_VERGLEICH_ENTWURF_DE.md` – Rechnerprofile und Anschlussvergleiche.
 
 ## Diagnose, Firmware und Recovery
+- `docs/NVME_MI_MANAGEMENT_ENTWURF_DE.md` – NVMe-MI-Fähigkeiten und Verwaltungsinformationen.
+- `docs/NVME_ASYNCHRONE_WARNUNGEN_ENTWURF_DE.md` – asynchrone Controllerereignisse und Live-Warnungen.
+- `docs/NVME_SANITIZE_STATUS_NUR_LESEN_ENTWURF_DE.md` – rein lesende Sanitize-Statusanzeige.
 - `docs/NVME_READ_RECOVERY_LEVELS_ENTWURF_DE.md` – optionale Read-Recovery-Level und Datenrettungsabwägungen.
 - `docs/NVME_ZONED_NAMESPACES_ENTWURF_DE.md` – Erkennung und Darstellung von Zoned Namespaces.
 - `docs/NVME_BOOT_PARTITION_INFORMATION_ENTWURF_DE.md` – spezielle NVMe-Boot-Partitionen und Zugriffsgrenzen.
