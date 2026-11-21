@@ -267,9 +267,16 @@ class App(tk.Tk):
     def png_export_done(self,cancel,report):
         if self.png_export_cancel is not cancel:return
         self.png_export_cancel=None
-        self.last_report={"offline_png_carving":report}
+        if not isinstance(self.last_report,dict):
+            self.last_report={}
+        self.last_report["offline_png_carving"]=report
         self.show(json.dumps(self.last_report,ensure_ascii=False,indent=2))
-        self.status.config(text=f"PNG-Export beendet: {len(report.get('exported',[]))} Dateien erstellt. Quell-Image unverändert.")
+        if report.get("error"):
+            self.status.config(text="PNG-Export fehlgeschlagen: "+str(report["error"]))
+        elif report.get("cancelled"):
+            self.status.config(text=f"PNG-Export abgebrochen: {len(report.get('exported',[]))} Dateien fertiggestellt.")
+        else:
+            self.status.config(text=f"PNG-Export beendet: {len(report.get('exported',[]))} Dateien erstellt. Quell-Image unverändert.")
     def plan_image(self):
         if not self.selected:
             messagebox.showinfo("Abbild planen","Zuerst einen Datenträger auswählen.");return
