@@ -73,6 +73,7 @@ class App(tk.Tk):
         self.last_report=None
         self.case_for_compare=None
         self.inventory_epoch=0
+        self.refresh_request_id=0
         self.ui_queue=queue.Queue()
         self.after(75,self.process_ui_queue)
         self.refresh()
@@ -83,19 +84,25 @@ class App(tk.Tk):
         for _ in range(50):
             try: callback=self.ui_queue.get_nowait()
             except queue.Empty: break
-            callback()
+            try: callback()
+            except Exception as exc:
+                self.status.config(text=f"UI-Rückmeldung fehlgeschlagen: {type(exc).__name__}")
         self.after(75,self.process_ui_queue)
     def label(self,parent,text,size,bold=False):
         return tk.Label(parent,text=text,bg=parent["bg"],fg="#e8eff8",font=("Segoe UI",size,"bold" if bold else "normal"))
     def show(self,text):
         self.detail.config(state="normal");self.detail.delete("1.0","end");self.detail.insert("1.0",text);self.detail.config(state="disabled")
     def refresh(self):
+        self.refresh_request_id+=1
+        request_id=self.refresh_request_id
+        self.inventory_epoch+=1
         self.status.config(text="Geräte werden erfasst ...")
         def worker():
             devices=discover()
-            self.post_ui(lambda:self.loaded(devices))
+            self.post_ui(lambda:self.loaded(devices,request_id))
         threading.Thread(target=worker,daemon=True).start()
-    def loaded(self,devices):
+    def loaded(self,devices,request_id):
+        if request_id!=self.refresh_request_id:return
         self.devices=devices;self.selected=None;self.last_report=None;self.inventory_epoch+=1;self.tree.delete(*self.tree.get_children())
         for i,x in enumerate(devices):
             self.tree.insert("","end",iid=str(i),text=x["name"],values=(x["bus"],x.get("connection","extern (USB)" if sys.platform=="win32" else "Unbekannt"),f'{x["size"]/1e9:.1f} GB'))
