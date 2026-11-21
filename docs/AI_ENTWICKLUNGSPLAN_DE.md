@@ -6,7 +6,7 @@ Dieses Dokument ist die Übergabe unseres gemeinsam festgelegten Entwurfs an ein
 NVMe Recovery Studio AI soll möglichst viele Fehler von M.2-NVMe-SSDs erkennen und technisch mögliche Reparaturen unterstützen. Das Programm soll ohne ständige Internetverbindung funktionieren und eine transparente, lernfähige KI integrieren. Nicht jede SSD lässt sich softwareseitig wiederherstellen.
 
 ## Windows-Edition
-- Eigenständige Windows-11-Anwendung.
+- Eigenständige Windows-10/11-Anwendung.
 - Nur externe USB-NVMe-SSDs; keine internen SSDs als Ziel.
 - USB-Bridge-Erkennung, verständliche Einschränkungen und passende Adapterhinweise.
 - Diagnose, Firmwareverwaltung, KI-Assistent, Recovery und Live-Monitor.
