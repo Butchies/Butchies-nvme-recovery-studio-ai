@@ -69,6 +69,11 @@ def scan(path, progress=None, cancelled=None):
                     result["png_inspection"]=png_inspection.inspect_candidates(verify,result["matches"],info.st_size,cancelled=cancelled)
                 else:
                     result["png_inspection_warning"]="Dateiidentität vor PNG-Prüfung verändert."
+        after=os.stat(path,follow_symlinks=False)
+        if (after.st_dev!=info.st_dev or after.st_ino!=info.st_ino
+                or after.st_size!=info.st_size or after.st_mtime_ns!=info.st_mtime_ns):
+            result["error"]="Image-Datei während der Analyse verändert; Ergebnisse nicht verlässlich."
+            result["completed"]=False
         if cancelled and cancelled():
             result["cancelled"]=True
             result["completed"]=False
