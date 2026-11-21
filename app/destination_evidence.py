@@ -1,9 +1,9 @@
-"""Read-only Linux mount ancestry evidence for imaging planning.
+"""Conservative read-only Linux destination ancestry evidence.
 
-Informational only: stacked, remote, encrypted and virtual filesystems
-can obscure the actual backing disk. Never authorizes imaging.
+Never grants permission to image, flash or modify a block device.
 """
 import json
+import os
 import subprocess
 import sys
 
@@ -14,48 +14,61 @@ def _run(args):
     except (OSError,ValueError,subprocess.TimeoutExpired):
         return None
 
+def _canonical(path):
+    return os.path.realpath(path) if isinstance(path,str) and path.startswith("/dev/") else ""
+
 def destination_evidence(directory,source):
     result={"supported":sys.platform.startswith("linux"),
             "source_disk":source,"destination_mount":None,
             "destination_source":None,"destination_ancestors":[],
             "same_device_detected":False,"separation_verified":False,
             "warnings":[]}
+    warnings=result["warnings"]
     if not result["supported"]:
-        result["warnings"].append("Mount-Abstammung wird nur unter Linux untersucht.")
+        warnings.append("Mount-Abstammung wird nur unter Linux untersucht.")
         return result
     mount=_run(["findmnt","-J","-T",str(directory),"-o","SOURCE,TARGET,FSTYPE"])
     entries=(mount or {}).get("filesystems") or []
     if not entries:
-        result["warnings"].append("Ziel-Mount konnte nicht bestimmt werden.")
+        warnings.append("Ziel-Mount konnte nicht bestimmt werden.")
         return result
     item=entries[0]
     result["destination_mount"]=item.get("target")
     result["destination_source"]=item.get("source")
-    source_path=str(item.get("source") or "")
-    if not source_path.startswith("/dev/"):
-        result["warnings"].append("Ziel liegt auf nicht eindeutig zuordenbarem Dateisystem.")
+    source_path=_canonical(item.get("source"))
+    selected=_canonical(source)
+    if not source_path or not selected:
+        warnings.append("Quelle oder Ziel liegt nicht auf einem eindeutig erkennbaren /dev-Gerät.")
         return result
-    # lsblk tree can expose partitions and device-mapper layers.
-    tree=_run(["lsblk","-J","-p","-o","PATH,PKNAME,TYPE"])
-    nodes=[]
-    def walk(items):
+    tree=_run(["lsblk","-J","-p","-o","PATH,TYPE"])
+    if not tree or not isinstance(tree.get("blockdevices"),list):
+        warnings.append("Blockgerätehierarchie konnte nicht gelesen werden.")
+        return result
+    parents={}
+    def walk(items,parent=None):
         for node in items or []:
-            if isinstance(node,dict):
-                nodes.append(node)
-                walk(node.get("children"))
-    walk((tree or {}).get("blockdevices"))
-    by_path={str(x.get("path")):x for x in nodes if x.get("path")}
-    cursor=source_path
-    visited=set()
-    while cursor and cursor not in visited and len(visited)<32:
-        visited.add(cursor)
-        result["destination_ancestors"].append(cursor)
-        parent=by_path.get(cursor,{}).get("pkname")
-        cursor=str(parent) if parent else ""
-    if source in visited:
+            if not isinstance(node,dict):continue
+            path=_canonical(node.get("path"))
+            if path:
+                parents.setdefault(path,set())
+                if parent:parents[path].add(parent)
+            walk(node.get("children"),path or parent)
+    walk(tree["blockdevices"])
+    if source_path not in parents:
+        warnings.append("Zielgerät ist nicht vollständig in lsblk auflösbar.")
+        return result
+    seen=set()
+    pending=[source_path]
+    while pending and len(seen)<512:
+        current=pending.pop()
+        if current in seen:continue
+        seen.add(current)
+        pending.extend(parents.get(current,()))
+    result["destination_ancestors"]=sorted(seen)
+    if selected in seen:
         result["same_device_detected"]=True
-        result["warnings"].append("ACHTUNG: Ziel liegt auf dem ausgewählten Quelldatenträger.")
-    if source_path not in by_path:
-        result["warnings"].append("Zielgerät ist nicht vollständig in lsblk auflösbar.")
-    result["warnings"].append("Abstammung ist nur ein Hinweis. LVM, RAID, Loop, Netzwerk und Verschlüsselung können weitere Abhängigkeiten verbergen.")
+        warnings.append("KRITISCH: Ziel verwendet den ausgewählten Quelldatenträger.")
+    if len(seen)>=512:
+        warnings.append("Blockgerätegraph ist zu groß oder unvollständig.")
+    warnings.append("Die Erkennung bleibt unvollständig bei RAID, LVM, Loop, Netzwerk, Bind-Mounts und Verschlüsselung. Keine Freigabe.")
     return result
