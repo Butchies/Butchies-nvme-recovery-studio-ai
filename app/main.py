@@ -17,6 +17,7 @@ import imaging_plan
 import controller_identity
 import nvme_capabilities
 import read_probe
+import image_scan
 
 def cmd(args):
     try:
@@ -82,7 +83,7 @@ class App(tk.Tk):
         self.label(top,("Windows 10/11 | Nur USB-Geräte" if sys.platform=="win32" else "Linux | Alle physischen Laufwerke (intern und extern)") +" | Nur lesende Inventarisierung",11).pack(anchor="w",pady=(6,0))
         bar=tk.Frame(self,bg="#101722",padx=22,pady=12);bar.pack(fill="x")
         buttons=tk.Frame(bar,bg="#101722");buttons.pack(fill="x")
-        actions=[("Geräte aktualisieren",self.refresh),("Rechneranalyse",self.host_info),("SSD-Diagnose",self.diagnose),("NVMe-Controller",self.controller_info),("USB-Verbindung",self.usb_diagnose),("Schutzprüfung",self.safety_check),("Firmwaredatei prüfen",self.inspect_firmware),("Firmwarekatalog",self.catalog_lookup),("Recovery-Leitfaden",self.triage_plan),("Abbild planen",self.plan_image),("Leseprobe 4 KiB",self.read_probe_action),("Befund",self.assess),("Vergleich",self.compare_case),("Fallakte speichern",self.save_case),("Fallakten",self.open_cases),("Fallakte exportieren",self.export)]
+        actions=[("Geräte aktualisieren",self.refresh),("Rechneranalyse",self.host_info),("SSD-Diagnose",self.diagnose),("NVMe-Controller",self.controller_info),("USB-Verbindung",self.usb_diagnose),("Schutzprüfung",self.safety_check),("Firmwaredatei prüfen",self.inspect_firmware),("Firmwarekatalog",self.catalog_lookup),("Recovery-Leitfaden",self.triage_plan),("Abbild planen",self.plan_image),("Leseprobe 4 KiB",self.read_probe_action),("Image analysieren",self.scan_image_action),("Befund",self.assess),("Vergleich",self.compare_case),("Fallakte speichern",self.save_case),("Fallakten",self.open_cases),("Fallakte exportieren",self.export)]
         for i,(name,cb) in enumerate(actions):
             tk.Button(buttons,text=name,command=cb,bg="#22566c",fg="white",relief="flat",padx=9,pady=7).grid(row=i//5,column=i%5,sticky="ew",padx=4,pady=4)
         for i in range(5): buttons.grid_columnconfigure(i,weight=1)
@@ -97,6 +98,7 @@ class App(tk.Tk):
         self.case_for_compare=None
         self.inventory_epoch=0
         self.refresh_request_id=0
+        self.image_scan_cancel=None
         self.ui_queue=queue.Queue()
         self.after(75,self.process_ui_queue)
         self.refresh()
@@ -198,6 +200,33 @@ class App(tk.Tk):
         self.merge_device_report(device,"read_probe",report)
         self.show(json.dumps(self.last_report,ensure_ascii=False,indent=2))
         self.status.config(text="Leseprobe beendet; kein Abbild und keine Schreiboperation.")
+    def scan_image_action(self):
+        if self.image_scan_cancel is not None:
+            self.image_scan_cancel.set()
+            self.status.config(text="Abbruch der Image-Analyse angefordert ...")
+            return
+        path=filedialog.askopenfilename(title="Vorhandenes Rohabbild nur lesend untersuchen",
+            filetypes=[("Rohabbilder","*.img *.raw *.dd *.bin"),("Alle Dateien","*.*")])
+        if not path:return
+        cancel=threading.Event()
+        self.image_scan_cancel=cancel
+        self.status.config(text="Offline-Image-Analyse läuft. Erneut klicken zum Abbrechen.")
+        def progress(done,total,count):
+            self.post_ui(lambda:self.scan_image_progress(cancel,done,total,count))
+        def worker():
+            result=image_scan.scan(path,progress=progress,cancelled=cancel.is_set)
+            self.post_ui(lambda:self.scan_image_done(cancel,path,result))
+        threading.Thread(target=worker,daemon=True).start()
+    def scan_image_progress(self,cancel,done,total,count):
+        if self.image_scan_cancel is cancel:
+            percent=100*done/total if total else 0
+            self.status.config(text=f"Offline-Image-Analyse: {percent:.1f}% | {count} Signaturtreffer | Erneut klicken zum Abbrechen")
+    def scan_image_done(self,cancel,path,result):
+        if self.image_scan_cancel is not cancel:return
+        self.image_scan_cancel=None
+        self.last_report={"offline_image_scan":{"file":path,**result}}
+        self.show(json.dumps(self.last_report,ensure_ascii=False,indent=2))
+        self.status.config(text="Offline-Image-Analyse beendet. Keine SSD-Zugriffe oder Dateischreibvorgänge.")
     def plan_image(self):
         if not self.selected:
             messagebox.showinfo("Abbild planen","Zuerst einen Datenträger auswählen.");return
