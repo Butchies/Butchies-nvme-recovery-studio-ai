@@ -4,7 +4,6 @@ This module never grants permission to flash, erase or overwrite disks.
 It records reasons why a selected drive must not be modified.
 """
 import json
-import re
 import sys
 from datetime import datetime, timezone
 
@@ -25,8 +24,8 @@ def classify(device):
     if not sys.platform.startswith("linux"):
         result["reasons"].append("Nicht unterstütztes Betriebssystem.")
         return result
-    if not re.fullmatch(r"/dev/(?:nvme[0-9]+n[0-9]+|sd[a-z]+)",path):
-        result["reasons"].append("Gerätepfad ist nicht als physischer Datenträger erkennbar.")
+    if not path.startswith("/dev/") or path == "/dev/":
+        result["reasons"].append("Ungültiger Gerätepfad.")
         return result
     response=diagnostics.run(["lsblk","-J","-b","-o","NAME,PATH,TYPE,TRAN,SERIAL,MODEL,SIZE,MOUNTPOINTS,PKNAME"])
     if not response["ok"]:
@@ -45,6 +44,7 @@ def classify(device):
         result["reasons"].append("Datenträger nicht eindeutig identifiziert.")
         return result
     root=roots[0]
+    result["observations"].append({"transport":root.get("tran"),"model":root.get("model"),"type":root.get("type")})
     if str(root.get("serial") or "").strip()!=str(device.get("serial") or "").strip() or int(root.get("size") or 0)!=int(device.get("size") or 0):
         result["reasons"].append("Geräteidentität hat sich seit Auswahl verändert.")
         return result
