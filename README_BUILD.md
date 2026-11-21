@@ -1,4 +1,4 @@
-# NVMe Recovery Studio AI – Entwicklungsstand 0.10.0 (GitHub)
+# NVMe Recovery Studio AI – Entwicklungsstand 0.11.0 (GitHub)
 
 ## Tatsächlich vorhandene Funktionen
 - Grafische Desktopoberfläche und lesende Laufwerksinventarisierung.
@@ -41,3 +41,8 @@ Ein Hash-Treffer im selbst bereitgestellten Katalog bestätigt weder Echtheit no
 ## Wartung 0.10.0
 - SQLite-Verbindungen nach Fallaktenoperationen ausdrücklich schließen; Fehler beim Öffnen und Speichern in der Oberfläche anzeigen.
 - Datenschutzwarnung und restriktivere Ausblendung im anonymisierten JSON-Export.
+
+## Wartung 0.11.0
+- Fallaktenvergleich nutzt den aktuellen Diagnosebericht statt einer gespeicherten Hülle.
+- Speichern ordnet die Geräteidentität dem tatsächlich erfassten Bericht zu, nicht einer eventuell später geänderten Auswahl.
+- Vergleich lehnt fehlende SMART-Messwerte ab und weist auf rückläufige Zähler sowie mögliche Resets hin.
