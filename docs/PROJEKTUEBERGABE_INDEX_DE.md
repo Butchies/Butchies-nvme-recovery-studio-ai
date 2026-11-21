@@ -33,6 +33,9 @@
 - `docs/RECHNER_HARDWARE_PROFIL_VERGLEICH_ENTWURF_DE.md` – Rechnerprofile und Anschlussvergleiche.
 
 ## Diagnose, Firmware und Recovery
+- `docs/FIRMWARE_KOMPATIBILITAETS_MATRIx_ENTWURF_DE.md` – Hardwareabgleich für Firmwarepakete.
+- `docs/CONTROLLER_IDENTIFIKATION_UNBEKANNTE_SSD_ENTWURF_DE.md` – Identifikation unbekannter Controller und SSD-Varianten.
+- `docs/FIRMWARE_QUELLEN_DOWNLOADS_ENTWURF_DE.md` – Herkunft und Verwaltung von Firmware- und Wissensressourcen.
 - `docs/ABBILD_SEKTORENKARTE_ENTWURF_DE.md` – Abbildfortschritt und grafische Sektorenkarte.
 - `docs/RETTUNGSERGEBNIS_INTEGRITAET_ENTWURF_DE.md` – Qualität und Vollständigkeit geretteter Daten.
 - `docs/STROMAUSFALL_UNTERBRECHUNG_ENTWURF_DE.md` – unterbrochene Sitzungen und Wiederaufnahme.
