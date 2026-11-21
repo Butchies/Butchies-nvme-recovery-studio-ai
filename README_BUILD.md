@@ -1,9 +1,21 @@
-# NVMe Recovery Studio AI 0.1.0
+# NVMe Recovery Studio AI – Entwicklungsstand 0.2.0 (GitHub)
 
-Erste ausführbare Desktop-Grundlage: grafische Oberfläche, lesende Inventarisierung und lokaler JSON-Export. Windows 10/11: nur USB-Datenträger sichtbar. Linux: NVMe und USB.
+## Tatsächlich vorhandene Funktionen
+- Grafische Desktopoberfläche und lesende Laufwerksinventarisierung.
+- Windows 10/11: ausschließlich USB-Laufwerke in der Geräteauswahl. Die USB-Anbindung allein beweist noch nicht, dass eine NVMe-SSD dahintersteckt.
+- Linux: direkte NVMe-Namespaces und USB-Laufwerke in der Inventarisierung.
+- Rechneranalyse mit Betriebssystem-, CPU- und optionalen PCI/USB-Informationen.
+- Linux-NVMe-Diagnose mit `nvme-cli`: SMART, Controller-Identify und Fehlerlog als JSON, sofern Berechtigungen und Gerätezugriff vorhanden sind.
+- Lokale SQLite-Fallakten: speichern, auflisten und öffnen.
+- JSON-Export inklusive vorhandener Diagnosedaten.
 
-**Nicht implementiert:** KI, SMART, Firmware-Recovery, Datenrettung, Flashen und bootfähiges Linux-Image.
+## Nicht vorhanden
+Noch keine lokale KI, keine Datenrettung, kein Firmware-Flash, kein Controller-Recovery, kein bootfähiges Linux-Image. Kein fertiger oder verifizierter Installer.
 
-Start: `python app/main.py`.
+## Start
+`python app/main.py`
 
-Windows-Installer: GitHub Actions `Windows Installer` baut mit PyInstaller und Inno Setup einen Setup-Installer und stellt ihn als Workflow-Artefakt bereit. Keine Installerdatei als fertig bezeichnen, bevor der Build erfolgreich gelaufen ist.
+Unter Linux ist für die NVMe-Diagnose zusätzlich `nvme-cli` erforderlich. Fehlende Berechtigungen und nicht unterstützte Geräte werden als Fehler angezeigt.
+
+## Windows-Installer
+Der GitHub-Actions-Workflow `Windows Installer` ist für PyInstaller und Inno Setup vorgesehen. Ein Setup-EXE darf erst nach erfolgreichem Build als verfügbar bezeichnet werden. Die Zielgröße für das spätere einzelne Installationspaket beträgt maximal 250 MB; eine Überschreitung erfordert vorherige Freigabe.
