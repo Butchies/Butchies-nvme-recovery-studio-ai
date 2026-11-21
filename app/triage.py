@@ -67,6 +67,32 @@ def plan(report):
             for limitation in limits:
                 if isinstance(limitation,str) and ("außerhalb" in limitation or "Mehr Slot-Einträge" in limitation):
                     add(2,"Widersprüchliche Firmware-Slot-Daten",limitation[:500])
+    probe=report.get("read_probe") if isinstance(report.get("read_probe"),dict) else {}
+    if probe:
+        if probe.get("error") or probe.get("probe_success") is False:
+            add(1,"Rohdaten-Leseproblem dokumentieren",
+                "Die begrenzte Leseprobe war nicht vollständig erfolgreich. Keine wiederholten Leseversuche erzwingen; zuerst Stromversorgung, Controllerzustand und Datenrettungsrisiko beurteilen.")
+        sector=probe.get("sector_evidence") if isinstance(probe.get("sector_evidence"),dict) else {}
+        if sector.get("partition_table")=="protective_mbr" and not sector.get("gpt_primary_header_candidates"):
+            add(2,"GPT-Header noch nicht nachgewiesen",
+                "Ein Schutz-MBR allein beweist keine intakte GPT. Keine Partitionstabelle reparieren oder neu schreiben.")
+        candidates=sector.get("gpt_primary_header_candidates")
+        if isinstance(candidates,list):
+            for candidate in candidates:
+                if not isinstance(candidate,dict):
+                    continue
+                if candidate.get("header_crc_valid") is False:
+                    add(1,"GPT-Header-Prüfsumme auffällig",
+                        "Der vorhandene GPT-Header-Kandidat hat keine gültige CRC32. Vor jeder Reparatur ein vollständiges Abbild anstreben.")
+                if candidate.get("partition_array_crc_valid") is False:
+                    add(1,"GPT-Partitionseinträge-Prüfsumme auffällig",
+                        "Die vollständig erfasste Partitionseintragstabelle stimmt nicht mit ihrer CRC32 überein.")
+                if candidate.get("partition_array_crc_valid") is None:
+                    add(3,"GPT-Partitionseinträge unvollständig erfasst",
+                        "Die 4-KiB-Leseprobe reicht für eine CRC32-Prüfung der vollständigen GPT-Eintragstabelle nicht aus.")
+                if candidate.get("layout_plausible") is False:
+                    add(2,"GPT-Layout widersprüchlich",
+                        "LBA-Grenzen oder Eintragsgröße sind unplausibel. Keine automatische Korrektur.")
     imaging=report.get("imaging_plan") if isinstance(report.get("imaging_plan"),dict) else {}
     if imaging:
         evidence=imaging.get("destination_evidence")
