@@ -1,4 +1,4 @@
-# NVMe Recovery Studio AI – Entwicklungsstand 0.26.0 (GitHub)
+# NVMe Recovery Studio AI – Entwicklungsstand 0.27.0 (GitHub)
 
 ## Tatsächlich vorhandene Funktionen
 - Grafische Desktopoberfläche und lesende Laufwerksinventarisierung.
@@ -125,3 +125,10 @@ Ein Hash-Treffer im selbst bereitgestellten Katalog bestätigt weder Echtheit no
 - ATA-Befunde berücksichtigen SMART-Warnbits; ein bestandener Gesamtstatus überstimmt keine andere kritische Warnung.
 - Geräteliste zeigt Bus und Anschlussklassifikation getrennt. Direkte Verbindungen können ohne weitere Hardwarebelege nicht sicher als intern oder M.2 identifiziert werden.
 - Keine Tests, kein Installer, kein ZIP, keine Datenträger-Schreibzugriffe.
+
+## Wartung 0.27.0
+- Geräteaktualisierung verwendet eine fortlaufende Anforderungsnummer: langsamere ältere Abfragen können neuere Laufwerkslisten nicht mehr überschreiben.
+- Bereits beim Start einer Aktualisierung werden ausstehende Geräteberichte ungültig.
+- Fehler in einer UI-Rückmeldung stoppen die Warteschlangenverarbeitung nicht dauerhaft.
+- Windows-USB-Inventar prüft JSON-Struktur, physische Gerätepfade und Kapazität, bevor Einträge angezeigt werden.
+- Keine Tests, kein Installer, kein ZIP und keine Schreibbefehle an Datenträger.
