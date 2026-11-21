@@ -1,4 +1,4 @@
-# NVMe Recovery Studio AI – Entwicklungsstand 0.24.0 (GitHub)
+# NVMe Recovery Studio AI – Entwicklungsstand 0.25.0 (GitHub)
 
 ## Tatsächlich vorhandene Funktionen
 - Grafische Desktopoberfläche und lesende Laufwerksinventarisierung.
@@ -113,3 +113,9 @@ Ein Hash-Treffer im selbst bereitgestellten Katalog bestätigt weder Echtheit no
 - Diagnose, Schutzprüfung, USB-Verbindungsbericht und Abbildplanung ergänzen nun eine gemeinsame Fallakte, sofern die Geräteidentität übereinstimmt.
 - Gerätewechsel und erneute Inventarisierung machen ausstehende Hintergrundresultate ungültig; veraltete Befunde werden nicht mehr einem später ausgewählten Laufwerk zugeordnet.
 - Weiterhin ausschließlich lesende Diagnose und Planung, keine Datenträger-Schreiboperationen.
+
+## Wartung 0.25.0
+- Gespeicherte ATA/SATA-Fallakten können jetzt anhand gemeinsamer numerischer SMART-Rohattribute verglichen werden.
+- Ein Vergleich setzt übereinstimmende Seriennummer, Modell und Kapazität voraus; SATA- und NVMe-Befunde werden nicht miteinander vermischt.
+- Gespeicherte verschachtelte Fallakten werden für den Vergleich entpackt; sinkende Rohzähler werden als mögliche Rücksetzung markiert, nicht als Heilung interpretiert.
+- Keine Tests oder Datenträger-Schreiboperationen ausgeführt.
