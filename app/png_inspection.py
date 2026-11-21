@@ -12,7 +12,7 @@ MAX_PNG_BYTES=32*1024*1024
 MAX_CHUNKS=4096
 MAX_CANDIDATES=32
 
-def inspect(stream,offset,file_size):
+def inspect(stream,offset,file_size,cancelled=None):
     result={"offset_bytes":offset,"format":"PNG","validated":False,
             "complete":False,"crc_errors":0,"chunks_checked":0}
     if offset<0 or offset+8>file_size:
@@ -27,6 +27,8 @@ def inspect(stream,offset,file_size):
     seen_plte=False
     color_type=None
     for _ in range(MAX_CHUNKS):
+        if cancelled and cancelled():
+            return dict(result,cancelled=True,error="PNG-Prüfung abgebrochen.")
         if position-offset+12>MAX_PNG_BYTES or position+12>file_size:
             return dict(result,error="PNG-Ende außerhalb der Prüfgrenze oder des Images.")
         header=stream.read(8)
@@ -57,6 +59,8 @@ def inspect(stream,offset,file_size):
         remaining=length
         ihdr=b""
         while remaining:
+            if cancelled and cancelled():
+                return dict(result,cancelled=True,error="PNG-Prüfung abgebrochen.")
             block=stream.read(min(remaining,1024*1024))
             if not block:
                 return dict(result,error="PNG-Chunk abgeschnitten.")
@@ -98,10 +102,11 @@ def inspect(stream,offset,file_size):
             return result
     return dict(result,error="Maximale Anzahl PNG-Chunks erreicht.")
 
-def inspect_candidates(stream,matches,file_size):
+def inspect_candidates(stream,matches,file_size,cancelled=None):
     findings=[]
     for match in matches:
+        if cancelled and cancelled():break
         if match.get("signature")=="PNG":
             if len(findings)>=MAX_CANDIDATES:break
-            findings.append(inspect(stream,match["offset_bytes"],file_size))
+            findings.append(inspect(stream,match["offset_bytes"],file_size,cancelled=cancelled))
     return findings
