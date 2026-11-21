@@ -1,5 +1,5 @@
 """NVMe Recovery Studio AI - read-only desktop application."""
-import json, platform, sqlite3, subprocess, sys, threading, tkinter as tk
+import json, platform, queue, sqlite3, subprocess, sys, threading, tkinter as tk
 from datetime import datetime
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
@@ -61,7 +61,18 @@ class App(tk.Tk):
         self.status=self.label(self,"Keine Schreib-, Lösch- oder Firmwarefunktionen",10);self.status.pack(anchor="w",padx=22,pady=12)
         self.last_report=None
         self.case_for_compare=None
+        self.ui_queue=queue.Queue()
+        self.after(75,self.process_ui_queue)
         self.refresh()
+    def post_ui(self,callback):
+        """Workers enqueue callbacks; only the Tk main thread touches widgets."""
+        self.ui_queue.put(callback)
+    def process_ui_queue(self):
+        for _ in range(50):
+            try: callback=self.ui_queue.get_nowait()
+            except queue.Empty: break
+            callback()
+        self.after(75,self.process_ui_queue)
     def label(self,parent,text,size,bold=False):
         return tk.Label(parent,text=text,bg=parent["bg"],fg="#e8eff8",font=("Segoe UI",size,"bold" if bold else "normal"))
     def show(self,text):
@@ -70,7 +81,7 @@ class App(tk.Tk):
         self.status.config(text="Geräte werden erfasst ...")
         def worker():
             devices=discover()
-            self.after(0,lambda:self.loaded(devices))
+            self.post_ui(lambda:self.loaded(devices))
         threading.Thread(target=worker,daemon=True).start()
     def loaded(self,devices):
         self.devices=devices;self.selected=None;self.last_report=None;self.tree.delete(*self.tree.get_children())
@@ -87,7 +98,7 @@ class App(tk.Tk):
         self.status.config(text="Rechneranalyse läuft ...")
         def worker():
             report={"hardware":diagnostics.hardware()}
-            self.after(0,lambda:self.host_done(report))
+            self.post_ui(lambda:self.host_done(report))
         threading.Thread(target=worker,daemon=True).start()
     def host_done(self,report):
         self.last_report=report
@@ -100,7 +111,7 @@ class App(tk.Tk):
         self.status.config(text="Lesende NVMe-Diagnose läuft ...")
         def worker():
             report=diagnostics.nvme_report(device)
-            self.after(0,lambda:self.diagnose_done(device,report))
+            self.post_ui(lambda:self.diagnose_done(device,report))
         threading.Thread(target=worker,daemon=True).start()
     def plan_image(self):
         if not self.selected:
@@ -114,7 +125,7 @@ class App(tk.Tk):
                 result=imaging_plan.plan(device,destination)
             except (OSError,ValueError) as exc:
                 result={"error":str(exc),"ready_to_image":False,"device_writes_allowed":False}
-            self.after(0,lambda:self.plan_image_done(device,result))
+            self.post_ui(lambda:self.plan_image_done(device,result))
         threading.Thread(target=worker,daemon=True).start()
     def plan_image_done(self,device,result):
         if not self.selected or self.selected.get("path")!=device.get("path"):
@@ -139,7 +150,7 @@ class App(tk.Tk):
         def worker():
             catalog=firmware_catalog.load(path)
             result=firmware_catalog.lookup(catalog,report)
-            self.after(0,lambda:self.catalog_done(report,result))
+            self.post_ui(lambda:self.catalog_done(report,result))
         threading.Thread(target=worker,daemon=True).start()
     def catalog_done(self,firmware_report,result):
         self.last_report={"firmware_file":firmware_report,"catalog_lookup":result}
@@ -152,7 +163,7 @@ class App(tk.Tk):
         def worker():
             try: report=firmware.inspect(path)
             except (OSError,ValueError) as exc: report={"error":str(exc)}
-            self.after(0,lambda:self.firmware_done(report))
+            self.post_ui(lambda:self.firmware_done(report))
         threading.Thread(target=worker,daemon=True).start()
     def firmware_done(self,report):
         self.last_report={"firmware_file":report}
@@ -165,7 +176,7 @@ class App(tk.Tk):
         self.status.config(text="Schutzprüfung läuft ...")
         def worker():
             report=safety.classify(device)
-            self.after(0,lambda:self.safety_done(device,report))
+            self.post_ui(lambda:self.safety_done(device,report))
         threading.Thread(target=worker,daemon=True).start()
     def safety_done(self,device,report):
         if not self.selected or self.selected.get("path")!=device.get("path"):
@@ -180,7 +191,7 @@ class App(tk.Tk):
         self.status.config(text="USB-Verbindung wird lesend analysiert ...")
         def worker():
             report=diagnostics.usb_report(device)
-            self.after(0,lambda:self.usb_done(device,report))
+            self.post_ui(lambda:self.usb_done(device,report))
         threading.Thread(target=worker,daemon=True).start()
     def usb_done(self,device,report):
         if not self.selected or self.selected.get("path")!=device.get("path"):
