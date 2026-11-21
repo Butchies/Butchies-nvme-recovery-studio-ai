@@ -13,6 +13,7 @@
 #include <QStorageInfo>
 #include <QStandardPaths>
 #include <QRegularExpression>
+#include "usb_bridge.h"
 
 class RecoveryController final : public QObject {
     Q_OBJECT
@@ -63,7 +64,13 @@ public:
             const auto pid=pidPattern.match(pnp);
             d["bridgeVendorId"]=vid.hasMatch() ? vid.captured(1).toUpper() : QStringLiteral("Unbekannt");
             d["bridgeProductId"]=pid.hasMatch() ? pid.captured(1).toUpper() : QStringLiteral("Unbekannt");
-            d["bridgeFirmware"]=QStringLiteral("Nicht ermittelt");
+            const auto bridge=UsbBridge::inspect(path);
+            if(bridge.value("usbConfirmed").toBool()!=true) continue;
+            d["storageBus"]=bridge.value("storageBus");
+            d["deviceVendor"]=bridge.value("deviceVendor");
+            d["deviceProduct"]=bridge.value("deviceProduct");
+            d["bridgeFirmware"]=bridge.value("deviceFirmware");
+            d["bridgeInspectionError"]=bridge.value("error");
             d["nvmePassthrough"]=QStringLiteral("Nicht nachgewiesen");
             d["nvmeVerified"]=false; // USB bridge cannot prove underlying NVMe type.
             d["readOnly"]=true;
@@ -83,10 +90,11 @@ public:
             return;
         }
         const auto device=m_devices.at(index).toMap();
-        setStatus(QStringLiteral("%1 | USB-Bridge VID:%2 PID:%3 | NVMe-Passthrough nicht bestätigt.")
+        setStatus(QStringLiteral("%1 | USB VID:%2 PID:%3 | Revision:%4 | NVMe-Passthrough nicht bestätigt.")
             .arg(device.value("name").toString(),
                  device.value("bridgeVendorId").toString(),
-                 device.value("bridgeProductId").toString()));
+                 device.value("bridgeProductId").toString(),
+                 device.value("bridgeFirmware").toString()));
     }
     Q_INVOKABLE void inspectDestination(const QString &path) {
         const QFileInfo info(path);
