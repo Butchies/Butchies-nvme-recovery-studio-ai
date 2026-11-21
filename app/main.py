@@ -170,7 +170,7 @@ class App(tk.Tk):
         epoch=self.inventory_epoch
         self.status.config(text="Lesende SSD-Diagnose läuft ...")
         def worker():
-            report=(ata_diagnostics.report(device) if sys.platform.startswith("linux") and device.get("bus") in ("SATA","ATA") else diagnostics.nvme_report(device))
+            report=(diagnostics.usb_report(device) if sys.platform=="win32" else ata_diagnostics.report(device) if device.get("bus") in ("SATA","ATA") else diagnostics.nvme_report(device))
             self.post_ui(lambda:self.diagnose_done(device,report,epoch))
         threading.Thread(target=worker,daemon=True).start()
     def plan_image(self):
@@ -285,7 +285,7 @@ class App(tk.Tk):
         elif "smartctl" in report:
             self.last_report["assessment"]=ata_analysis.assess(self.last_report)
         self.show(json.dumps(self.last_report,ensure_ascii=False,indent=2))
-        self.status.config(text="Lesende SSD-Diagnose abgeschlossen. Fehlende SMART-Daten und Berechtigungen werden angezeigt.")
+        self.status.config(text="Lesende SSD-Diagnose abgeschlossen. Windows-USB-Bridges liefern möglicherweise keine SMART-Daten.")
     def assess(self):
         if not self.last_report:
             messagebox.showinfo("Befund","Zuerst NVMe-Diagnose durchführen.");return
