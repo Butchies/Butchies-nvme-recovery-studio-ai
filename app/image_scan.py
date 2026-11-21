@@ -26,8 +26,9 @@ def scan(path, progress=None, cancelled=None):
         started=time.monotonic()
         overlap=max(len(sig) for sig,_ in SIGNATURES)-1
         previous=b""
-        with open(path,"rb",buffering=0) as stream:
-            if os.fstat(stream.fileno()).st_ino!=info.st_ino or os.fstat(stream.fileno()).st_dev!=info.st_dev:
+        with os.fdopen(os.open(path,os.O_RDONLY|getattr(os,"O_CLOEXEC",0)|getattr(os,"O_NOFOLLOW",0)|getattr(os,"O_NONBLOCK",0)),"rb",buffering=0) as stream:
+            opened=os.fstat(stream.fileno())
+            if not stat.S_ISREG(opened.st_mode) or opened.st_ino!=info.st_ino or opened.st_dev!=info.st_dev or opened.st_size!=info.st_size:
                 return dict(result,error="Dateiidentität beim Öffnen verändert.")
             while True:
                 if cancelled and cancelled():
@@ -50,7 +51,7 @@ def scan(path, progress=None, cancelled=None):
                         offset=pos+1
                 result["scanned_bytes"]+=len(chunk)
                 previous=data[-overlap:]
-                if progress:
+                if progress and (result["scanned_bytes"]//(16*CHUNK)!=(result["scanned_bytes"]-len(chunk))//(16*CHUNK) or result["scanned_bytes"]>=info.st_size):
                     progress(result["scanned_bytes"],info.st_size,len(result["matches"]))
                 if len(result["matches"])>=MAX_RESULTS:
                     result["limit_reached"]=True
