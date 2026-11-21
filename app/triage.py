@@ -42,6 +42,8 @@ def plan(report):
                 "Fehlerzähler ist größer als null. Zusätzliche Belastung vermeiden.")
     if isinstance(diagnostics.get("smartctl"),dict):
         ata=diagnostics["smartctl"]
+        for warning in diagnostics.get("warnings",[]) if isinstance(diagnostics.get("warnings"),list) else []:
+            if isinstance(warning,str):add(2,"ATA-Diagnosehinweis",warning[:500])
         health=ata.get("smart_status")
         if isinstance(health,dict) and health.get("passed") is False:
             add(1,"ATA-SMART-Warnung ernst nehmen",
