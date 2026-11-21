@@ -103,6 +103,32 @@ def interpret_header(data):
             entries_lba=struct.unpack_from("<Q",header,72)[0]
             entries_count=struct.unpack_from("<I",header,80)[0]
             entry_size=struct.unpack_from("<I",header,84)[0]
+            entries_crc=struct.unpack_from("<I",header,88)[0]
+            table_bytes=entries_count*entry_size
+            table_start=entries_lba*sector_size
+            table_fully_present=(entry_size>=128 and entry_size%8==0
+                                 and entries_count>0 and table_bytes<=len(data)
+                                 and table_start<=len(data)-table_bytes)
+            table_crc=None
+            entries_preview=[]
+            if table_fully_present:
+                table=data[table_start:table_start+table_bytes]
+                table_crc=zlib.crc32(table)&0xffffffff
+            # Even if the table is incomplete, show only complete entries already
+            # in the sample. Never read beyond the 4 KiB buffer.
+            if entry_size>=128 and entry_size%8==0 and table_start<len(data):
+                available=min(entries_count, (len(data)-table_start)//entry_size, 16)
+                for index in range(available):
+                    entry=data[table_start+index*entry_size:table_start+(index+1)*entry_size]
+                    if entry[:16]==bytes(16):
+                        continue
+                    first_lba=struct.unpack_from("<Q",entry,32)[0]
+                    last_lba=struct.unpack_from("<Q",entry,40)[0]
+                    entries_preview.append({
+                        "index":index+1,"type_guid_bytes_le":entry[:16].hex(),
+                        "first_lba":first_lba,"last_lba":last_lba,
+                        "range_plausible":first_lba<=last_lba and first_lba>=first_usable and last_lba<=last_usable
+                    })
             gpt_candidates.append({
                 "assumed_logical_sector_bytes":sector_size,
                 "header_size":header_size,"header_crc32_stored":format(stored_crc,"08x"),
@@ -112,6 +138,11 @@ def interpret_header(data):
                 "first_usable_lba":first_usable,"last_usable_lba":last_usable,
                 "partition_entry_start_lba":entries_lba,
                 "partition_entry_count":entries_count,"partition_entry_size":entry_size,
+                "partition_array_crc32_stored":format(entries_crc,"08x"),
+                "partition_array_crc32_calculated":format(table_crc,"08x") if table_crc is not None else None,
+                "partition_array_crc_valid":table_crc==entries_crc if table_crc is not None else None,
+                "partition_array_fully_sampled":table_fully_present,
+                "partition_entries_preview":entries_preview,
                 "layout_plausible":current_lba==1 and first_usable<=last_usable and entry_size>=128 and entry_size%8==0,
                 "note":"CRC bestätigt nur den Header, nicht Partitionseinträge, Backup-GPT oder Datenträgerintegrität."
             })
