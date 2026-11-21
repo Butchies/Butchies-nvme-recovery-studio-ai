@@ -45,17 +45,23 @@ def discover():
     if sys.platform.startswith("linux"):
         try: data=json.loads(cmd(["lsblk","-J","-b","-d","-o","NAME,MODEL,SERIAL,SIZE,TRAN,TYPE,PATH,ROTA"]))
         except (ValueError,TypeError): return []
+        if not isinstance(data,dict) or not isinstance(data.get("blockdevices"),list):return []
         out=[]
-        for x in data.get("blockdevices",[]):
+        for x in data["blockdevices"]:
             if not isinstance(x,dict) or x.get("type")!="disk":continue
             name=str(x.get("name") or "")
             transport=str(x.get("tran") or "").lower()
             is_nvme=bool(re.fullmatch(r"nvme[0-9]+n[0-9]+",name))
             is_usb=transport=="usb"
             bus="PCIe/NVMe" if is_nvme and not is_usb else "USB" if is_usb else transport.upper() if transport else "Unbekannt"
+            try: size=int(x.get("size") or 0)
+            except (ValueError,TypeError,OverflowError):continue
+            path=str(x.get("path") or "/dev/"+name)
+            if size<=0 or not re.fullmatch(r"/dev/(?:nvme[0-9]+n[0-9]+|sd[a-z]+|hd[a-z]+|vd[a-z]+|xvd[a-z]+|mmcblk[0-9]+)",path):
+                continue
             # SATA M.2 and SATA 2.5-inch drives are not reliably distinguishable via lsblk.
-            out.append({"name":str(x.get("model") or name),"path":str(x.get("path") or "/dev/"+name),
-                        "serial":str(x.get("serial") or ""),"size":int(x.get("size") or 0),
+            out.append({"name":str(x.get("model") or name),"path":path,
+                        "serial":str(x.get("serial") or ""),"size":size,
                         "bus":bus,"nvme":bool(is_nvme and not is_usb),
                         "m2_form_factor_verified":False,
                         "connection":"extern (USB)" if is_usb else "intern/direkt oder nicht eindeutig"})
