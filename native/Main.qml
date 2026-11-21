@@ -26,7 +26,7 @@ ApplicationWindow {
             color: "#a5bed3"
         }
         RowLayout {
-            Button { text: "USB-Geräte erkennen"; onClicked: controller.refresh() }
+            Button { text: controller.linuxEdition ? "Geräte erkennen" : "USB-Geräte erkennen"; onClicked: controller.refresh() }
             Button { text: "Zielordner wählen"; enabled: !controller.recoveryRunning; onClicked: folderDialog.open() }
             Button { text: "Linux-Boot-Stick erstellen"; visible: !controller.linuxEdition; enabled: !controller.recoveryRunning; onClicked: stickDialog.open() }
             Button { text: "Ziel prüfen"; onClicked: controller.inspectDestination(destination.text) }

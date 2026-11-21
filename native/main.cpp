@@ -513,7 +513,7 @@ private:
             for(const auto &id:m_tools.forFamily(famId)) {
                 const auto t=m_tools.tool(id);
                 if(t.value("nutzerBereitgestellt").toBool()) continue;
-                if(!t.value("plattform").toArray().contains(QStringLiteral("windows"))) continue;
+                if(!t.value("plattform").toArray().contains(linuxEdition() ? QStringLiteral("linux") : QStringLiteral("windows"))) continue;
                 const bool inst=!m_tools.path(id).isEmpty();
                 recommended.append(QVariantMap{{"id",id},{"name",t.value("name").toString()},{"installiert",inst}});
                 if(!inst) ai(QStringLiteral("Empfohlenes Werkzeug für diese SSD: %1 – nicht installiert.").arg(t.value("name").toString()));
