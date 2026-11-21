@@ -1,4 +1,4 @@
-# NVMe Recovery Studio AI – Entwicklungsstand 0.28.0 (GitHub)
+# NVMe Recovery Studio AI – Entwicklungsstand 0.29.0 (GitHub)
 
 ## Tatsächlich vorhandene Funktionen
 - Grafische Desktopoberfläche und lesende Laufwerksinventarisierung.
@@ -138,3 +138,9 @@ Ein Hash-Treffer im selbst bereitgestellten Katalog bestätigt weder Echtheit no
 - NVMe-Rohdiagnose verlangt eine nichtleere Seriennummer, konsistente positive Kapazität und weiterhin direkten, nicht als USB ausgewiesenen Transport.
 - Fehlerhafte lsblk-Einträge führen nicht mehr ohne Weiteres zu Abbrüchen der gesamten Inventarisierung.
 - Keine Tests, kein Installer, kein ZIP, keine Laufwerksschreibzugriffe.
+
+## Wartung 0.29.0
+- Windows-USB-Gerätebericht prüft die Antwortstruktur, positive Kapazität und nichtleere übereinstimmende Seriennummern; fehlende Identität wird nicht als Bestätigung akzeptiert.
+- Rechneranalyse verwirft Ergebnisse, wenn sich zwischen Start und Rückmeldung die Geräteauswahl oder Inventarisierung verändert hat.
+- Der Recovery-Leitfaden zeigt ATA-Diagnosehinweise aus smartctl-Rückgabebits explizit an.
+- Keine Tests, kein Installer, kein ZIP und keine Schreibzugriffe auf Datenträger.
