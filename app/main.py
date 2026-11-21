@@ -170,12 +170,14 @@ class App(tk.Tk):
         if not self.last_report:
             messagebox.showinfo("Befund","Zuerst NVMe-Diagnose durchführen.");return
         report=self.last_report.get("report",self.last_report)
+        if "diagnostics" not in report:
+            messagebox.showinfo("Befund","Diese Fallakte enthält keine NVMe-SMART-Diagnose.");return
         result=analysis.assess(report)
         self.show(json.dumps(result,ensure_ascii=False,indent=2))
         self.status.config(text="Regelbasierter Befund angezeigt; kein KI-Modell.")
     def compare_case(self):
-        if not self.last_report:
-            messagebox.showinfo("Vergleich","Zuerst aktuelle NVMe-Diagnose durchführen.");return
+        if not self.last_report or "diagnostics" not in self.last_report:
+            messagebox.showinfo("Vergleich","Zuerst eine aktuelle NVMe-Diagnose durchführen.");return
         try: entries=cases.recent()
         except Exception as exc:messagebox.showerror("Fallakten",str(exc));return
         if not entries:
@@ -190,15 +192,17 @@ class App(tk.Tk):
             except (OSError,ValueError,sqlite3.Error) as exc:
                 messagebox.showerror("Fallakten",str(exc));return
             old_report=(old or {}).get("report") or {}
-            current=self.last_report.get("report",self.last_report)
+            current=self.last_report
+            if "diagnostics" not in old_report:
+                messagebox.showinfo("Vergleich","Gespeicherte Fallakte enthält keine NVMe-Diagnose.");return
             result=analysis.compare(old_report,current)
             self.show(json.dumps(result,ensure_ascii=False,indent=2))
             win.destroy()
         tk.Button(win,text="Vergleichen",command=choose_case).pack(pady=8)
     def save_case(self):
-        if not self.selected and not self.last_report:
-            messagebox.showinfo("Fallakte","Bitte zuerst ein Gerät oder die Rechneranalyse öffnen.");return
-        item=self.selected or {}
+        if not self.last_report:
+            messagebox.showinfo("Fallakte","Bitte zuerst eine Diagnose, Schutzprüfung oder Rechneranalyse durchführen.");return
+        item=(self.last_report or {}).get("device") or {}
         snapshot={"device":item,"report":self.last_report,"captured":datetime.now().astimezone().isoformat()}
         try:
             case_id=cases.save(item.get("name","Rechneranalyse"),item.get("path",""),snapshot)
