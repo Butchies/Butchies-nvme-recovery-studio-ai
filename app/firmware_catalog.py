@@ -4,6 +4,8 @@ Catalog entries are untrusted research notes, NOT flashing authorizations.
 No network requests or device writes.
 """
 import json
+import os
+import stat
 import re
 from pathlib import Path
 
@@ -13,12 +15,25 @@ HEX4=re.compile(r"^[a-fA-F0-9]{4}$")
 
 def load(path):
     file=Path(path)
-    if file.is_symlink() or not file.is_file() or file.stat().st_size>MAX_CATALOG_BYTES:
-        return {"error":"Katalogdatei fehlt, ist ein Symlink oder zu groß."}
     try:
-        data=json.loads(file.read_text(encoding="utf-8"))
+        if file.is_symlink():
+            return {"error":"Symlinks sind nicht erlaubt."}
+        flags=os.O_RDONLY|getattr(os,"O_BINARY",0)|getattr(os,"O_NOFOLLOW",0)
+        fd=os.open(file,flags)
+        with os.fdopen(fd,"rb") as stream:
+            before=os.fstat(stream.fileno())
+            if not stat.S_ISREG(before.st_mode) or before.st_size>MAX_CATALOG_BYTES:
+                return {"error":"Katalog muss eine reguläre Datei bis 2 MiB sein."}
+            raw=stream.read(MAX_CATALOG_BYTES+1)
+            after=os.fstat(stream.fileno())
+            if len(raw)>MAX_CATALOG_BYTES:
+                return {"error":"Katalogdatei überschreitet 2 MiB."}
+            if (before.st_size!=len(raw) or before.st_size!=after.st_size or
+                before.st_mtime_ns!=after.st_mtime_ns or before.st_ctime_ns!=after.st_ctime_ns):
+                return {"error":"Katalogdatei wurde während des Lesens verändert."}
+        data=json.loads(raw.decode("utf-8"))
     except (OSError,ValueError,UnicodeError) as exc:
-        return {"error":"Katalog kann nicht gelesen werden: "+str(exc)}
+        return {"error":"Katalog kann nicht sicher gelesen werden: "+str(exc)}
     if not isinstance(data,dict) or data.get("schema")!=1 or not isinstance(data.get("entries"),list):
         return {"error":"Ungültiges Katalogformat (schema 1 erwartet)."}
     if len(data["entries"])>1000:
