@@ -6,10 +6,11 @@ from datetime import datetime, timezone
 
 def plan(report):
     report=report if isinstance(report,dict) else {}
-    device=report.get("device") or {}
-    diagnostics=report.get("diagnostics") or {}
-    usb=report.get("usb_diagnostics") or {}
-    protection=report.get("safety") or {}
+    device=report.get("device") if isinstance(report.get("device"),dict) else {}
+    diagnostics=report.get("diagnostics") if isinstance(report.get("diagnostics"),dict) else {}
+    usb=report.get("usb_diagnostics") if isinstance(report.get("usb_diagnostics"),dict) else {}
+    protection=report.get("safety") if isinstance(report.get("safety"),dict) else {}
+    assessment=report.get("assessment") if isinstance(report.get("assessment"),dict) else {}
     steps=[]
     def add(priority,title,reason):
         steps.append({"priority":priority,"title":title,"reason":reason,"automatic_action":False})
@@ -39,6 +40,24 @@ def plan(report):
         if errors>0:
             add(1,"Medienfehler berücksichtigen",
                 "Fehlerzähler ist größer als null. Zusätzliche Belastung vermeiden.")
+    if isinstance(diagnostics.get("smartctl"),dict):
+        ata=diagnostics["smartctl"]
+        health=ata.get("smart_status")
+        if isinstance(health,dict) and health.get("passed") is False:
+            add(1,"ATA-SMART-Warnung ernst nehmen",
+                "SMART-Gesamtstatus meldet einen Fehler. Laufwerk nicht zusätzlich belasten.")
+        if assessment.get("status") in ("kritisch","auffällig"):
+            add(1,"Auffällige SATA/ATA-Messwerte sichern",
+                "Vorhandene SMART-Belege dokumentieren; keine automatischen Reparatur- oder Selbsttests starten.")
+        if diagnostics.get("command_ok") is False:
+            add(2,"ATA-SMART-Daten auf Vollständigkeit prüfen",
+                "smartctl meldete einen nicht erfolgreichen Rückgabestatus; vorhandene Teilinformationen sind keine Entwarnung.")
+    imaging=report.get("imaging_plan") if isinstance(report.get("imaging_plan"),dict) else {}
+    if imaging:
+        evidence=imaging.get("destination_evidence")
+        if isinstance(evidence,dict) and evidence.get("same_device_detected"):
+            add(1,"Quell-/Zielkonflikt",
+                "Das gewählte Abbildziel liegt auf dem Quelllaufwerk. Anderes physisches Zielmedium wählen.")
     if protection.get("reasons"):
         add(1,"Systemlaufwerksschutz beachten",
             "Die Schutzprüfung hebt keine Sperren auf; Mounts, Swap und Bootabhängigkeiten können kritisch sein.")
