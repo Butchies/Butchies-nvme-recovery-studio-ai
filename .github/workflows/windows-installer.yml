@@ -1,12 +1,6 @@
 name: Windows Installer
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - 'app/**'
-      - 'requirements-build.txt'
-      - 'NVMeRecoveryStudioAI.iss'
-      - '.github/workflows/windows-installer.yml'
 jobs:
   installer:
     runs-on: windows-2022
