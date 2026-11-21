@@ -1,6 +1,16 @@
 # NVMe Recovery Studio AI
 
-KI-gestützte NVMe-Controllerdiagnose und Firmware-Wiederherstellung. **Projektstatus: erste ausführbare Desktop-Grundlage (0.1.0), noch keine funktionsfähige SSD-Recovery.**\n\n## Programmdateien\n- `app/main.py`: grafische, nur lesende Laufwerksinventarisierung und lokaler Fallaktenexport.\n- `.github/workflows/windows-installer.yml`: automatisierter Windows-Installer-Build.\n- `NVMeRecoveryStudioAI.iss`: Inno-Setup-Installationspaket.\n- `README_BUILD.md`: Build- und Funktionsstand.\n\n**Noch nicht fertig:** KI-Diagnose, SMART-/Controllerdiagnose, Datenrettung, Firmware-Flash und Linux-Bootimage.
+KI-gestützte NVMe-Controllerdiagnose und Firmware-Wiederherstellung. **Projektstatus: erste ausführbare Desktop-Grundlage (0.1.0), noch keine funktionsfähige SSD-Recovery.**\n\n## Vorschau der Benutzeroberfläche
+
+![NVMe Recovery Studio AI: schematische Vorschau der Benutzeroberfläche](docs/images/gui-preview.svg)
+
+*Darstellung anhand der aktuellen Tkinter-Oberfläche und ihrer Schaltflächen. Die angezeigte SSD ist ein Beispiel. Dies ist kein echter Screenshot und kein Nachweis eines erfolgreichen Hardwaretests.*
+
+**Aktuelle Funktionen:** Laufwerke erfassen, Rechner- und SSD-Diagnose, Linux-NVMe-Controlleridentifikation, USB-Verbindungsprüfung, Schutzprüfung, lokale Firmwaredatei und Firmwarekatalog untersuchen, Recovery-Leitfaden, Abbildplanung, Befund und Vergleich sowie Fallakten.
+
+**Noch nicht implementiert:** tatsächliche Datenrettung, Firmware-Recovery/Flash und bootfähige Linux-Edition.
+
+## Programmdateien\n- `app/main.py`: grafische, nur lesende Laufwerksinventarisierung und lokaler Fallaktenexport.\n- `.github/workflows/windows-installer.yml`: automatisierter Windows-Installer-Build.\n- `NVMeRecoveryStudioAI.iss`: Inno-Setup-Installationspaket.\n- `README_BUILD.md`: Build- und Funktionsstand.\n\n**Noch nicht fertig:** KI-Diagnose, SMART-/Controllerdiagnose, Datenrettung, Firmware-Flash und Linux-Bootimage.
 
 ## Zwei Editionen
 - **Windows 10 und 11:** Ausschließlich externe NVMe-SSDs über USB. Interne Laufwerke sind weder Diagnose- noch Flash-Ziele.
