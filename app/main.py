@@ -19,6 +19,7 @@ import nvme_capabilities
 import read_probe
 import image_scan
 import png_carving
+import windows_carving
 
 def cmd(args):
     try:
@@ -208,9 +209,6 @@ class App(tk.Tk):
             self.png_export_cancel.set()
             self.status.config(text="Auto-Recovery: Abbruch angefordert ...")
             return
-        if sys.platform=="win32":
-            messagebox.showwarning("Auto-Recovery","Der sichere Dateiexport ist für Windows noch nicht implementiert.")
-            return
         source=filedialog.askopenfilename(title="Quell-Image auswählen (wird nur gelesen)",
             filetypes=[("Rohabbilder","*.img *.raw *.dd *.bin"),("Alle Dateien","*.*")])
         if not source:return
@@ -225,7 +223,8 @@ class App(tk.Tk):
             if scan.get("completed") and not scan.get("error") and not scan.get("cancelled"):
                 findings=[x for x in (scan.get("png_inspection",[])+scan.get("jpeg_inspection",[]))
                           if isinstance(x,dict) and x.get("validated") and x.get("complete")]
-                recovery=png_carving.export_files(source,destination,findings,cancelled=cancel.is_set)
+                engine=windows_carving if sys.platform=="win32" else png_carving
+                recovery=engine.export_files(source,destination,findings,cancelled=cancel.is_set)
             else:
                 recovery={"exported":[],"skipped":[],"error":"Analyse unvollständig oder abgebrochen; kein Export."}
             report={"offline_image_scan":{"file":source,**scan},
@@ -274,9 +273,6 @@ class App(tk.Tk):
         self.show(json.dumps(self.last_report,ensure_ascii=False,indent=2))
         self.status.config(text="Offline-Image-Analyse beendet. Keine SSD-Zugriffe oder Dateischreibvorgänge.")
     def export_png_action(self):
-        if sys.platform=="win32":
-            messagebox.showwarning("PNG retten","Der Datei-Export ist unter Windows noch nicht freigegeben. Die Image-Analyse bleibt lesend verfügbar.")
-            return
         if self.png_export_cancel is not None:
             self.png_export_cancel.set()
             self.status.config(text="Abbruch des PNG-Exports angefordert ...")
@@ -302,7 +298,8 @@ class App(tk.Tk):
         def progress(index,copied,total):
             self.post_ui(lambda:self.png_export_progress(cancel,index,copied,total))
         def worker():
-            report=png_carving.export_files(source,destination,findings,cancelled=cancel.is_set,progress=progress)
+            engine=windows_carving if sys.platform=="win32" else png_carving
+            report=engine.export_files(source,destination,findings,cancelled=cancel.is_set,progress=progress)
             self.post_ui(lambda:self.png_export_done(cancel,report))
         threading.Thread(target=worker,daemon=True).start()
     def png_export_progress(self,cancel,index,copied,total):
