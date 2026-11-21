@@ -70,11 +70,15 @@ def compare(before, after):
         return {"error":"Vergleich gesperrt: Modell oder Kapazität unterscheidet sich"}
     sa=(before.get("diagnostics") or {}).get("smart") or {}
     sb=(after.get("diagnostics") or {}).get("smart") or {}
-    if not isinstance(sa,dict) or not isinstance(sb,dict):
-        return {"error":"SMART-Daten fehlen"}
+    if not isinstance(sa,dict) or not isinstance(sb,dict) or sa.get("error") or sb.get("error") or not sa or not sb:
+        return {"error":"Verwertbare SMART-Daten fehlen"}
     changes=[]
     for field in ("media_errors","num_err_log_entries","percentage_used","unsafe_shutdowns","power_on_hours","data_units_read","data_units_written"):
         x,y=_number(sa.get(field)),_number(sb.get(field))
         if x is not None and y is not None:
             changes.append({"field":field,"before":x,"after":y,"difference":y-x})
-    return {"device":serial_a,"changes":changes,"note":"Nur identische, auslesbare SMART-Felder verglichen. Kein Defektnachweis."}
+    if not changes: return {"error":"Keine gemeinsamen numerischen SMART-Felder vorhanden"}
+    decreases=[x["field"] for x in changes if x["difference"]<0]
+    return {"device":serial_a,"changes":changes,
+            "warnings":(["Sinkende Zähler erkannt: "+", ".join(decreases)+". Reset, Wraparound oder Gerätewechsel möglich."] if decreases else []),
+            "note":"Kumulierte Werte können sich zurücksetzen oder überlaufen. Identische Seriennummern allein beweisen keine eindeutige physische Identität. Kein Defektnachweis."}
