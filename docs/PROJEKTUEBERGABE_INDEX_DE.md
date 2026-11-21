@@ -33,6 +33,9 @@
 - `docs/RECHNER_HARDWARE_PROFIL_VERGLEICH_ENTWURF_DE.md` – Rechnerprofile und Anschlussvergleiche.
 
 ## Diagnose, Firmware und Recovery
+- `docs/NVME_TELEMETRIE_EREIGNISSE_ENTWURF_DE.md` – erweiterte NVMe-Telemetrie und Ereignischronik.
+- `docs/NVME_NAMESPACE_KAPAZITAET_ENTWURF_DE.md` – Namespace- und Kapazitätsanalyse.
+- `docs/DIAGNOSE_PRIORITAETEN_UEBERSICHT_ENTWURF_DE.md` – priorisierte Diagnose- und Maßnahmenübersicht.
 - `docs/NVME_PROTOKOLL_LOG_EXPLORER_ENTWURF_DE.md` – lesender Explorer für NVMe-Logs und Rohdaten.
 - `docs/FIRMWARE_SLOT_AKTIVIERUNG_ENTWURF_DE.md` – Firmware-Slots und Aktivierungsbedingungen.
 - `docs/WISSENSQUELLEN_VERTRAUEN_ENTWURF_DE.md` – Quellen und Belege für KI-Empfehlungen.
