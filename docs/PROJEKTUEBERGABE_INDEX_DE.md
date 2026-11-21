@@ -33,6 +33,9 @@
 - `docs/RECHNER_HARDWARE_PROFIL_VERGLEICH_ENTWURF_DE.md` – Rechnerprofile und Anschlussvergleiche.
 
 ## Diagnose, Firmware und Recovery
+- `docs/USB_BRIDGE_FAeHIGKEITEN_ENTWURF_DE.md` – Fähigkeitsmatrix und Befehlsgrenzen von USB-NVMe-Bridges.
+- `docs/EXTERNE_MESSWERTE_HARDWARE_ENTWURF_DE.md` – manuelle und externe Elektronikmesswerte für KI-Befunde.
+- `docs/ERSTSTART_ASSISTENT_ENTWURF_DE.md` – Ersteinrichtung, Editionsauswahl und lokale KI-Ressourcen.
 - `docs/FIRMWARE_KOMPATIBILITAETS_MATRIx_ENTWURF_DE.md` – Hardwareabgleich für Firmwarepakete.
 - `docs/CONTROLLER_IDENTIFIKATION_UNBEKANNTE_SSD_ENTWURF_DE.md` – Identifikation unbekannter Controller und SSD-Varianten.
 - `docs/FIRMWARE_QUELLEN_DOWNLOADS_ENTWURF_DE.md` – Herkunft und Verwaltung von Firmware- und Wissensressourcen.
