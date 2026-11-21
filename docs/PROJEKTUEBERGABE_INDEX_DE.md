@@ -33,6 +33,9 @@
 - `docs/RECHNER_HARDWARE_PROFIL_VERGLEICH_ENTWURF_DE.md` – Rechnerprofile und Anschlussvergleiche.
 
 ## Diagnose, Firmware und Recovery
+- `docs/NAND_FTL_ECC_DIAGNOSEGRENZEN_ENTWURF_DE.md` – NAND, FTL, ECC und Grenzen der Controllerdiagnose.
+- `docs/USB_BRIDGE_VS_SSD_FIRMWARE_ENTWURF_DE.md` – getrennte Firmware- und Fehlerbewertung für USB-Bridge und SSD.
+- `docs/RETTUNGSQUALITAET_DATEISYSTEM_BEWERTUNG_ENTWURF_DE.md` – Qualität, Lesbarkeit und Integrität geretteter Daten.
 - `docs/NETZWERK_WLAN_OFFLINE_PAKETE_ENTWURF_DE.md` – WLAN, Offline-Modus und kontrollierte Paketdownloads.
 - `docs/RETTUNGSFALL_ZWEITMEINUNG_EXPORT_ENTWURF_DE.md` – datensparsamer Export für fachliche Zweitmeinungen.
 - `docs/RETTUNGSZIELE_SPEICHERORT_VERWALTUNG_ENTWURF_DE.md` – Speicherortmanager und Schutz der Rettungsquelle.
