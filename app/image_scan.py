@@ -7,6 +7,7 @@ import os
 import stat
 import time
 import png_inspection
+import jpeg_inspection
 
 SIGNATURES=((b"\x89PNG\r\n\x1a\n","PNG"),(b"\xff\xd8\xff","JPEG"),
             (b"%PDF-","PDF"),(b"PK\x03\x04","ZIP"),(b"SQLite format 3\x00","SQLite"))
@@ -67,6 +68,8 @@ def scan(path, progress=None, cancelled=None):
                 again=os.fstat(verify.fileno())
                 if stat.S_ISREG(again.st_mode) and again.st_ino==info.st_ino and again.st_dev==info.st_dev and again.st_size==info.st_size:
                     result["png_inspection"]=png_inspection.inspect_candidates(verify,result["matches"],info.st_size,cancelled=cancelled)
+                    if not (cancelled and cancelled()):
+                        result["jpeg_inspection"]=jpeg_inspection.inspect_candidates(verify,result["matches"],info.st_size,cancelled=cancelled)
                 else:
                     result["png_inspection_warning"]="Dateiidentität vor PNG-Prüfung verändert."
         after=os.stat(path,follow_symlinks=False)
@@ -78,7 +81,7 @@ def scan(path, progress=None, cancelled=None):
             result["cancelled"]=True
             result["completed"]=False
         result["elapsed_seconds"]=round(time.monotonic()-started,3)
-        result["warning"]="Signaturtreffer können falsch positiv sein. Nur PNG-Kandidaten erhalten eine begrenzte Chunk-/CRC-Prüfung; kein Export und keine Wiederherstellung."
+        result["warning"]="Signaturtreffer können falsch positiv sein. PNG- und JPEG-Kandidaten erhalten begrenzte Strukturprüfungen; kein Export und keine Wiederherstellung."
     except OSError as exc:
         result["error"]=str(exc)
     return result
