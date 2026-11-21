@@ -65,7 +65,9 @@ def usb_report(device):
     if device.get("bus")!="USB":
         return {"error":"Nur USB-Geräte sind für diese Windows-Ansicht zulässig"}
     path=str(device.get("path") or "")
-    if not re.fullmatch(r"\\\\.\\PHYSICALDRIVE[0-9]+",path,re.IGNORECASE):
+    # Validate the canonical Win32 physical-drive path without a permissive regex.
+    prefix=chr(92)*2+"."+chr(92)+"PHYSICALDRIVE"
+    if not path.upper().startswith(prefix) or not path[len(prefix):].isdigit():
         return {"error":"Ungültiger Windows-Gerätepfad"}
     number=int(path.rsplit("PHYSICALDRIVE",1)[-1]) if "PHYSICALDRIVE" in path else int(path.upper().rsplit("PHYSICALDRIVE",1)[-1])
     script=(
