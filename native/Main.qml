@@ -32,6 +32,33 @@ ApplicationWindow {
             }
         }
         Rectangle {
+            Layout.fillWidth: true
+            implicitHeight: reportColumn.implicitHeight + 24
+            color: "#203247"; radius: 10
+            ColumnLayout {
+                id: reportColumn
+                anchors.left: parent.left; anchors.right: parent.right
+                anchors.top: parent.top; anchors.margins: 12
+                spacing: 5
+                Label { text: "Automatische Diagnose"; font.bold: true; color: "white"; font.pixelSize: 17 }
+                Label {
+                    Layout.fillWidth: true
+                    text: controller.aiReport.diagnosis || "Gerät auswählen und automatische Diagnose starten."
+                    color: "#c6e2f2"; wrapMode: Text.WordWrap
+                }
+                Label {
+                    Layout.fillWidth: true
+                    visible: !!controller.aiReport.severity
+                    text: "Bewertung: " + (controller.aiReport.severity || "") + " · Sicherheit: " + (controller.aiReport.confidence || "")
+                    color: "#c6e2f2"; wrapMode: Text.WordWrap
+                }
+                Repeater {
+                    model: controller.aiReport.actions || []
+                    Label { Layout.fillWidth: true; text: "• " + modelData; color: "#b5d0e6"; wrapMode: Text.WordWrap }
+                }
+            }
+        }
+        Rectangle {
             Layout.fillWidth: true; Layout.fillHeight: true
             color: "#192333"; radius: 12
             ColumnLayout {
@@ -52,7 +79,14 @@ ApplicationWindow {
                         Column {
                             anchors.fill: parent; anchors.margins: 12
                             spacing: 5
-                            Label { text: modelData.name || "USB-Laufwerk"; color: "white"; font.bold: true }
+                            Row {
+                                spacing: 14
+                                Label { text: modelData.name || "USB-Laufwerk"; color: "white"; font.bold: true }
+                                Button {
+                                    text: "Automatisch diagnostizieren"
+                                    onClicked: controller.autoDiagnose(index)
+                                }
+                            }
                             Label {
                                 text: "USB · VID " + modelData.bridgeVendorId + " · PID " + modelData.bridgeProductId
                                 color: "#a5bed3"
