@@ -1,84 +1,70 @@
-# Ablaufplan zur Weiterentwicklung durch andere KI-Agenten
+# NVMe Recovery Studio AI – Entwurf und offene Programmierarbeiten
 
-**Zweck:** Eine andere KI soll das Projekt ohne Verlust von Produktanforderungen sicher fortsetzen können. Dieser Plan ist eine Arbeitsanweisung, keine Behauptung fertiger Funktionen.
+Dieses Dokument ist die Übergabe unseres gemeinsam festgelegten Entwurfs an eine andere KI. Es legt **keinen Testplan, keine Prüfverfahren und keine Arbeitsmethodik** fest. Wie die andere KI programmiert, verbessert und prüft, entscheidet sie selbst.
 
-## 0. Bestandsaufnahme
-- GitHub-Repository `Butchies/Butchies-nvme-recovery-studio-ai` öffnen, Default-Branch `main`.
-- `AGENTS.md`, Master-Spezifikation, Architektur, Sicherheitskonzept und aktuellen Code lesen.
-- Vor jeder Änderung tatsächlichen Repository-Zustand gegen Dokumentation prüfen.
-- Kein ungeprüftes Überschreiben, keine behaupteten Builds oder Hardwaretests.
+## Unsere Produktvision
+NVMe Recovery Studio AI soll möglichst viele Fehler von M.2-NVMe-SSDs erkennen und technisch mögliche Reparaturen unterstützen. Das Programm soll ohne ständige Internetverbindung funktionieren und eine transparente, lernfähige KI integrieren. Nicht jede SSD lässt sich softwareseitig wiederherstellen.
 
-## 1. Modul- und Schnittstellenplan
+## Windows-Edition
+- Eigenständige Windows-11-Anwendung.
+- Nur externe USB-NVMe-SSDs; keine internen SSDs als Ziel.
+- USB-Bridge-Erkennung, verständliche Einschränkungen und passende Adapterhinweise.
+- Diagnose, Firmwareverwaltung, KI-Assistent, Recovery und Live-Monitor.
 
-### Geräteinventar
-- Linux: sysfs, libnvme/nvme-cli, PCIe-Topologie, Controller- und Namespace-IDs, SMART, Error-Logs.
-- Windows: USB-PnP-Topologie, Bridge-ID und nachweislich externe NVMe-Ziele; interne Laufwerke vollständig aus Zielauswahl und Aktionspfad ausschließen.
-- Datenmodell: Geräte-Fingerprint, Bus, Controller-IDs, Firmwarestand, Gerätepfad, System-/Bootschutz, Diagnosefähigkeiten.
-- Unbekannte oder widersprüchliche Identität als nicht beschreibbar kennzeichnen.
+## Linux-USB-Edition
+- Bootfähiges USB-System, das direkt in die Recovery-Oberfläche startet, ohne normalen Desktop.
+- Direkter PCIe-Zugriff auf interne NVMe-SSDs.
+- WLAN, Online-Aktualisierung und weitgehend vollständiger Offlinebetrieb.
+- Lokales KI-Modell, Controllerdatenbank, Firmwarebibliothek, Hilfedaten und persistenter Speicher.
+- Boot-USB-Stick und andere Datenträger schützen.
 
-### Diagnose
-- Rohdaten strikt von KI-Interpretationen trennen.
-- SMART/Health, NVMe Identify, Firmware-Slots, Error Information Log und PCIe-Status erfassen.
-- Fehlercodes mit Quellen und Confidence/Unsicherheit interpretieren.
-- Keine Firmwareänderung im Diagnosepfad.
+## KI und Lernfähigkeit
+- Controller und Fehlerbilder erkennen und erklären.
+- Firmwarekompatibilität berücksichtigen.
+- Eigene Fallakten und Wissensdatenbank mit Erkenntnissen aus Reparaturen aufbauen.
+- Neue Diagnoseverfahren und Lösungswege vorschlagen und vorhandene verbessern.
+- Fehlende Original-Firmware kann Anlass für experimentelle KI-Entwicklung eigener Diagnose-, Recovery- oder vollständiger Controller-Firmware sein.
+- Technische Grenzen wie unbekannte Hardware, gesperrte Bootloader und Herstellersignaturen berücksichtigen.
+- Vor tatsächlichen Schreib-/Flashaktionen ausdrückliche Benutzerfreigabe einholen.
 
-### KI und Lernspeicher
-- Lokales Modell optional einbinden; Offlinebetrieb ohne Cloud voraussetzen.
-- Werkzeuge als explizite, protokollierte APIs anbieten; KI nicht direkt mit privilegiertem Shell-/Raw-Device-Zugriff ausstatten.
-- SQLite-Fallakten: Gerätedaten, Beobachtungen, Hypothesen, Quellen, Versuche, Freigaben, Ergebnisse.
-- Lernvorschläge zunächst als unbestätigt speichern; bestätigte Erkenntnisse versionieren, mit Herkunft und Rücknahmeoption.
-- Keine automatische Selbständerung sicherheitskritischer Regeln oder Flash-Executor-Privilegien.
+## KI-Live-Monitor
+- Live-Ansicht für Messwerte, Diagnoseschritte, Hypothesen, Begründungen und vorgeschlagene Aktionen.
+- Einfache und detaillierte Expertenansicht.
+- Quellcode, Änderungen und Fortschritt eigener Firmwareentwicklung anzeigen.
+- Lokale Protokolle und Fallakten auch offline verfügbar halten.
+- Sichtbar sind nachvollziehbare Analyseberichte, nicht die verborgenen internen Gedanken des KI-Modells.
 
-### Firmware und Recovery
-- Manifest je Firmware: Hersteller, Lizenz/Redistribution, SHA-256, Signatur, Controller, Board, NAND, Revision, kompatible Geräte, Verfahren, Herkunft.
-- Signatur-/Kompatibilitätsprüfung unabhängig vom Sprachmodell implementieren.
-- Privilegierter Executor separat, gerätegebundene Freigabe, Audit-Log, Abbruch-/Timeout-Regeln.
-- Custom-Firmware-Modus: Hardwaredokumentation, Codegenerierung, Build, statische Analyse, Sandbox, dokumentierter Programmierweg, manuelle Freigabe.
-- Signaturgesperrte und unbekannte Controller nicht als universell reparierbar darstellen.
+## Firmware und Offline-Pakete
+- Große lokale Sammlung rechtmäßig verteilbarer Firmware, Controllerprofile und Wiederherstellungsinformationen.
+- Herstellerübergreifende Erkennung (u. a. Phison, Silicon Motion, Realtek, Innogrit, Maxio, Samsung, WD/SanDisk, Kioxia).
+- Original-Firmware nur mit gesicherter Herkunft und passender Gerätezuordnung.
+- Internet nur für fehlende Ressourcen, Updates und optionale Zusatzdienste benötigen.
+- Zwei fertige Ausgabepakete: Windows-Installer und bootfähige Linux-USB-Edition.
 
-### Benutzeroberfläche
-- Qt 6/QML, dunkles Design.
-- Tabs: Übersicht, Geräte, Diagnose, KI-Live-Monitor, Firmware, Recovery, Fallakten, Netzwerk, Einstellungen.
-- KI-Live-Monitor: Rohmessungen, Werkzeugaufrufe, Hypothesen, Belege, Entscheidungen, Code-Diffs und Buildprotokolle.
-- Einfach-/Expertenmodus; Simulation immer deutlich kennzeichnen.
+## Gewünschte Oberfläche
+Dashboard, Geräteliste, Diagnose, KI-Live-Monitor, Firmware-Manager, Recovery-Bereich, Reparaturhistorie, WLAN und Einstellungen. Modernes, dunkles, gut lesbares Design.
 
-### Packaging
-- Windows: Installer mit ausschließlich USB-NVMe-Zugriff.
-- Linux: UEFI-USB-Image, Vollbild-Kiosk, WLAN über NetworkManager, Offline-Modell, verschlüsselte persistente Daten.
-- Offline-Ressourcen soweit lizenzrechtlich möglich; Aktualisierung signiert und nachvollziehbar.
-- Keine PDF-Handbücher mit Bildern vor fertiger Software.
+## Was noch programmiert werden muss
+1. Vollständige Windows-USB-Geräteerkennung.
+2. Erweiterte Linux-PCIe-/NVMe-Diagnose.
+3. Gemeinsame Datenmodelle und Controllerprofile.
+4. Moderne Windows- und Linux-Oberfläche.
+5. KI-Live-Monitor mit realen Daten.
+6. Lokales KI-Modell und lernfähige Wissensdatenbank.
+7. Firmwarekatalog, Download und Kompatibilitätszuordnung.
+8. Recovery-Funktionen mit Freigabedialog.
+9. Experimenteller Modus für selbst entwickelte Controller-Firmware.
+10. Linux-Bootmedium mit WLAN und Offline-Ressourcen.
+11. Windows-Installationspaket und Aktualisierungsfunktionen.
+12. Nach Fertigstellung: bebilderte PDF-Handbücher auf Deutsch und Englisch.
 
-## 2. Reihenfolge der Arbeitspakete
-| ID | Aufgabe | Abhängigkeit | Abnahme |
-|---|---|---|---|
-| A01 | Einheitliches Geräte-/Diagnoseschema | keine | dokumentierte Modelle |
-| A02 | Linux read-only Inventory erweitern | A01 | nachvollziehbare sysfs/NVMe-Ausgaben |
-| A03 | Windows USB-only Discovery | A01 | interne Geräte ausgeschlossen |
-| A04 | SMART/Identify/Error Logs | A02/A03 | rohe Messdaten + Fehlerbehandlung |
-| A05 | SQLite-Fallakten und Export | A01 | Ereignisse reproduzierbar |
-| A06 | Qt-UI und Live-Monitor | A04/A05 | echte Daten, keine erfundenen Logs |
-| A07 | Firmwaremanifest + Validierung | A01 | fail-closed bei Unbekanntem |
-| A08 | Offline-KI und kontrollierte Tool-API | A04/A05 | kein direkter Flashzugriff |
-| A09 | Recovery-Executor mit Freigaben | A07/A08 | Zielbindung, Audit, Sperren |
-| A10 | Linux Boot USB + WLAN | A02/A06 | Boot- und Netzwerktests auf Zielhardware |
-| A11 | Windows Installer | A03/A06 | installierbarer Build |
-| A12 | Experimentelle Firmwareentwicklung | A07/A09 | Code/Prüfung/Freigabe, keine Universalversprechen |
-| A13 | Offline-Pakete, Updatekanal | A08/A10/A11 | Signaturen, Lizenzprüfung |
-| A14 | End-to-End-Validierung | alle | echte Testergebnisse dokumentiert |
-| A15 | Bebilderte DE/EN-Handbücher | A14 | echte Screenshots beider Editionen |
+## Bisher vorhandene Projektdateien
+- Dokumentierte Anforderungen und Architektur.
+- Erste Linux-NVMe-Inventarisierung in Python.
+- Erste Planungslogik für Schreibfreigaben.
+- Lokale SQLite-Fallakten als Grundlage.
 
-## 3. Fortsetzungsprotokoll
-Bei jeder Übergabe die Datei `docs/ENTWICKLUNGSSTAND_DE.md` aktualisieren:
-- Letzte abgeschlossene Arbeitspakete
-- Geänderte Dateien/Commits
-- Was real funktioniert, was nur vorbereitet ist
-- Tests durchgeführt/nicht durchgeführt und Ergebnis
-- Bekannte Risiken und Blocker
-- Konkrete nächste Aufgabe mit Akzeptanzkriterien
+Diese Dateien sind nur ein Anfang, keine fertige Anwendung.
 
-## 4. Verbesserungsprozess
-- Änderungen an Architektur und Datenmodellen in kurzen ADRs unter `docs/decisions/` festhalten.
-- Sicherheitsinvarianten dürfen nicht durch Modellvorschläge gelockert werden.
-- Messbare Verbesserungen bevorzugen: höhere Erkennungsrate, weniger Fehlklassifikation, bessere Offlineabdeckung, nachvollziehbarere Entscheidungen.
-- Regressionen dokumentieren und Änderungen bei Bedarf zurücknehmen.
-- Firmware-Recovery erst nach bestätigter Hardware-/Controllerkompatibilität.
+## Verantwortung der weiterentwickelnden KI
+Die andere KI übernimmt die technische Planung, konkrete Programmierung, Optimierung, notwendige Prüfungen und Umsetzung. Diese Übergabe beschreibt ausschließlich, **was das Produkt können soll und welche Arbeiten noch fehlen**.
