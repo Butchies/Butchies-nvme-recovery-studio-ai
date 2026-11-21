@@ -82,6 +82,8 @@ public:
             d["percentageUsed"]=bridge.value("percentageUsed");
             d["mediaErrors"]=bridge.value("mediaErrors");
             d["errorLogEntries"]=bridge.value("errorLogEntries");
+            d["errorLogAvailable"]=bridge.value("errorLogAvailable");
+            d["recentNvmeErrors"]=bridge.value("recentNvmeErrors");
             d["nvmePassthrough"]=bridge.value("nvmePassthrough");
             d["nvmeVerified"]=bridge.value("nvmeIdentifyAvailable").toBool(); // USB bridge cannot prove underlying NVMe type.
             d["readOnly"]=true;
@@ -107,7 +109,15 @@ public:
                  device.value("bridgeProductId").toString(),
                  device.value("bridgeFirmware").toString(),
                  device.value("nvmePassthrough").toString()));
-        if(device.value("smartAvailable").toBool()) {
+        if(device.value("errorLogAvailable").toBool() &&
+           !device.value("recentNvmeErrors").toList().isEmpty()) {
+            const auto entry=device.value("recentNvmeErrors").toList().first().toMap();
+            setStatus(QStringLiteral("%1 | NVMe-Fehlerzähler %2 | Status %3 | SCT %4")
+                .arg(device.value("name").toString(),
+                     entry.value("errorCount").toString(),
+                     entry.value("statusField").toString(),
+                     entry.value("statusCodeType").toString()));
+        } else if(device.value("smartAvailable").toBool()) {
             setStatus(QStringLiteral("%1 | Temperatur: %2 °C | Reserve: %3 %% | Verschleiß: %4 %% | Medienfehler: %5")
                 .arg(device.value("name").toString(),
                      device.value("temperatureCelsius").toString(),
