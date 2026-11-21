@@ -230,6 +230,9 @@ class App(tk.Tk):
         self.show(json.dumps(self.last_report,ensure_ascii=False,indent=2))
         self.status.config(text="Offline-Image-Analyse beendet. Keine SSD-Zugriffe oder Dateischreibvorgänge.")
     def export_png_action(self):
+        if sys.platform=="win32":
+            messagebox.showwarning("PNG retten","Der PNG-Export ist unter Windows noch nicht freigegeben. Die Image-Analyse bleibt lesend verfügbar.")
+            return
         if self.png_export_cancel is not None:
             self.png_export_cancel.set()
             self.status.config(text="Abbruch des PNG-Exports angefordert ...")
