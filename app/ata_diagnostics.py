@@ -40,7 +40,16 @@ def report(device):
     except (ValueError,TypeError): payload=None
     if not isinstance(payload,dict):
         return {"error":response["stderr"] or "Keine auswertbare SMART-JSON-Antwort."}
+    exit_info=payload.get("smartctl") if isinstance(payload.get("smartctl"),dict) else {}
+    exit_status=exit_info.get("exit_status")
+    warnings=[]
+    if isinstance(exit_status,int) and exit_status:
+        if exit_status & 0b11: warnings.append("smartctl meldet Kommando-/Zugriffsfehler (Bits 0-1).")
+        if exit_status & 0b1100: warnings.append("SMART-Gerätestatus oder Vorwarnung gemeldet (Bits 2-3).")
+        if exit_status & 0b11110000: warnings.append("SMART-Attribute oder Fehlerhistorie auffällig (Bits 4-7).")
+    elif not response["ok"]:
+        warnings.append("smartctl meldete einen Fehlerstatus ohne auswertbare Exit-Bitmaske.")
     return {"device":path,"timestamp":datetime.now(timezone.utc).isoformat(),
             "diagnostic_type":"ATA/SATA SMART (read-only)","smartctl":payload,
-            "command_ok":response["ok"],
+            "command_ok":response["ok"],"smartctl_exit_status":exit_status,"warnings":warnings,
             "notice":"SMART-Werte können fehlen. M.2-Bauform nicht verifiziert. Keine Selbsttests oder Schreibbefehle."}
