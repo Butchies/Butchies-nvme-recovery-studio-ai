@@ -57,3 +57,33 @@ def nvme_report(device):
             except ValueError: result[key]={"error":"Ungültige JSON-Antwort"}
         else: result[key]={"error":response["stderr"] or "Abfrage nicht möglich"}
     return result
+
+def usb_report(device):
+    """Read-only Windows USB inventory; does not claim NVMe passthrough."""
+    if sys.platform!="win32":
+        return {"error":"USB-Bridge-Bericht derzeit nur unter Windows verfügbar"}
+    if device.get("bus")!="USB":
+        return {"error":"Nur USB-Geräte sind für diese Windows-Ansicht zulässig"}
+    path=str(device.get("path") or "")
+    if not re.fullmatch(r"\\\\.\\PHYSICALDRIVE[0-9]+",path,re.IGNORECASE):
+        return {"error":"Ungültiger Windows-Gerätepfad"}
+    number=int(path.rsplit("PHYSICALDRIVE",1)[-1]) if "PHYSICALDRIVE" in path else int(path.upper().rsplit("PHYSICALDRIVE",1)[-1])
+    script=(
+        "$ErrorActionPreference='Stop'; "
+        "$d=Get-CimInstance Win32_DiskDrive -Filter 'Index="+str(number)+"'; "
+        "if (-not $d) { throw 'Gerät nicht vorhanden' }; "
+        "if ($d.InterfaceType -ne 'USB' -and $d.PNPDeviceID -notmatch '^USBSTOR|^USB\\\\') { throw 'Gerät ist nicht USB' }; "
+        "$d | Select-Object Index,Model,SerialNumber,Size,InterfaceType,PNPDeviceID,Status | ConvertTo-Json -Compress"
+    )
+    response=run(["powershell.exe","-NoProfile","-NonInteractive","-Command",script])
+    if not response["ok"]:
+        return {"error":response["stderr"] or "USB-Gerät nicht auslesbar"}
+    try: details=json.loads(response["stdout"])
+    except ValueError: return {"error":"Ungültige Geräteantwort"}
+    if str(details.get("SerialNumber") or "").strip()!=str(device.get("serial") or "").strip() or int(details.get("Size") or 0)!=int(device.get("size") or 0):
+        return {"error":"Geräteidentität hat sich verändert"}
+    return {"device":path,"transport":"USB","inventory":details,
+            "nvme_verified":False,
+            "limitations":["USB-Gerät erkannt, NVMe hinter der Bridge nicht bestätigt.",
+                           "Kein NVMe-Admin-Passthrough und keine Firmwareoperation verfügbar.",
+                           "Bei fehlenden NVMe-Daten eine geeignete Bridge oder direkten PCIe-Zugriff verwenden."]}
