@@ -1,4 +1,4 @@
-# NVMe Recovery Studio AI – Entwicklungsstand 0.19.0 (GitHub)
+# NVMe Recovery Studio AI – Entwicklungsstand 0.20.0 (GitHub)
 
 ## Tatsächlich vorhandene Funktionen
 - Grafische Desktopoberfläche und lesende Laufwerksinventarisierung.
@@ -87,3 +87,7 @@ Ein Hash-Treffer im selbst bereitgestellten Katalog bestätigt weder Echtheit no
 - Linux inventarisiert alle physischen Datenträger, auch interne SATA-Geräte, weil sich M.2-SATA nicht sicher anhand von lsblk erkennen lässt.
 - Windows bleibt bei externen USB-Datenträgern; interne Windows-Laufwerke werden nicht aufgelistet.
 - Das Auflisten erteilt keine Schreibfreigabe; System- und Bootlaufwerke bleiben geschützt.
+
+## Wartung 0.20.0
+- Linux-Schutzprüfung unterstützt jetzt alle durch lsblk eindeutig als physischer Datenträger identifizierten Geräte, einschließlich SATA-M.2-Kandidaten; Schreibzugriffe bleiben immer gesperrt.
+- NVMe-Namespaces werden anhand eines eindeutigen Gerätenamens statt einer unscharfen Teilzeichenfolge erkannt.
