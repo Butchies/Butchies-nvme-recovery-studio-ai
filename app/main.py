@@ -43,10 +43,10 @@ class App(tk.Tk):
         self.label(top,("Windows 10/11 | Nur USB-Geräte" if sys.platform=="win32" else "Linux | NVMe und USB") +" | Nur lesende Inventarisierung",11).pack(anchor="w",pady=(6,0))
         bar=tk.Frame(self,bg="#101722",padx=22,pady=12);bar.pack(fill="x")
         buttons=tk.Frame(bar,bg="#101722");buttons.pack(fill="x")
-        actions=[("Geräte aktualisieren",self.refresh),("Rechneranalyse",self.host_info),("NVMe-Diagnose",self.diagnose),("Befund",self.assess),("Vergleich",self.compare_case),("Fallakte speichern",self.save_case),("Fallakten",self.open_cases),("Fallakte exportieren",self.export)]
+        actions=[("Geräte aktualisieren",self.refresh),("Rechneranalyse",self.host_info),("NVMe-Diagnose",self.diagnose),("USB-Verbindung",self.usb_diagnose),("Befund",self.assess),("Vergleich",self.compare_case),("Fallakte speichern",self.save_case),("Fallakten",self.open_cases),("Fallakte exportieren",self.export)]
         for i,(name,cb) in enumerate(actions):
-            tk.Button(buttons,text=name,command=cb,bg="#22566c",fg="white",relief="flat",padx=9,pady=7).grid(row=i//4,column=i%4,sticky="ew",padx=4,pady=4)
-        for i in range(4): buttons.grid_columnconfigure(i,weight=1)
+            tk.Button(buttons,text=name,command=cb,bg="#22566c",fg="white",relief="flat",padx=9,pady=7).grid(row=i//5,column=i%5,sticky="ew",padx=4,pady=4)
+        for i in range(5): buttons.grid_columnconfigure(i,weight=1)
         main=tk.PanedWindow(self,orient="horizontal",bg="#101722",sashwidth=6,bd=0);main.pack(fill="both",expand=True,padx=22,pady=12)
         left=tk.Frame(main,bg="#192333",padx=12,pady=12);right=tk.Frame(main,bg="#192333",padx=12,pady=12);main.add(left,minsize=350);main.add(right,minsize=280)
         self.label(left,"Erkannte Datenträger",15,True).pack(anchor="w")
@@ -97,6 +97,21 @@ class App(tk.Tk):
             report=diagnostics.nvme_report(device)
             self.after(0,lambda:self.diagnose_done(device,report))
         threading.Thread(target=worker,daemon=True).start()
+    def usb_diagnose(self):
+        if not self.selected:
+            messagebox.showinfo("USB-Verbindung","Bitte zuerst ein USB-Gerät auswählen.");return
+        device=dict(self.selected)
+        self.status.config(text="USB-Verbindung wird lesend analysiert ...")
+        def worker():
+            report=diagnostics.usb_report(device)
+            self.after(0,lambda:self.usb_done(device,report))
+        threading.Thread(target=worker,daemon=True).start()
+    def usb_done(self,device,report):
+        if not self.selected or self.selected.get("path")!=device.get("path"):
+            self.status.config(text="Geräteauswahl geändert; Bericht verworfen.");return
+        self.last_report={"device":device,"usb_diagnostics":report}
+        self.show(json.dumps(self.last_report,ensure_ascii=False,indent=2))
+        self.status.config(text="USB-Bericht abgeschlossen. NVMe-Passthrough nicht bestätigt.")
     def diagnose_done(self,device,report):
         if self.selected is None or self.selected.get("path")!=device.get("path"):
             self.status.config(text="Diagnose abgeschlossen; Geräteauswahl geändert.");return
