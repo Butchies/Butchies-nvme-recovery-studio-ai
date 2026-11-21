@@ -66,7 +66,7 @@ class App(tk.Tk):
         main=tk.PanedWindow(self,orient="horizontal",bg="#101722",sashwidth=6,bd=0);main.pack(fill="both",expand=True,padx=22,pady=12)
         left=tk.Frame(main,bg="#192333",padx=12,pady=12);right=tk.Frame(main,bg="#192333",padx=12,pady=12);main.add(left,minsize=350);main.add(right,minsize=280)
         self.label(left,"Erkannte Datenträger",15,True).pack(anchor="w")
-        self.tree=ttk.Treeview(left,columns=("bus","size"),show="tree headings");self.tree.heading("#0",text="Gerät");self.tree.heading("bus",text="Anschluss");self.tree.heading("size",text="Größe");self.tree.column("#0",width=210);self.tree.column("bus",width=90);self.tree.column("size",width=100);self.tree.pack(fill="both",expand=True,pady=12);self.tree.bind("<<TreeviewSelect>>",self.choose)
+        self.tree=ttk.Treeview(left,columns=("bus","connection","size"),show="tree headings");self.tree.heading("#0",text="Gerät");self.tree.heading("bus",text="Bus");self.tree.heading("connection",text="Verbindung");self.tree.heading("size",text="Größe");self.tree.column("#0",width=210);self.tree.column("bus",width=85);self.tree.column("connection",width=150);self.tree.column("size",width=100);self.tree.pack(fill="both",expand=True,pady=12);self.tree.bind("<<TreeviewSelect>>",self.choose)
         self.label(right,"Gerätedetails",15,True).pack(anchor="w")
         self.detail=tk.Text(right,bg="#192333",fg="#e8eff8",font=("Consolas",11),relief="flat",wrap="word",state="disabled");self.detail.pack(fill="both",expand=True,pady=12)
         self.status=self.label(self,"Keine Schreib-, Lösch- oder Firmwarefunktionen",10);self.status.pack(anchor="w",padx=22,pady=12)
@@ -98,7 +98,7 @@ class App(tk.Tk):
     def loaded(self,devices):
         self.devices=devices;self.selected=None;self.last_report=None;self.inventory_epoch+=1;self.tree.delete(*self.tree.get_children())
         for i,x in enumerate(devices):
-            self.tree.insert("","end",iid=str(i),text=x["name"],values=(x["bus"],f'{x["size"]/1e9:.1f} GB'))
+            self.tree.insert("","end",iid=str(i),text=x["name"],values=(x["bus"],x.get("connection","extern (USB)" if sys.platform=="win32" else "Unbekannt"),f'{x["size"]/1e9:.1f} GB'))
         self.status.config(text=f"{len(devices)} Datenträger erfasst. Keine Änderungen vorgenommen.")
         self.show("Gerät auswählen.\n\nUnter Linux werden auch SATA-Laufwerke angezeigt, da M.2-SATA nicht immer eindeutig erkennbar ist.\nUSB-Bridges können NVMe-Informationen verbergen.\nFirmware-Recovery und Datenrettung sind noch nicht implementiert.\nNVMe-Diagnose benötigt unter Linux nvme-cli und entsprechende Leseberechtigungen.")
     def choose(self,event=None):
