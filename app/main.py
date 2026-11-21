@@ -104,7 +104,7 @@ class App(tk.Tk):
     def choose(self,event=None):
         sel=self.tree.selection()
         if not sel:return
-        x=self.devices[int(sel[0])];self.selected=x;self.last_report=None
+        x=self.devices[int(sel[0])];self.inventory_epoch+=1;self.selected=x;self.last_report=None
         self.show(f'Modell: {x["name"]}\n\nGerätepfad: {x["path"]}\n\nSeriennummer: {x["serial"] or "Unbekannt"}\n\nGröße: {x["size"]/1e9:.1f} GB\n\nTransport: {x["bus"]}\n\nNVMe bestätigt: {"Ja" if x["nvme"] else "Nein / bei USB nicht verifiziert"}\n\nNur lesende Inventarisierung. Keine Reparatur- oder Flashbefehle.')
     def host_info(self):
         self.status.config(text="Rechneranalyse läuft ...")
@@ -142,14 +142,9 @@ class App(tk.Tk):
             self.post_ui(lambda:self.plan_image_done(device,result,epoch))
         threading.Thread(target=worker,daemon=True).start()
     def plan_image_done(self,device,result,epoch):
-        if epoch!=self.inventory_epoch or self.selected!=device:
+        if not self.selection_is_current(device,epoch):
             self.status.config(text="Geräteauswahl geändert; Abbildplanung verworfen.");return
-        previous=self.current_diagnostic()
-        if previous.get("device")==device:
-            self.last_report=dict(previous)
-        else:
-            self.last_report={"device":device}
-        self.last_report["imaging_plan"]=result
+        self.merge_device_report(device,"imaging_plan",result)
         self.show(json.dumps(self.last_report,ensure_ascii=False,indent=2))
         self.status.config(text="Abbildplanung beendet. Kein Gerät geöffnet, kein Abbild erstellt.")
     def merge_device_report(self,device,key,value):
