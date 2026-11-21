@@ -62,9 +62,12 @@ def scan(path, progress=None, cancelled=None):
             with os.fdopen(os.open(path,os.O_RDONLY|getattr(os,"O_CLOEXEC",0)|getattr(os,"O_NOFOLLOW",0)),"rb",buffering=0) as verify:
                 again=os.fstat(verify.fileno())
                 if stat.S_ISREG(again.st_mode) and again.st_ino==info.st_ino and again.st_dev==info.st_dev and again.st_size==info.st_size:
-                    result["png_inspection"]=png_inspection.inspect_candidates(verify,result["matches"],info.st_size)
+                    result["png_inspection"]=png_inspection.inspect_candidates(verify,result["matches"],info.st_size,cancelled=cancelled)
                 else:
                     result["png_inspection_warning"]="Dateiidentität vor PNG-Prüfung verändert."
+        if cancelled and cancelled():
+            result["cancelled"]=True
+            result["completed"]=False
         result["elapsed_seconds"]=round(time.monotonic()-started,3)
         result["warning"]="Signaturtreffer können falsch positiv sein. Nur PNG-Kandidaten erhalten eine begrenzte Chunk-/CRC-Prüfung; kein Export und keine Wiederherstellung."
     except OSError as exc:
