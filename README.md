@@ -1,6 +1,6 @@
 # NVMe Recovery Studio AI
 
-KI-gestützte NVMe-Controllerdiagnose und Firmware-Wiederherstellung. **Projektstatus: Architektur und Spezifikation, keine funktionsfähige Recovery-Software.**
+KI-gestützte NVMe-Controllerdiagnose und Firmware-Wiederherstellung. **Projektstatus: erste ausführbare Desktop-Grundlage (0.1.0), noch keine funktionsfähige SSD-Recovery.**\n\n## Programmdateien\n- `app/main.py`: grafische, nur lesende Laufwerksinventarisierung und lokaler Fallaktenexport.\n- `.github/workflows/windows-installer.yml`: automatisierter Windows-Installer-Build.\n- `NVMeRecoveryStudioAI.iss`: Inno-Setup-Installationspaket.\n- `README_BUILD.md`: Build- und Funktionsstand.\n\n**Noch nicht fertig:** KI-Diagnose, SMART-/Controllerdiagnose, Datenrettung, Firmware-Flash und Linux-Bootimage.
 
 ## Zwei Editionen
 - **Windows 10 und 11:** Ausschließlich externe NVMe-SSDs über USB. Interne Laufwerke sind weder Diagnose- noch Flash-Ziele.
