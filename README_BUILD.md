@@ -1,4 +1,4 @@
-# NVMe Recovery Studio AI – Entwicklungsstand 0.14.0 (GitHub)
+# NVMe Recovery Studio AI – Entwicklungsstand 0.15.0 (GitHub)
 
 ## Tatsächlich vorhandene Funktionen
 - Grafische Desktopoberfläche und lesende Laufwerksinventarisierung.
@@ -62,3 +62,8 @@ Ein Hash-Treffer im selbst bereitgestellten Katalog bestätigt weder Echtheit no
 - Zielverzeichnis wird unter Linux mit findmnt und lsblk rein lesend zugeordnet.
 - Liegt das Ziel nachweisbar auf der gewählten Quelle, erscheint eine kritische Warnung.
 - LVM, RAID, verschlüsselte, virtuelle und Netzwerk-Dateisysteme bleiben potenziell unvollständig auflösbar. Imaging weiterhin nicht freigegeben.
+
+## Wartung 0.15.0
+- Linux-Zielzuordnung ermittelt Elternbeziehungen aus dem lsblk-Gerätebaum statt aus möglicherweise fehlenden PKNAME-Feldern.
+- Mehrfach-Elternbeziehungen werden berücksichtigt; Gerätepfade werden kanonisiert.
+- Das Ergebnis ist weiterhin ausschließlich ein Warnhinweis und keine Imaging-Freigabe.
