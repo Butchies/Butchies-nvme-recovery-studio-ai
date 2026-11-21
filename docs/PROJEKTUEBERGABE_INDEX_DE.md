@@ -33,6 +33,9 @@
 - `docs/RECHNER_HARDWARE_PROFIL_VERGLEICH_ENTWURF_DE.md` – Rechnerprofile und Anschlussvergleiche.
 
 ## Diagnose, Firmware und Recovery
+- `docs/LINUX_BOOT_MEDIUM_ERSTELLEN_ENTWURF_DE.md` – geführte und sichere Erstellung des Linux-Rettungssticks.
+- `docs/KI_MODELL_MANAGER_OFFLINE_ENTWURF_DE.md` – Offline-KI-Modelle, Hardwareeignung und Paketverwaltung.
+- `docs/EXPERTEN_ARBEITSPLATZ_ENTWURF_DE.md` – anpassbare Expertenoberfläche für SSD-, Host- und Recovery-Daten.
 - `docs/TELEMETRIE_SNAPSHOT_KONSISTENZ_ENTWURF_DE.md` – Telemetrie-Snapshots, Generationsnummern und Konsistenz.
 - `docs/HERSTELLER_LOGS_DECODER_KATALOG_ENTWURF_DE.md` – herstellerspezifische Logformate und Decoder-Katalog.
 - `docs/RETTUNGSABBILD_QUELLENZUORDNUNG_ENTWURF_DE.md` – Herkunftszuordnung und Konfliktschutz für Rettungsabbilder.
