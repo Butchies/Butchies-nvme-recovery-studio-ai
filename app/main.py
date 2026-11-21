@@ -134,12 +134,15 @@ class App(tk.Tk):
         x=self.devices[int(sel[0])];self.inventory_epoch+=1;self.selected=x;self.last_report=None
         self.show(f'Modell: {x["name"]}\n\nGerätepfad: {x["path"]}\n\nSeriennummer: {x["serial"] or "Unbekannt"}\n\nGröße: {x["size"]/1e9:.1f} GB\n\nTransport: {x["bus"]}\n\nNVMe bestätigt: {"Ja" if x["nvme"] else "Nein / bei USB nicht verifiziert"}\n\nNur lesende Inventarisierung. Keine Reparatur- oder Flashbefehle.')
     def host_info(self):
+        epoch=self.inventory_epoch
         self.status.config(text="Rechneranalyse läuft ...")
         def worker():
             report={"hardware":diagnostics.hardware()}
-            self.post_ui(lambda:self.host_done(report))
+            self.post_ui(lambda:self.host_done(report,epoch))
         threading.Thread(target=worker,daemon=True).start()
-    def host_done(self,report):
+    def host_done(self,report,epoch):
+        if epoch!=self.inventory_epoch:
+            self.status.config(text="Geräteauswahl geändert; Rechnerbericht verworfen.");return
         self.last_report=report
         self.show(json.dumps(report,ensure_ascii=False,indent=2))
         self.status.config(text="Rechneranalyse erfasst (nur lesend).")
