@@ -7,11 +7,15 @@ import os
 import stat
 import hashlib
 import png_inspection
+import jpeg_inspection
 
 COPY_CHUNK=1024*1024
 MAX_EXPORTS=32
 
 def export_pngs(image_path,destination_directory,findings,cancelled=None,progress=None):
+    return export_files(image_path,destination_directory,findings,cancelled,progress)
+
+def export_files(image_path,destination_directory,findings,cancelled=None,progress=None):
     result={"mode":"offline_png_carving","source_writes_allowed":False,
             "physical_device_access":False,"exported":[],"skipped":[],"cancelled":False}
     if os.name!="posix" or not hasattr(os,"pread") or os.open not in os.supports_dir_fd:
@@ -44,21 +48,24 @@ def export_pngs(image_path,destination_directory,findings,cancelled=None,progres
                     if cancelled and cancelled():
                         result["cancelled"]=True
                         break
-                    if not isinstance(item,dict) or item.get("format")!="PNG" or item.get("validated") is not True or item.get("complete") is not True:
+                    if not isinstance(item,dict) or item.get("format") not in ("PNG","JPEG") or item.get("validated") is not True or item.get("complete") is not True:
                         result["skipped"].append({"reason":"Nicht vollständig validierter PNG-Kandidat."})
                         continue
+                    kind=item["format"]
+                    limit=png_inspection.MAX_PNG_BYTES if kind=="PNG" else jpeg_inspection.MAX_JPEG_BYTES
                     offset=item.get("offset_bytes")
                     length=item.get("length_bytes")
                     if (type(offset) is not int or type(length) is not int or offset<0
-                            or length<=0 or length>png_inspection.MAX_PNG_BYTES
+                            or length<=0 or length>limit
                             or offset+length>opened.st_size):
                         result["skipped"].append({"reason":"Ungültige Kandidatenposition oder Länge."})
                         continue
-                    fresh=png_inspection.inspect(stream,offset,opened.st_size,cancelled=cancelled)
+                    inspector=png_inspection if kind=="PNG" else jpeg_inspection
+                    fresh=inspector.inspect(stream,offset,opened.st_size,cancelled=cancelled)
                     if not fresh.get("validated") or not fresh.get("complete") or fresh.get("length_bytes")!=length:
                         result["skipped"].append({"offset_bytes":offset,"reason":"Erneute PNG-Prüfung fehlgeschlagen."})
                         continue
-                    filename=f"recovered_png_{offset:016x}.png"
+                    filename=f"recovered_{kind.lower()}_{offset:016x}.{kind.lower() if kind=='PNG' else 'jpg'}"
                     output_fd=None
                     created=False
                     try:
@@ -142,5 +149,5 @@ def export_pngs(image_path,destination_directory,findings,cancelled=None,progres
         result["error"]=str(exc)
     finally:
         if source_fd is not None:os.close(source_fd)
-    result["warning"]="Exportiert werden nur zusammenhängende PNG-Daten mit gültigen Chunk-CRC-Werten; Bilddekodierung und semantische Integrität sind nicht nachgewiesen."
+    result["warning"]="Nur zusammenhängende PNG/JPEG-Kandidaten; PNG mit Chunk-CRC, JPEG nur mit Markerprüfung. Keine Bilddekodierung oder vollständige Integritätsgarantie."
     return result
