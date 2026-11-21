@@ -280,8 +280,65 @@ ApplicationWindow {
                     }
                     onCountChanged: positionViewAtEnd()
                 }
+                Label { text: "Werkzeuge der KI"; font.bold: true; font.pixelSize: 16; color: "white" }
+                RowLayout {
+                    Layout.fillWidth: true
+                    visible: !!controller.toolDownload.name
+                    ProgressBar { Layout.fillWidth: true; from: 0; to: 100; value: controller.toolDownload.percent || 0 }
+                    Label {
+                        text: (controller.toolDownload.percent || 0) + " % · " + (controller.toolDownload.phase || "")
+                        color: "#cdd5ff"; font.pixelSize: 12
+                    }
+                }
+                ListView {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 230
+                    clip: true
+                    spacing: 4
+                    model: controller.tools
+                    delegate: Rectangle {
+                        width: ListView.view.width
+                        height: toolRow.implicitHeight + 10
+                        radius: 6
+                        color: modelData.installiert ? "#1f3a2c" : "#2a2440"
+                        RowLayout {
+                            id: toolRow
+                            anchors.left: parent.left; anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.margins: 6
+                            Label {
+                                Layout.fillWidth: true
+                                text: (modelData.installiert ? "✓ " : "○ ") + modelData.name
+                                      + (modelData.nutzerBereitgestellt ? " (selbst bereitstellen)" : "")
+                                color: modelData.installiert ? "#b8f2c8" : "#e0dcff"
+                                font.pixelSize: 12; elide: Text.ElideRight
+                                ToolTip.visible: toolHover.hovered
+                                ToolTip.text: modelData.zweck + "\n" + (modelData.installiert ? modelData.pfad : (modelData.offizielleSeite || "Keine öffentliche Quelle"))
+                                HoverHandler { id: toolHover }
+                            }
+                            Button {
+                                visible: !modelData.installiert && !modelData.nutzerBereitgestellt
+                                text: modelData.automatisch ? "Installieren" : "Seite öffnen"
+                                enabled: !controller.toolDownload.running
+                                onClicked: controller.installTool(modelData.id)
+                            }
+                            Button {
+                                visible: !modelData.installiert && (modelData.nutzerBereitgestellt || modelData.plattform.indexOf("windows") >= 0)
+                                text: "Registrieren"
+                                onClicked: { toolFileDialog.toolId = modelData.id; toolFileDialog.open() }
+                            }
+                        }
+                    }
+                }
             }
         }
+        }
+        FileDialog {
+            id: toolFileDialog
+            property string toolId: ""
+            title: "Programmdatei des Werkzeugs auswählen"
+            nameFilters: ["Programme (*.exe)", "Alle Dateien (*)"]
+            onAccepted: controller.registerTool(toolId, selectedFile.toString())
         }
         Label { text: controller.status; color: "#c6e2f2"; wrapMode: Text.WordWrap }
     }

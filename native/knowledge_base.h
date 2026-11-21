@@ -219,6 +219,15 @@ public:
         recordAction(QStringLiteral("rettung"),d,last.toVariantMap());
     }
 
+    // Learned: which bridge protocol (smartctl -d type) works for a bridge.
+    void recordBridgeProtocol(const QVariantMap &d, const QString &type) {
+        auto bridges=m_root.value("bridges").toObject();
+        auto br=bridges.value(bridgeKey(d)).toObject();
+        br["smartctlTyp"]=type;
+        bridges[bridgeKey(d)]=br;
+        m_root["bridges"]=bridges;
+        recordAction(QStringLiteral("bridge_protokoll_gelernt"),d,{{"smartctlTyp",type}});
+    }
 private:
     void save() {
         QSaveFile f(m_path);

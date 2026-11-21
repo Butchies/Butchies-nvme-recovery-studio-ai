@@ -6,6 +6,7 @@
 | `usb_storage_bridges.json` | USB-Speicher- und Bridge-Geräte (SATA/NVMe) | erzeugt aus usb.ids, GPL-2.0+/BSD-3 |
 | `usb_nvme_bridges.json` | USB-NVMe-Bridgechips und was sie durchreichen | Fachwissen, mit Vertrauensangabe |
 | `controller_families.json` | Controllerfamilien je Hersteller: Notmodus, Reparaturwege, Werkzeuge, Datenverlust, Fehlerbilder | Fachwissen, mit Vertrauensangabe |
+| `tools.json` | Werkzeuge der KI mit offiziellen Quellen, Erkennung und Nutzung (Liste: `docs/WERKZEUGE_DOWNLOADLISTE_DE.md`) | recherchiert |
 | `firmware_issues.json` | Bekannte fehlerhafte Firmwarestände und offizielle Korrekturen | recherchiert, mit Belegen |
 
 Die Dateien werden in das Programm eingebettet. Eine gleichnamige Datei in `%APPDATA%/NVMeRecoveryStudioAI/vorlagen/` hat Vorrang (Aktualisierung ohne Neubau).

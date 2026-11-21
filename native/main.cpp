@@ -21,6 +21,12 @@
 #include "rescue_imager.h"
 #include "knowledge_base.h"
 #include "controller_catalog.h"
+#include "tool_manager.h"
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QNetworkRequest>
+#include <QDesktopServices>
+#include <QUrl>
 #include <QTimer>
 #include <QTime>
 
@@ -36,6 +42,8 @@ class RecoveryController final : public QObject {
     Q_PROPERTY(QStringList aiMonitor READ aiMonitor NOTIFY aiMonitorChanged)
     Q_PROPERTY(QVariantMap knowledge READ knowledge NOTIFY aiMonitorChanged)
     Q_PROPERTY(QVariantMap catalog READ catalog CONSTANT)
+    Q_PROPERTY(QVariantList tools READ tools NOTIFY toolsChanged)
+    Q_PROPERTY(QVariantMap toolDownload READ toolDownload NOTIFY toolsChanged)
 public:
     explicit RecoveryController(QObject *parent=nullptr):QObject(parent) {
         const auto k=m_kb.summary();
@@ -46,12 +54,72 @@ public:
             .arg(c.value("vendors").toInt()).arg(c.value("devices").toInt()).arg(c.value("pciVersion").toString())
             .arg(c.value("families").toInt()).arg(c.value("firmwareIssues").toInt()).arg(c.value("bridges").toInt()));
         ai(QStringLiteral("Überwache USB-Anschlüsse: neue SSDs werden automatisch erkannt und untersucht."));
+        int installed=0;
+        for(const auto &t:m_tools.status()) if(t.toMap().value("installiert").toBool()) ++installed;
+        ai(QStringLiteral("Werkzeuge: %1 von %2 installiert/registriert. Fehlende Werkzeuge im Bereich „Werkzeuge“.")
+            .arg(installed).arg(m_tools.status().size()));
+        if(m_tools.path(QStringLiteral("smartctl")).isEmpty())
+            ai(QStringLiteral("Empfehlung: smartmontools installieren – damit liest die KI NVMe-Daten auch hinter USB-Bridges."));
+        m_toolSig=m_tools.signature();
         connect(&m_watch,&QTimer::timeout,this,&RecoveryController::checkDevices);
         m_watch.start(4000);
     }
     QStringList aiMonitor() const { return m_aiLog; }
     QVariantMap knowledge() const { return m_kb.summary(); }
     QVariantMap catalog() const { return ControllerCatalog::totals(); }
+    QVariantList tools() const { return m_tools.status(); }
+    QVariantMap toolDownload() const { return m_download; }
+    // Installs a tool: automatic download for freely distributable tools
+    // (progress in percent), otherwise opens the official page.
+    Q_INVOKABLE void installTool(const QString &id) {
+        const auto t=m_tools.tool(id);
+        if(t.isEmpty()) return;
+        m_kb.recordAction(QStringLiteral("werkzeug_installieren"),{},{{"werkzeug",id}});
+        const auto autoDl=t.value("automatischerDownload").toObject();
+        if(autoDl.isEmpty()) {
+            const QString url=t.value("offizielleSeite").toString();
+            if(url.isEmpty()) {
+                ai(QStringLiteral("%1 hat keine öffentliche Quelle. Bitte das Werkzeug selbst beschaffen und mit „Registrieren“ einbinden.").arg(t.value("name").toString()));
+                return;
+            }
+            QDesktopServices::openUrl(QUrl(url));
+            ai(QStringLiteral("Offizielle Seite für %1 geöffnet. Nach der Installation erkennt die KI das Werkzeug automatisch.").arg(t.value("name").toString()));
+            return;
+        }
+        if(m_download.value("running").toBool()) { ai(QStringLiteral("Es läuft bereits ein Download.")); return; }
+        m_download={{"id",id},{"name",t.value("name").toString()},{"percent",0},{"running",true},{"phase","Suche neueste Version …"}};
+        emit toolsChanged();
+        QNetworkRequest req(QUrl(QStringLiteral("https://api.github.com/repos/%1/releases/latest").arg(autoDl.value("githubRepo").toString())));
+        req.setHeader(QNetworkRequest::UserAgentHeader,QStringLiteral("NVMeRecoveryStudioAI"));
+        auto *reply=m_net.get(req);
+        connect(reply,&QNetworkReply::finished,this,[this,reply,autoDl,t]{
+            reply->deleteLater();
+            const auto j=QJsonDocument::fromJson(reply->readAll()).object();
+            QString url, file;
+            for(const auto &a:j.value("assets").toArray()) {
+                const auto o=a.toObject();
+                if(o.value("name").toString().endsWith(autoDl.value("assetEndung").toString())) {
+                    url=o.value("browser_download_url").toString(); file=o.value("name").toString(); break;
+                }
+            }
+            if(reply->error()!=QNetworkReply::NoError || url.isEmpty()) {
+                downloadFailed(QStringLiteral("Keine passende Version gefunden (%1). Offizielle Seite wird geöffnet.").arg(reply->errorString()),t);
+                return;
+            }
+            startDownload(QUrl(url),file,autoDl,t,j.value("tag_name").toString());
+        });
+    }
+    Q_INVOKABLE void registerTool(const QString &id, const QString &fileUrl) {
+        const QString path=fileUrl.startsWith(QStringLiteral("file:")) ? QUrl(fileUrl).toLocalFile() : fileUrl;
+        QString error;
+        if(!m_tools.registerTool(id,path,error)) { ai(QStringLiteral("Registrierung fehlgeschlagen: %1").arg(error)); return; }
+        m_kb.recordAction(QStringLiteral("werkzeug_registriert"),{},{{"werkzeug",id}});
+        ai(QStringLiteral("Werkzeug %1 registriert: %2").arg(m_tools.tool(id).value("name").toString(),QDir::toNativeSeparators(path)));
+        if(m_tools.tool(id).value("nutzerBereitgestellt").toBool())
+            ai(QStringLiteral("Hinweis: Notmodus-Werkzeuge werden nur über direkten PCIe-Anschluss und nur nach Datensicherung und ausdrücklicher Freigabe eingesetzt (Datenverlust)."));
+        m_toolSig=m_tools.signature();
+        emit toolsChanged();
+    }
     ~RecoveryController() override {
         m_cancel=true;
         if(m_worker) { m_worker->wait(); }
@@ -215,6 +283,26 @@ private:
             verified[it.key()]=it.value();
         verified["connection"]="USB";
         verified["readOnly"]=true;
+        // Windows gives no NVMe data through USB bridges: use smartctl with
+        // the bridge-specific protocol (learned, from template, or probed).
+        const QString smartctl=m_tools.path(QStringLiteral("smartctl"));
+        if(!verified.value("nvmeIdentifyAvailable").toBool() && !smartctl.isEmpty()) {
+            QStringList types;
+            const auto learnedType=m_kb.experience(verified).value("bridge").toMap().value("smartctlTyp").toString();
+            if(!learnedType.isEmpty()) types<<learnedType;
+            const auto bridgeTpl=ControllerCatalog::identify(verified).value("bridge").toMap().value("smartctlTyp").toString();
+            if(!bridgeTpl.isEmpty() && !types.contains(bridgeTpl)) types<<bridgeTpl;
+            for(const auto &t:ControllerCatalog::Catalog::instance().usbNvme.value("smartctlReihenfolgeUnbekannt").toArray())
+                if(!types.contains(t.toString())) types<<t.toString();
+            ai(QStringLiteral("Windows liefert keine NVMe-Daten über USB – KI fragt die Bridge über smartctl ab (%1).").arg(types.join(QStringLiteral(", "))));
+            const auto sm=ToolManager::querySmartctl(smartctl,verified.value("devicePath").toString(),types);
+            if(!sm.isEmpty()) {
+                for(auto it=sm.constBegin();it!=sm.constEnd();++it) verified[it.key()]=it.value();
+                verified["nvmeVerified"]=true;
+                m_kb.recordBridgeProtocol(verified,sm.value("smartctlTyp").toString());
+                ai(QStringLiteral("Bridge-Protokoll %1 funktioniert – gelernt für diese Bridge.").arg(sm.value("smartctlTyp").toString()));
+            } else ai(QStringLiteral("Bridge reicht keine NVMe-Befehle durch (alle Protokolle versucht)."));
+        }
         m_verified=verified;
         m_experience=m_kb.experience(verified);
         m_aiReport=RecoveryAgent::analyze(verified,m_experience);
@@ -233,6 +321,19 @@ private:
         for(const auto &p:m_aiReport.value("repairPaths").toList()) {
             const auto m=p.toMap();
             ai(QStringLiteral("Reparaturweg %1: %2").arg(m.value("typ").toString(),m.value("status").toString()));
+        }
+        {
+            const QString famId=m_aiReport.value("catalog").toMap().value("family").toMap().value("id").toString();
+            QVariantList recommended;
+            for(const auto &id:m_tools.forFamily(famId)) {
+                const auto t=m_tools.tool(id);
+                if(t.value("nutzerBereitgestellt").toBool()) continue;
+                if(!t.value("plattform").toArray().contains(QStringLiteral("windows"))) continue;
+                const bool inst=!m_tools.path(id).isEmpty();
+                recommended.append(QVariantMap{{"id",id},{"name",t.value("name").toString()},{"installiert",inst}});
+                if(!inst) ai(QStringLiteral("Empfohlenes Werkzeug für diese SSD: %1 – nicht installiert.").arg(t.value("name").toString()));
+            }
+            m_aiReport["recommendedTools"]=recommended;
         }
         if(m_aiReport.value("learnedFindings").toInt()>0)
             ai(QStringLiteral("Erfahrung genutzt: %1 Erkenntnisse aus früheren Fällen.").arg(m_aiReport.value("learnedFindings").toInt()));
@@ -275,7 +376,68 @@ private:
         setStatus(report.isEmpty() ? evaluation.value("summary").toString()
             : QStringLiteral("%1 Bericht: %2").arg(evaluation.value("summary").toString(),QDir::toNativeSeparators(report)));
     }
+    void downloadFailed(const QString &text, const QJsonObject &t) {
+        m_download["running"]=false; m_download["phase"]=text;
+        emit toolsChanged();
+        ai(QStringLiteral("Download %1: %2").arg(t.value("name").toString(),text));
+        const QString page=t.value("offizielleSeite").toString();
+        if(!page.isEmpty()) QDesktopServices::openUrl(QUrl(page));
+    }
+    void startDownload(const QUrl &url, const QString &file, const QJsonObject &autoDl, const QJsonObject &t, const QString &version) {
+        const QString dir=ToolManager::appDataFile(QStringLiteral("werkzeuge"));
+        QDir().mkpath(dir);
+        const QString target=QDir(dir).filePath(file);
+        m_download["phase"]=QStringLiteral("Lade %1 %2 …").arg(t.value("name").toString(),version);
+        emit toolsChanged();
+        ai(QStringLiteral("Lade %1 (%2) von der offiziellen Quelle: %3").arg(t.value("name").toString(),version,url.toString()));
+        QNetworkRequest req(url);
+        req.setHeader(QNetworkRequest::UserAgentHeader,QStringLiteral("NVMeRecoveryStudioAI"));
+        auto *reply=m_net.get(req);
+        auto *lastStep=new int(-1);
+        connect(reply,&QNetworkReply::downloadProgress,this,[this,lastStep](qint64 got,qint64 total){
+            if(total<=0) return;
+            const int percent=int(100*got/total);
+            m_download["percent"]=percent;
+            emit toolsChanged();
+            if(percent/5!=*lastStep) {
+                *lastStep=percent/5;
+                const int bars=percent/5;
+                ai(QStringLiteral("Download [%1%2] %3 %").arg(QString(bars,QChar(0x2588)),QString(20-bars,QChar(0x2591))).arg(percent));
+            }
+        });
+        connect(reply,&QNetworkReply::finished,this,[this,reply,target,autoDl,t,lastStep]{
+            delete lastStep;
+            reply->deleteLater();
+            if(reply->error()!=QNetworkReply::NoError) { downloadFailed(reply->errorString(),t); return; }
+            QSaveFile f(target);
+            if(!f.open(QIODevice::WriteOnly) || f.write(reply->readAll())<0 || !f.commit()) { downloadFailed(QStringLiteral("Datei kann nicht gespeichert werden."),t); return; }
+            m_download["phase"]=QStringLiteral("Installiere …");
+            m_download["percent"]=100;
+            emit toolsChanged();
+            QStringList args;
+            for(const auto &a:autoDl.value("stilleInstallation").toArray()) args<<a.toString();
+            auto *proc=new QProcess(this);
+            connect(proc,&QProcess::finished,this,[this,proc,t](int code,QProcess::ExitStatus){
+                proc->deleteLater();
+                m_download["running"]=false;
+                const bool ok=!m_tools.path(t.value("id").toString()).isEmpty();
+                m_download["phase"]=ok ? QStringLiteral("Installiert") : QStringLiteral("Installation nicht bestätigt (Code %1)").arg(code);
+                m_toolSig=m_tools.signature();
+                emit toolsChanged();
+                ai(ok ? QStringLiteral("%1 installiert – die KI nutzt es ab sofort automatisch.").arg(t.value("name").toString())
+                      : QStringLiteral("%1: Installation nicht bestätigt. Bitte Installer prüfen.").arg(t.value("name").toString()));
+                m_kb.recordAction(QStringLiteral("werkzeug_installiert"),{},{{"werkzeug",t.value("id").toString()},{"erfolg",ok}});
+            });
+            proc->start(target,args);
+        });
+    }
     void checkDevices() {
+        const QString toolSig=m_tools.signature();
+        if(toolSig!=m_toolSig) {
+            m_toolSig=toolSig;
+            emit toolsChanged();
+            ai(QStringLiteral("Werkzeugänderung erkannt – die KI berücksichtigt neue Werkzeuge ab der nächsten Diagnose."));
+        }
         if(m_worker) return;
         const QString sig=UsbBridge::usbDiskSignature();
         if(sig==m_signature) return;
@@ -338,6 +500,7 @@ signals:
     void recoveryChanged();
     void recoveryLogChanged();
     void aiMonitorChanged();
+    void toolsChanged();
 private:
     void setStatus(const QString &text){m_status=text;emit statusChanged();}
     QVariantList m_devices;
@@ -354,6 +517,10 @@ private:
     QStringList m_aiLog;
     QTimer m_watch;
     QString m_signature;
+    ToolManager::Manager m_tools;
+    QNetworkAccessManager m_net;
+    QVariantMap m_download;
+    QString m_toolSig;
     QString m_status=QStringLiteral("Bereit. Keine Schreibzugriffe auf SSDs.");
 };
 int main(int argc,char *argv[]) {

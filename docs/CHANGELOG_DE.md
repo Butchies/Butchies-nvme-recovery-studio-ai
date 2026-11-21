@@ -1,5 +1,13 @@
 # Änderungsprotokoll
 
+## 2026-11-21 – Werkzeug-Manager und Downloadliste
+- `data/catalog/tools.json` und `docs/WERKZEUGE_DOWNLOADLISTE_DE.md`: smartmontools, nvme-cli, GNU ddrescue, Samsung Magician, WD/SanDisk Dashboard, Crucial Storage Executive, Kingston SSD Manager, SK hynix Drive Manager, Solidigm Storage Tool, KIOXIA SSD Utility, Seagate SeaTools – jeweils mit offizieller Quelle; Notmodus-MPTools (Phison, SMI, Realtek, Maxio) als vom Nutzer bereitzustellende Werkzeuge.
+- `native/tool_manager.h`: Erkennung installierter Werkzeuge, Registrierung eigener Werkzeuge, smartctl-Abfrage.
+- smartmontools wird vom Programm selbst von der offiziellen GitHub-Release-Seite geladen und still installiert (Fortschritt in Prozent, Ladebalken alle 5 % im KI-Live-Monitor); übrige Werkzeuge öffnen die offizielle Seite, die Installation wird automatisch erkannt.
+- Diagnose nutzt smartctl automatisch, wenn Windows über USB keine NVMe-Daten liefert; die KI lernt je Bridge das funktionierende Protokoll (sntjmicron/sntasmedia/sntrealtek).
+- KI empfiehlt je Controllerfamilie die passenden Herstellerwerkzeuge.
+- Nicht gebaut und nicht auf Hardware getestet.
+
 ## 2026-11-21 – Controller-Vorlagen aller Hersteller
 - `data/catalog/`: 121 Hersteller und 835 NVMe-Controller/-Produkte aus pci.ids (Stand 21.11.2026) inkl. Produkt-Zuordnungen, 223 USB-Speicher-/Bridge-Einträge aus usb.ids, Fachwissen zu 14 Controllerfamilien (Phison, Silicon Motion, Realtek, Maxio, InnoGrit, Samsung, WD/SanDisk, Kioxia, SK hynix/Solidigm, Micron/Crucial, Intel, Marvell, weitere), USB-NVMe-Bridges und belegte Firmwarefehler (Samsung 980 PRO/990 PRO, WD/SanDisk HMB 24H2).
 - `tools/generate_catalog.py`: Vorlagen jederzeit aus den aktuellen Datenbanken neu erzeugen.
