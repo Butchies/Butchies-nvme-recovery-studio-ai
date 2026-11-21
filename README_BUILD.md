@@ -1,4 +1,4 @@
-# NVMe Recovery Studio AI – Entwicklungsstand 0.9.0 (GitHub)
+# NVMe Recovery Studio AI – Entwicklungsstand 0.10.0 (GitHub)
 
 ## Tatsächlich vorhandene Funktionen
 - Grafische Desktopoberfläche und lesende Laufwerksinventarisierung.
@@ -11,7 +11,7 @@
 - Rechneranalyse mit Betriebssystem-, CPU- und optionalen PCI/USB-Informationen.
 - Linux-NVMe-Diagnose mit `nvme-cli`: SMART, Controller-Identify und Fehlerlog als JSON, sofern Berechtigungen und Gerätezugriff vorhanden sind.
 - Lokale SQLite-Fallakten: speichern, auflisten und öffnen.
-- JSON-Export inklusive vorhandener Diagnosedaten, wahlweise mit Ausblendung von Seriennummern und Gerätepfaden.
+- JSON-Export mit optionaler konservativer Anonymisierung: bekannte Kennungen und rohe Freitext-/Identifikationsdaten werden ausgeblendet. Vollständige Anonymität ist nicht garantiert.
 - Regelbasierte Offline-Auswertung von NVMe-SMART-Werten mit Belegen und Unsicherheiten.
 - Vergleich gespeicherter und aktueller SMART-Messwerte nur bei übereinstimmender Geräteidentität.
 
@@ -37,3 +37,7 @@ Der GitHub-Actions-Workflow `Windows Installer` ist für PyInstaller und Inno Se
 ## Firmwarekatalog (nur Recherche)
 Beispielstruktur: `{"schema":1,"entries":[{"sha256":"<64 Hexzeichen>","pci_vendor_id":"1234","pci_device_id":"abcd","model":"Beispiel","firmware_revision":"1.0","source":"Herstellerquelle dokumentieren"}]}`.
 Ein Hash-Treffer im selbst bereitgestellten Katalog bestätigt weder Echtheit noch Controller-Kompatibilität. Kein automatischer Download und kein Flash.
+
+## Wartung 0.10.0
+- SQLite-Verbindungen nach Fallaktenoperationen ausdrücklich schließen; Fehler beim Öffnen und Speichern in der Oberfläche anzeigen.
+- Datenschutzwarnung und restriktivere Ausblendung im anonymisierten JSON-Export.
