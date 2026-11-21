@@ -1,6 +1,7 @@
 """Local SQLite case history; never opens a block device for writing."""
 import json
 import sqlite3
+from contextlib import closing
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -24,16 +25,16 @@ def connect():
     return conn
 
 def save(title, device_path, snapshot):
-    with connect() as conn:
+    with closing(connect()) as conn, conn:
         cursor=conn.execute("INSERT INTO cases(created,title,device_path,snapshot) VALUES (?,?,?,?)",
              (datetime.now(timezone.utc).isoformat(),title,device_path,json.dumps(snapshot,ensure_ascii=False)))
         return cursor.lastrowid
 
 def recent(limit=50):
-    with connect() as conn:
+    with closing(connect()) as conn:
         return conn.execute("SELECT id,created,title,device_path FROM cases ORDER BY id DESC LIMIT ?",(limit,)).fetchall()
 
 def load(case_id):
-    with connect() as conn:
+    with closing(connect()) as conn:
         row=conn.execute("SELECT snapshot FROM cases WHERE id=?",(case_id,)).fetchone()
     return json.loads(row[0]) if row else None
