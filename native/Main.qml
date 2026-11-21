@@ -42,7 +42,7 @@ ApplicationWindow {
                     model: controller.devices
                     clip: true
                     delegate: Rectangle {
-                        width: ListView.view.width; height: 100
+                        width: ListView.view.width; height: 122
                         color: index%2 ? "#1c2939" : "#243346"
                         radius: 6
                         MouseArea {
@@ -57,6 +57,7 @@ ApplicationWindow {
                                 text: "USB · VID " + modelData.bridgeVendorId + " · PID " + modelData.bridgeProductId
                                 color: "#a5bed3"
                             }
+                            Label { text: "Geräterevision: " + modelData.bridgeFirmware; color: "#a5bed3" }
                             Label {
                                 text: "NVMe-Passthrough: " + modelData.nvmePassthrough + " · Nur lesend"
                                 color: "#a5bed3"
