@@ -107,10 +107,21 @@ class App(tk.Tk):
             messagebox.showinfo("Abbild planen","Zuerst einen Datenträger auswählen.");return
         destination=filedialog.askdirectory(title="Zielverzeichnis für spätere Datensicherung auswählen")
         if not destination:return
-        result=imaging_plan.plan(dict(self.selected),destination)
-        self.last_report={"device":dict(self.selected),"imaging_plan":result}
+        device=dict(self.selected)
+        self.status.config(text="Ziel-Mount und Speicherkapazität werden lesend geprüft ...")
+        def worker():
+            try:
+                result=imaging_plan.plan(device,destination)
+            except (OSError,ValueError) as exc:
+                result={"error":str(exc),"ready_to_image":False,"device_writes_allowed":False}
+            self.after(0,lambda:self.plan_image_done(device,result))
+        threading.Thread(target=worker,daemon=True).start()
+    def plan_image_done(self,device,result):
+        if not self.selected or self.selected.get("path")!=device.get("path"):
+            self.status.config(text="Geräteauswahl geändert; Abbildplanung verworfen.");return
+        self.last_report={"device":device,"imaging_plan":result}
         self.show(json.dumps(self.last_report,ensure_ascii=False,indent=2))
-        self.status.config(text="Kapazitätsplanung abgeschlossen. Kein Datenträger geöffnet, kein Abbild erstellt.")
+        self.status.config(text="Abbildplanung beendet. Kein Gerät geöffnet, kein Abbild erstellt.")
     def triage_plan(self):
         if not self.last_report:
             messagebox.showinfo("Recovery-Leitfaden","Zuerst eine Diagnose oder Schutzprüfung durchführen.");return
