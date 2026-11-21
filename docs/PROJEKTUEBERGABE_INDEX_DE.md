@@ -33,6 +33,9 @@
 - `docs/RECHNER_HARDWARE_PROFIL_VERGLEICH_ENTWURF_DE.md` – Rechnerprofile und Anschlussvergleiche.
 
 ## Diagnose, Firmware und Recovery
+- `docs/KI_FIRMWARE_LABOR_FREIGABESTUFEN_ENTWURF_DE.md` – Stufen und Freigaben des experimentellen KI-Firmwarelabors.
+- `docs/GERAETE_SCHUTZREGELN_EDITIONSGRENZEN_ENTWURF_DE.md` – verbindliche Geräte- und Editionsgrenzen für Windows und Linux.
+- `docs/KI_DIAGNOSE_ZIELE_GRENZEN_ENTWURF_DE.md` – KI-Diagnosefähigkeiten, Belege und klare Aussagegrenzen.
 - `docs/NAND_FTL_ECC_DIAGNOSEGRENZEN_ENTWURF_DE.md` – NAND, FTL, ECC und Grenzen der Controllerdiagnose.
 - `docs/USB_BRIDGE_VS_SSD_FIRMWARE_ENTWURF_DE.md` – getrennte Firmware- und Fehlerbewertung für USB-Bridge und SSD.
 - `docs/RETTUNGSQUALITAET_DATEISYSTEM_BEWERTUNG_ENTWURF_DE.md` – Qualität, Lesbarkeit und Integrität geretteter Daten.
