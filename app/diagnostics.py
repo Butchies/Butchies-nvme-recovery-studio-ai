@@ -32,6 +32,7 @@ def hardware():
 def nvme_report(device):
     """Linux only. Reject partitions, USB targets and arbitrary paths."""
     if not sys.platform.startswith("linux"): return {"error":"NVMe-Rohdiagnose nur unter Linux"}
+    if not isinstance(device,dict): return {"error":"Ungültige Geräteauswahl"}
     path=str(device.get("path",""))
     if device.get("bus")!="PCIe/NVMe" or not re.fullmatch(r"/dev/nvme[0-9]+n[0-9]+",path):
         return {"error":"Nur eindeutig identifizierte direkte NVMe-Namespaces"}
@@ -40,10 +41,14 @@ def nvme_report(device):
     check=run(["lsblk","-J","-b","-d","-o","NAME,SERIAL,MODEL,SIZE,TRAN,TYPE,PATH"])
     try: rows=json.loads(check["stdout"]).get("blockdevices",[]) if check["ok"] else []
     except (ValueError,TypeError): rows=[]
-    matches=[x for x in rows if x.get("path")==path and x.get("type")=="disk" and str(x.get("name","")).startswith("nvme")]
+    matches=[x for x in rows if isinstance(x,dict) and x.get("path")==path and x.get("type")=="disk" and str(x.get("name","")).startswith("nvme")]
     if len(matches)!=1: return {"error":"Gerät nicht mehr eindeutig vorhanden"}
     current=matches[0]
-    if str(current.get("serial") or "").strip()!=str(device.get("serial") or "").strip() or int(current.get("size") or 0)!=int(device.get("size") or 0):
+    try: same_size=int(current.get("size") or 0)==int(device.get("size") or 0)>0
+    except (ValueError,TypeError,OverflowError): same_size=False
+    if (not str(device.get("serial") or "").strip() or
+        str(current.get("serial") or "").strip()!=str(device.get("serial") or "").strip() or
+        not same_size or str(current.get("tran") or "").lower()=="usb"):
         return {"error":"Geräteidentität seit Auswahl verändert"}
     result={"device":path,"timestamp":datetime.now(timezone.utc).isoformat()}
     for key,args in {
