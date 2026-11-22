@@ -24,7 +24,7 @@ namespace FirmwareManager {
 constexpr qint64 MaxImageBytes=64LL*1024*1024;
 
 inline QVariantMap prepare(const QVariantMap &device, const QVariantMap &report, const QString &file,
-                           const QVariantMap &experience, bool userConfirmsNoBackupNeeded) {
+                           const QVariantMap &experience, bool userConfirmsNoBackupNeeded, bool expert=false) {
     QVariantMap plan;
     QVariantList checks;
     bool allowed=true;
@@ -65,10 +65,11 @@ inline QVariantMap prepare(const QVariantMap &device, const QVariantMap &report,
 
     const auto last=experience.value("device").toMap().value("letzteRettung").toMap();
     const bool backup=last.value("status").toString()==QStringLiteral("abgeschlossen");
-    check(QStringLiteral("Datensicherung"),backup || userConfirmsNoBackupNeeded,
+    check(QStringLiteral("Datensicherung"),backup || userConfirmsNoBackupNeeded || expert,
           backup ? QStringLiteral("Rettungsabbild vom %1 (%2 %)").arg(last.value("zeit").toString()).arg(last.value("prozent").toDouble(),0,'f',2)
                  : (userConfirmsNoBackupNeeded ? QStringLiteral("Vom Benutzer bestätigt: Daten werden nicht benötigt")
-                                               : QStringLiteral("Zuerst Rettungsabbild erstellen oder bestätigen, dass die Daten nicht benötigt werden")));
+                                               : (expert ? QStringLiteral("Expertenmodus: keine Sicherung verlangt – Daten können verloren gehen")
+                                                         : QStringLiteral("Zuerst Rettungsabbild erstellen oder bestätigen, dass die Daten nicht benötigt werden"))),!expert);
     if(device.value("severity").toString()==QStringLiteral("Kritisch") || report.value("severity").toString()==QStringLiteral("Kritisch"))
         check(QStringLiteral("Zustand"),true,QStringLiteral("SSD ist kritisch: Ein Firmware-Update repariert keinen Flash-Verschleiß und kann einen geschwächten Controller endgültig ausfallen lassen."),false);
 
@@ -84,7 +85,8 @@ inline QVariantMap prepare(const QVariantMap &device, const QVariantMap &report,
     plan["file"]=file;
     plan["controllerPath"]=device.value("controllerPath");
     const QString serial=device.value("nvmeControllerSerial").toString();
-    plan["approvalCode"]=serial.right(4).toUpper();
+    plan["approvalCode"]=expert ? QString() : serial.right(4).toUpper();
+    plan["expert"]=expert;
     plan["checks"]=checks;
     plan["allowed"]=allowed;
     plan["risks"]=QVariantList{
@@ -94,7 +96,8 @@ inline QVariantMap prepare(const QVariantMap &device, const QVariantMap &report,
         immediate ? QStringLiteral("Aktivierung sofort ohne Neustart (vom Controller unterstützt).")
                   : QStringLiteral("Aktivierung durch Controller-Reset direkt nach der Übertragung.")};
     plan["summary"]=allowed
-        ? QStringLiteral("Alle Pflichtprüfungen bestanden. Zum Flashen den Bestätigungscode eingeben (letzte 4 Zeichen der Seriennummer).")
+        ? (expert ? QStringLiteral("Expertenmodus: Alle technischen Prüfungen bestanden – Flashen ohne Bestätigungscode möglich.")
+                  : QStringLiteral("Alle Pflichtprüfungen bestanden. Zum Flashen den Bestätigungscode eingeben (letzte 4 Zeichen der Seriennummer)."))
         : QStringLiteral("Flashen gesperrt: mindestens eine Pflichtprüfung ist nicht erfüllt.");
     return plan;
 }
@@ -105,7 +108,7 @@ inline QVariantMap execute(const QVariantMap &plan, const QVariantMap &device, c
     QVariantMap r;
     r["ok"]=false;
     if(!plan.value("allowed").toBool()) { r["message"]=QStringLiteral("Prüfungen nicht bestanden."); return r; }
-    if(typedCode.trimmed().toUpper()!=plan.value("approvalCode").toString() || plan.value("approvalCode").toString().isEmpty()) {
+    if(!plan.value("expert").toBool() && (typedCode.trimmed().toUpper()!=plan.value("approvalCode").toString() || plan.value("approvalCode").toString().isEmpty())) {
         r["message"]=QStringLiteral("Bestätigungscode stimmt nicht – nichts wurde geschrieben."); return r;
     }
 #ifdef Q_OS_WIN

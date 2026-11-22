@@ -25,6 +25,7 @@
 #include "linux_nvme.h"
 #include "firmware_manager.h"
 #include "stick_writer.h"
+#include "case_model.h"
 #include <QSet>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -61,6 +62,8 @@ public:
         ai(QStringLiteral("Vorlagen geladen: %1 Hersteller, %2 NVMe-Controller/-Produkte (pci.ids %3), %4 Controllerfamilien, %5 bekannte Firmwarefehler, %6 USB-Bridges.")
             .arg(c.value("vendors").toInt()).arg(c.value("devices").toInt()).arg(c.value("pciVersion").toString())
             .arg(c.value("families").toInt()).arg(c.value("firmwareIssues").toInt()).arg(c.value("bridges").toInt()));
+        ai(QStringLiteral("Lernende KI geladen: %1 gelernte Fälle, %2 Rettungen als Vergleich.").arg(m_model.trainedCases()).arg(m_model.rescueCases()));
+        if(linuxEdition()) ai(QStringLiteral("Expertenmodus (Linux-Boot-Edition): keine Rückfragen, kein Bestätigungscode, keine Sicherungspflicht. Nur Boot-Stick und Quelle=Ziel bleiben gesperrt."));
         ai(QStringLiteral("Überwache USB-Anschlüsse: neue SSDs werden automatisch erkannt und untersucht."));
         int installed=0;
         for(const auto &t:m_tools.status()) if(t.toMap().value("installiert").toBool()) ++installed;
@@ -169,13 +172,26 @@ public:
         return true;
 #endif
     }
+    // The user confirms the real cause of the last diagnosed SSD: strongest training signal.
+    Q_INVOKABLE void confirmCause(const QString &cause) {
+        if(m_features.empty() || !CaseModel::causes().contains(cause)) return;
+        m_model.learn(m_features,cause,1.0);
+        m_kb.recordAction(QStringLiteral("ursache_bestaetigt"),m_verified,{{"ursache",cause}});
+        ai(QStringLiteral("Gelernt: Ursache „%1“ bestätigt (%2 gelernte Fälle).").arg(CaseModel::causeText(cause)).arg(m_model.trainedCases()));
+        const auto pred=m_model.predict(m_features);
+        m_aiReport["kiModell"]=pred;
+        emit aiReportChanged();
+    }
+    Q_INVOKABLE QVariantList causeOptions() const {
+        QVariantList l; for(const auto &c:CaseModel::causes()) l.append(QVariantMap{{"id",c},{"text",CaseModel::causeText(c)}}); return l;
+    }
     // Step 1: check everything, write nothing.
     Q_INVOKABLE void prepareFirmware(int index, const QString &fileUrl, bool noBackupNeeded) {
         if(m_worker || m_fwWorker) { ai(QStringLiteral("Firmware-Prüfung nicht möglich, solange eine Rettung oder ein Flashvorgang läuft.")); return; }
         if(!diagnose(index)) return;
         const QString file=fileUrl.startsWith(QStringLiteral("file:")) ? QUrl(fileUrl).toLocalFile() : fileUrl;
         m_fwDevice=m_verified;
-        m_fwPlan=FirmwareManager::prepare(m_verified,m_aiReport,file,m_experience,noBackupNeeded);
+        m_fwPlan=FirmwareManager::prepare(m_verified,m_aiReport,file,m_experience,noBackupNeeded,linuxEdition());
         m_fwProgress.clear();
         emit firmwareChanged();
         ai(QStringLiteral("Firmware-Manager prüft %1 für %2:").arg(QFileInfo(file).fileName(),m_verified.value("nvmeControllerModel").toString()));
@@ -190,7 +206,7 @@ public:
     // Step 2: only with the approval code.
     Q_INVOKABLE void flashFirmware(const QString &code) {
         if(m_fwWorker || m_worker || !m_fwPlan.value("allowed").toBool()) return;
-        if(code.trimmed().toUpper()!=m_fwPlan.value("approvalCode").toString()) {
+        if(!m_fwPlan.value("expert").toBool() && code.trimmed().toUpper()!=m_fwPlan.value("approvalCode").toString()) {
             ai(QStringLiteral("Bestätigungscode falsch – es wurde nichts geschrieben."));
             return;
         }
@@ -396,7 +412,23 @@ public:
     Q_INVOKABLE void startAutoRecovery(int index, const QString &destination) {
         if(m_worker || m_fwWorker) { setStatus(QStringLiteral("Es läuft bereits eine Rettung oder ein Flashvorgang.")); return; }
         if(!diagnose(index)) return;
-        const QVariantMap plan=RecoveryAgent::planRescue(m_aiReport,m_experience);
+        QVariantMap plan=RecoveryAgent::planRescue(m_aiReport,m_experience);
+        {
+            const auto sug=m_model.suggestRescue(m_features);
+            if(plan.value("allowed").toBool() && !sug.isEmpty()) {
+                for(const auto &k:{"chunkBytes","readTimeoutMs","retryPasses","maxConsecutiveTimeouts"}) plan[QString::fromLatin1(k)]=sug.value(QString::fromLatin1(k));
+                auto d=plan.value("decisions").toList();
+                d.append(QStringLiteral("KI-Modell: übernimmt die Einstellungen der ähnlichsten erfolgreichen Rettung (%1 % ähnlich, %2).")
+                    .arg(qRound(sug.value("aehnlichkeit").toDouble()*100)).arg(sug.value("zeit").toString()));
+                plan["decisions"]=d;
+            }
+            if(linuxEdition() && plan.value("allowed").toBool()) {
+                plan["maxConsecutiveTimeouts"]=20;
+                auto d=plan.value("decisions").toList();
+                d.append(QStringLiteral("Expertenmodus: Rettung pausiert nicht bei Zeitüberschreitungen (bis 20 in Folge)."));
+                plan["decisions"]=d;
+            }
+        }
         if(!plan.value("allowed").toBool()) {
             setStatus(plan.value("reason").toString()); return;
         }
@@ -520,6 +552,14 @@ private:
             }
             m_aiReport["recommendedTools"]=recommended;
         }
+        {
+            m_features=CaseModel::features(verified,m_aiReport,m_experience);
+            const auto pred=m_model.predict(m_features);
+            m_aiReport["kiModell"]=pred;
+            ai(QStringLiteral("KI-Modell: wahrscheinlichste Ursache „%1“ (%2 %)%3")
+                .arg(pred.value("text").toString()).arg(qRound(pred.value("wahrscheinlichkeit").toDouble()*100))
+                .arg(pred.value("gruende").toStringList().isEmpty() ? QString() : QStringLiteral(" – wegen: ")+pred.value("gruende").toStringList().join(QStringLiteral(", "))));
+        }
         if(m_aiReport.value("learnedFindings").toInt()>0)
             ai(QStringLiteral("Erfahrung genutzt: %1 Erkenntnisse aus früheren Fällen.").arg(m_aiReport.value("learnedFindings").toInt()));
         emit aiReportChanged();
@@ -548,6 +588,14 @@ private:
             m_verified,m_aiReport,m_plan,result,evaluation);
         m_result["reportPath"]=QDir::toNativeSeparators(report);
         m_kb.recordRescue(m_verified,m_plan,result);
+        m_model.rememberRescue(m_features,m_plan,result);
+        {
+            const QString cause=CaseModel::Model::causeFromRescue(result,m_aiReport);
+            if(!cause.isEmpty()) {
+                m_model.learn(m_features,cause,0.5);
+                ai(QStringLiteral("KI-Modell gelernt: Ergebnis spricht für „%1“ (jetzt %2 gelernte Fälle).").arg(CaseModel::causeText(cause)).arg(m_model.trainedCases()));
+            }
+        }
         ai(QStringLiteral("Ergebnis: %1").arg(evaluation.value("summary").toString()));
         for(const auto &n:evaluation.value("nextSteps").toList()) ai(QStringLiteral("Empfehlung: %1").arg(n.toString()));
         {
@@ -712,6 +760,8 @@ private:
     QNetworkAccessManager m_net;
     QVariantMap m_download;
     QString m_toolSig;
+    CaseModel::Model m_model;
+    std::vector<double> m_features;
     QThread *m_fwWorker=nullptr;
     QVariantMap m_fwPlan;
     QVariantMap m_fwProgress;

@@ -153,6 +153,21 @@ ApplicationWindow {
                     Label { Layout.fillWidth: true; text: "• " + modelData; color: "#b5d0e6"; wrapMode: Text.WordWrap }
                 }
                 Label {
+                    visible: !!controller.aiReport.kiModell
+                    Layout.fillWidth: true; wrapMode: Text.WordWrap
+                    text: controller.aiReport.kiModell
+                          ? "KI-Modell: " + controller.aiReport.kiModell.text + " (" + Math.round(controller.aiReport.kiModell.wahrscheinlichkeit * 100) + " %)"
+                            + (controller.aiReport.kiModell.gruende.length ? " – wegen: " + controller.aiReport.kiModell.gruende.join(", ") : "")
+                          : ""
+                    font.bold: true; color: "#ffe8a3"
+                }
+                RowLayout {
+                    visible: !!controller.aiReport.kiModell
+                    Label { text: "Tatsächliche Ursache bestätigen:"; color: "#c6e2f2" }
+                    ComboBox { id: causeBox; model: controller.causeOptions(); textRole: "text"; valueRole: "id"; implicitWidth: 360 }
+                    Button { text: "Bestätigen – KI lernt"; onClicked: controller.confirmCause(causeBox.currentValue) }
+                }
+                Label {
                     visible: (controller.aiReport.repairPaths || []).length > 0
                     text: "Reparaturwege (Vorlage: " + ((controller.aiReport.catalog && controller.aiReport.catalog.family) ? controller.aiReport.catalog.family.hersteller : "allgemein") + ")"
                     font.bold: true; color: "white"
@@ -398,13 +413,14 @@ ApplicationWindow {
                     Layout.fillWidth: true
                     TextField {
                         id: approvalField
+                        visible: !!controller.firmwarePlan.approvalCode
                         Layout.fillWidth: true
                         enabled: !!controller.firmwarePlan.allowed && !controller.firmwareProgress.running
                         placeholderText: "Bestätigungscode: letzte 4 Zeichen der Seriennummer"
                     }
                     Button {
                         text: "Jetzt flashen"
-                        enabled: !!controller.firmwarePlan.allowed && !controller.firmwareProgress.running && approvalField.text.length === 4
+                        enabled: !!controller.firmwarePlan.allowed && !controller.firmwareProgress.running && (!!controller.firmwarePlan.expert || approvalField.text.length === 4)
                         onClicked: controller.flashFirmware(approvalField.text)
                     }
                 }

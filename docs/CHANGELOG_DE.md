@@ -1,5 +1,12 @@
 # Änderungsprotokoll
 
+## 2026-11-22 – Kleine lernende KI und Expertenmodus
+- `native/case_model.h`: lernendes Ursachenmodell (logistische Regression, 31 Merkmale, 6 Ursachen: gesund, Flash-Verschleiß, Firmwarefehler, Bridge-Problem, Notmodus, Controllerausfall), startet mit Regelwissen und lernt aus jeder Rettung und jeder bestätigten Ursache; begründet jede Vorhersage. Rettungs-Tuner übernimmt Einstellungen der ähnlichsten erfolgreichen Rettung. Kein Sprachmodell, keine Grafikkarte nötig.
+- Oberfläche: Vorhersage im Diagnosebereich, „Tatsächliche Ursache bestätigen – KI lernt“.
+- Expertenmodus Linux-Boot-Edition: Firmware ohne Bestätigungscode und ohne Sicherungspflicht, Rettung pausiert nicht bei Zeitüberschreitungen. Gesperrt bleiben nur der laufende Boot-Stick und Ziel = Quelle.
+- Windows unverändert: nur externe USB-SSDs.
+- Nicht gebaut und nicht auf Hardware getestet.
+
 ## 2026-11-21 – Linux-Boot-Edition, Firmware-Manager, Boot-Stick
 - `native/platform_io.h`: Rettungs-Ein-/Ausgabe für Windows und Linux (O_DIRECT + Kernel-AIO mit Zeitlimit); Zielprüfung unter Linux inkl. LVM/LUKS/RAID-Auflösung und Sperre für RAM-Dateisysteme des Live-Systems.
 - `native/linux_nvme.h`: PCIe-/NVMe-Erkennung über sysfs, Notmodus-Verdacht, Schutz von Boot-Stick und Systemlaufwerken, NVMe-Admin-Befehle (Identify, SMART, Fehlerprotokoll, Firmware-Slots).
