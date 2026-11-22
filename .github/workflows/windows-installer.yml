@@ -1,32 +1,61 @@
-name: Windows Installer
+name: Windows-Installer
+
 on:
+  push:
+    branches: [main]
+    tags: ['v*']
   workflow_dispatch:
+
+permissions:
+  contents: write
+
 jobs:
-  installer:
-    runs-on: windows-2022
+  build:
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+
+      - name: "[ 5 %] Qt 6 installieren"
+        uses: jurplel/install-qt-action@v4
         with:
-          python-version: '3.12'
-          architecture: x64
-      - name: Install builder
-        run: python -m pip install -r requirements-build.txt
-      - name: Build Windows executable
-        run: pyinstaller --noconfirm --clean --onefile --windowed --name NVMeRecoveryStudioAI app/main.py
-      - name: Build setup installer
-        shell: pwsh
-        run: '& "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" NVMeRecoveryStudioAI.iss'
-      - name: Enforce 250 MB installer limit
+          version: '6.8.*'
+          arch: win64_msvc2022_64
+          cache: true
+
+      - name: "[25 %] Visual Studio vorbereiten"
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: "[35 %] Konfigurieren"
+        run: cmake -S native -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+
+      - name: "[60 %] Kompilieren"
+        run: cmake --build build --config Release
+
+      - name: "[75 %] Qt-Laufzeit einsammeln"
         shell: pwsh
         run: |
-          $items = @(Get-ChildItem installer -Filter *.exe)
-          if ($items.Count -ne 1) { throw "Exactly one installer EXE is required." }
-          $limit = 250MB
-          if ($items[0].Length -gt $limit) { throw "Installer exceeds 250 MB. Approval required before distribution." }
-          Write-Host "Installer size: $($items[0].Length) bytes"
-      - uses: actions/upload-artifact@v4
+          New-Item -ItemType Directory -Force dist | Out-Null
+          Copy-Item build\nvme-recovery-studio.exe dist\
+          windeployqt --release --qmldir native --no-translations --compiler-runtime dist\nvme-recovery-studio.exe
+
+      - name: "[85 %] Installer bauen"
+        shell: pwsh
+        run: |
+          $ver = "0.5.$env:GITHUB_RUN_NUMBER"
+          if ($env:GITHUB_REF -like 'refs/tags/v*') { $ver = $env:GITHUB_REF_NAME.TrimStart('v') }
+          "VER=$ver" | Out-File -Append $env:GITHUB_ENV
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DMyAppVersion=$ver" installer\NVMeRecoveryStudioAI.iss
+
+      - name: "[95 %] Installer hochladen"
+        uses: actions/upload-artifact@v4
         with:
-          name: NVMeRecoveryStudioAI-Windows-Installer
-          path: installer/*.exe
-          if-no-files-found: error
+          name: NVMeRecoveryStudioAI_Setup_${{ env.VER }}_x64
+          path: out/*.exe
+
+      - name: "[100 %] Release veröffentlichen"
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || format('build-{0}', env.VER) }}
+          name: NVMe Recovery Studio AI ${{ env.VER }}
+          prerelease: ${{ !startsWith(github.ref, 'refs/tags/') }}
+          files: out/*.exe
