@@ -1,5 +1,8 @@
 # Änderungsprotokoll
 
+## 2026-11-22 – Nullfüll-Test nach erfolgreicher Reparatur
+- Pflichtschritt nach jeder erfolgreichen Reparatur: SSD komplett mit 0 beschreiben bis voll, danach alles zurücklesen und prüfen (Fortschritt in Prozent, Liste fehlerhafter Bereiche). Erst wenn er besteht, gilt die SSD als repariert; sonst „Speicherchips defekt“.
+
 ## 2026-11-22 – Reparaturkette und Übersetzung der Controller-Meldungen
 - `data/catalog/nvme_codes.json`: 45 NVMe-Statuscodes (allgemein, befehlsspezifisch, Flash/Datenintegrität, Verbindung), CSTS-Bits und Sonderwerte (z. B. 0xffffffff = SSD vom PCIe-Bus verschwunden), SMART-Warnbits, Selbsttest-Ergebnisse, 12 Linux-Kernelmeldungen (controller is down, Device not ready, I/O timeout, capacity change to 0, AER …) – jeweils mit verständlicher Übersetzung und Bedeutung.
 - `native/error_translator.h`: „Was der Controller meldet“ – Fehlerprotokoll (bis 16 Einträge inkl. LBA), SMART-Warnungen und Kernelmeldungen zum Gerät, übersetzt, mit Schweregrad; Merkmale für die KI.

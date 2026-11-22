@@ -89,6 +89,41 @@ inline QVariantMap surfaceTest(const QString &dev, bool full, std::atomic_bool &
     return r;
 }
 
+// Zero-fill test: writes zeros over the whole capacity until full, then reads
+// everything back and checks every byte is zero. Tests all flash chips.
+inline QVariantMap zeroFillTest(const QString &dev, std::atomic_bool &cancel, const Progress &progress) {
+    QVariantMap r;
+    const int fd=::open(QFile::encodeName(dev).constData(),O_RDWR|O_DIRECT|O_CLOEXEC);
+    if(fd<0) { r["ok"]=false; r["fehler"]=QStringLiteral("%1 nicht beschreibbar").arg(dev); return r; }
+    unsigned long long size=0; ioctl(fd,BLKGETSIZE64,&size);
+    const quint64 chunk=8ULL<<20;
+    auto *buf=static_cast<unsigned char*>(PlatformIO::allocAligned(chunk,4096));
+    quint64 writeErr=0, readErr=0, badChunks=0; QVariantList badAreas; int last=-1;
+    for(int pass=0;pass<2 && !cancel.load();++pass) {
+        for(quint64 off=0;off<size && !cancel.load();off+=chunk) {
+            const quint64 len=qMin(chunk,size-off);
+            if(pass==0) { memset(buf,0,len); if(pwrite(fd,buf,len,off_t(off))!=ssize_t(len)) ++writeErr; }
+            else {
+                if(pread(fd,buf,len,off_t(off))!=ssize_t(len)) { ++readErr; if(badAreas.size()<100) badAreas.append(QStringLiteral("Lesefehler ab Byte %1").arg(off)); continue; }
+                bool zero=true; for(quint64 i=0;i<len;++i) if(buf[i]) { zero=false; break; }
+                if(!zero) { ++badChunks; if(badAreas.size()<100) badAreas.append(QStringLiteral("Nicht null ab Byte %1 (8 MiB-Block)").arg(off)); }
+            }
+            const int pct=int((pass*size+off+len)*100/(2*size));
+            if(pct!=last) { last=pct; progress(pct,pass==0 ? QStringLiteral("Nullfüll-Test: beschreibe SSD bis voll …") : QStringLiteral("Nullfüll-Test: prüfe alle Bereiche …")); }
+        }
+        if(pass==0) fdatasync(fd);
+    }
+    ::close(fd);
+    PlatformIO::freeAligned(buf);
+    r["ok"]=!cancel.load() && writeErr==0 && readErr==0 && badChunks==0;
+    r["kapazitaetGiB"]=size/1073741824.0;
+    r["schreibfehler"]=QString::number(writeErr);
+    r["lesefehler"]=QString::number(readErr);
+    r["fehlerhafteBloecke"]=QString::number(badChunks);
+    r["fehlerbereiche"]=badAreas;
+    return r;
+}
+
 // Quick health check after a step.
 inline QVariantMap check(const QVariantMap &d, std::atomic_bool &cancel, const Progress &progress) {
     QVariantMap r;
@@ -245,13 +280,25 @@ done:
         step(QStringLiteral("Abschluss-Oberflächentest"),QStringLiteral("%1 GiB, %2 abweichende Blöcke, %3 I/O-Fehler").arg(s.value("getestetGiB").toDouble(),0,'f',1)
              .arg(s.value("abweichendeBloecke").toString(),s.value("ioFehler").toString()),s.value("ok").toBool());
         result["ok"]=s.value("ok").toBool();
+        // Mandatory after a successful repair: fill the whole SSD with zeros and verify.
+        if(result.value("ok").toBool() && !cancel.load()) {
+            log(QStringLiteral("Nullfüll-Test: SSD wird komplett mit 0 beschrieben und vollständig geprüft …"));
+            const auto z=zeroFillTest(d.value("devicePath").toString(),cancel,progress);
+            result["nullfuelltest"]=z;
+            step(QStringLiteral("Nullfüll-Test (Speicherchips)"),QStringLiteral("%1 GiB: %2 Schreibfehler, %3 Lesefehler, %4 fehlerhafte Blöcke")
+                 .arg(z.value("kapazitaetGiB").toDouble(),0,'f',1).arg(z.value("schreibfehler").toString(),z.value("lesefehler").toString(),z.value("fehlerhafteBloecke").toString()),
+                 z.value("ok").toBool());
+            result["ok"]=z.value("ok").toBool();
+            if(!z.value("ok").toBool()) result["naechsterWeg"]=QStringLiteral("speicherchips_defekt");
+        }
     } else result["ok"]=false;
     result["schritte"]=steps;
     result["controllerMeldungen"]=ErrorTranslator::report(d);
     result["message"]=result.value("ok").toBool()
         ? QStringLiteral("REPARIERT durch „%1“ – SSD arbeitet wieder einwandfrei.").arg(result.value("repariertDurch").toString())
         : (cancel.load() ? QStringLiteral("Abgebrochen.") : QStringLiteral("Nicht per Software reparierbar. Nächster Weg: %1.").arg(
-              result.value("naechsterWeg").toString()==QStringLiteral("notmodus_hersteller_werkzeug") ? QStringLiteral("Herstellerwerkzeug (MPTool) für den Notmodus oder Labor")
+              result.value("naechsterWeg").toString()==QStringLiteral("speicherchips_defekt") ? QStringLiteral("Controller läuft wieder, aber der Nullfüll-Test fand defekte Speicherbereiche – Speicherchips beschädigt, SSD nicht mehr verlässlich")
+            : result.value("naechsterWeg").toString()==QStringLiteral("notmodus_hersteller_werkzeug") ? QStringLiteral("Herstellerwerkzeug (MPTool) für den Notmodus oder Labor")
                                                                                                      : QStringLiteral("Herstellerwerkzeug oder Labor; Flash/Controller vermutlich defekt")));
     return result;
 #endif
