@@ -409,7 +409,7 @@ ApplicationWindow {
                                             var c = getContext("2d"); c.reset(); c.lineWidth = 14; c.lineCap = "round"
                                             c.strokeStyle = "#f4eef6"; c.beginPath(); c.arc(66, 66, 56, 0, 2 * Math.PI); c.stroke()
                                             var g = c.createLinearGradient(0, 0, 132, 132); g.addColorStop(0, "#e9c46a"); g.addColorStop(0.5, "#c084fc"); g.addColorStop(1, "#f472b6")
-                                            c.strokeStyle = parent.parent.lvl === "bad" ? col : g; c.beginPath(); c.arc(66, 66, 56, -Math.PI / 2, -Math.PI / 2 + 2 * Math.PI * val / 100); c.stroke()
+                                            c.strokeStyle = parent.lvl === "bad" ? col : g; c.beginPath(); c.arc(66, 66, 56, -Math.PI / 2, -Math.PI / 2 + 2 * Math.PI * val / 100); c.stroke()
                                         }
                                     }
                                     ColumnLayout {
