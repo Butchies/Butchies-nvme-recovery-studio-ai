@@ -17,15 +17,15 @@ ApplicationWindow {
     // ---------------------------------------------------------------- Theme
     QtObject {
         id: theme
-        readonly property color bg: "#fbf8fc"
+        readonly property color bg: "#f5f8fc"
         readonly property color card: "#ffffff"
-        readonly property color line: "#f1e6f3"
+        readonly property color line: "#e5ebf3"
         readonly property color text: "#1f2937"
         readonly property color strong: "#0f172a"
         readonly property color muted: "#667085"
-        readonly property color accent: "#ec4899"
-        readonly property color accentSoft: "#f6eefe"
-        readonly property color accentText: "#7c3aed"
+        readonly property color accent: "#2563eb"
+        readonly property color accentSoft: "#e8f0fe"
+        readonly property color accentText: "#1d4ed8"
         readonly property color good: "#22c55e"
         readonly property color goodSoft: "#e8f8ef"
         readonly property color goodText: "#15803d"
@@ -35,9 +35,9 @@ ApplicationWindow {
         readonly property color bad: "#ef4444"
         readonly property color badSoft: "#fdeeee"
         readonly property color badText: "#c0262d"
-        readonly property color gold: "#d4a017"
-        readonly property color goldText: "#b8860b"
-        readonly property color accent2: "#a855f7"
+        readonly property color gold: "#2563eb"
+        readonly property color goldText: "#2563eb"
+        readonly property color accent2: "#3b82f6"
         readonly property string mono: Qt.platform.os === "windows" ? "Consolas" : "DejaVu Sans Mono"
     }
     font.family: Qt.fontFamilies().indexOf("Inter") >= 0 ? "Inter" : (Qt.platform.os === "windows" ? "Segoe UI Variable Text" : "DejaVu Sans")
@@ -221,7 +221,7 @@ ApplicationWindow {
     header: Rectangle {
         height: 64; color: "#ffffff"
         Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 2
-            gradient: Gradient { orientation: Gradient.Horizontal; GradientStop { position: 0; color: "#d4a017" } GradientStop { position: 0.5; color: "#c084fc" } GradientStop { position: 1; color: "#f472b6" } } }
+            gradient: Gradient { orientation: Gradient.Horizontal; GradientStop { position: 0; color: "#60a5fa" } GradientStop { position: 1; color: "#1d4ed8" } } }
         RowLayout {
             anchors.fill: parent; anchors.leftMargin: 24; anchors.rightMargin: 24; spacing: 16
             Image { source: "icons/logo.svg"; sourceSize: Qt.size(38, 38) }
@@ -286,7 +286,7 @@ ApplicationWindow {
                         background: Rectangle {
                             radius: 10; color: window.page === modelData.page ? theme.accentSoft : (parent.hovered ? "#f5f7fa" : "transparent")
                             gradient: window.page === modelData.page ? navGrad : null
-                            Gradient { id: navGrad; orientation: Gradient.Horizontal; GradientStop { position: 0; color: "#f3e8ff" } GradientStop { position: 1; color: "#fde7f1" } }
+                            Gradient { id: navGrad; orientation: Gradient.Horizontal; GradientStop { position: 0; color: "#e8f0fe" } GradientStop { position: 1; color: "#f5f8ff" } }
                         }
                         contentItem: RowLayout {
                             spacing: 10
@@ -407,8 +407,8 @@ ApplicationWindow {
                                         onValChanged: requestPaint(); onColChanged: requestPaint()
                                         onPaint: {
                                             var c = getContext("2d"); c.reset(); c.lineWidth = 14; c.lineCap = "round"
-                                            c.strokeStyle = "#f4eef6"; c.beginPath(); c.arc(66, 66, 56, 0, 2 * Math.PI); c.stroke()
-                                            var g = c.createLinearGradient(0, 0, 132, 132); g.addColorStop(0, "#e9c46a"); g.addColorStop(0.5, "#c084fc"); g.addColorStop(1, "#f472b6")
+                                            c.strokeStyle = "#eef2f7"; c.beginPath(); c.arc(66, 66, 56, 0, 2 * Math.PI); c.stroke()
+                                            var g = c.createLinearGradient(0, 0, 132, 132); g.addColorStop(0, "#60a5fa"); g.addColorStop(1, "#1d4ed8")
                                             c.strokeStyle = parent.lvl === "bad" ? col : g; c.beginPath(); c.arc(66, 66, 56, -Math.PI / 2, -Math.PI / 2 + 2 * Math.PI * val / 100); c.stroke()
                                         }
                                     }
@@ -838,7 +838,7 @@ ApplicationWindow {
                                     Label { text: modelData.text; Layout.fillWidth: true; elide: Text.ElideRight; font.pixelSize: 13 }
                                     Label { text: Math.round(modelData.wahrscheinlichkeit * 100) + " %"; font.bold: true; font.pixelSize: 13 } }
                                 Progress { Layout.fillWidth: true; implicitHeight: 8; value: modelData.wahrscheinlichkeit * 100
-                                           barColor: index === 0 ? (modelData.ursache === "gesund" ? theme.good : "#db2777") : (index === 1 ? theme.warn : theme.accent2) }
+                                           barColor: index === 0 ? (modelData.ursache === "gesund" ? theme.good : "#ef4444") : (index === 1 ? theme.warn : theme.accent2) }
                             }
                         }
                         Label { visible: window.report.kiModell && window.report.kiModell.gruende.length > 0; Layout.fillWidth: true; wrapMode: Text.WordWrap; color: theme.muted; font.pixelSize: 12
@@ -892,7 +892,7 @@ ApplicationWindow {
         property bool userLogo: userLogoImg.status === Image.Ready
         Rectangle {
             anchors.fill: parent; opacity: 0.9
-            gradient: Gradient { GradientStop { position: 0; color: "#ffffff" } GradientStop { position: 0.6; color: "#fdf2f8" } GradientStop { position: 1; color: "#fbf3dc" } }
+            gradient: Gradient { GradientStop { position: 0; color: "#ffffff" } GradientStop { position: 1; color: "#e8f0fe" } }
         }
         // 1) Butchies
         Item {
@@ -910,17 +910,16 @@ ApplicationWindow {
             id: product; anchors.centerIn: parent; spacing: 22; opacity: 0
             Item {
                 width: 160; height: 160; anchors.horizontalCenter: parent.horizontalCenter
-                Rectangle { id: glow; anchors.centerIn: parent; width: 160; height: 160; radius: 80; color: "#f472b6"; opacity: 0; scale: 0.6
-                    border.width: 18; border.color: "#f5c542" }
+                Rectangle { id: glow; anchors.centerIn: parent; width: 160; height: 160; radius: 80; color: "#3b82f6"; opacity: 0; scale: 0.6 }
                 Image { id: appLogo; anchors.centerIn: parent; source: "icons/logo.svg"; sourceSize: Qt.size(150, 150); scale: 0.4; rotation: -20 }
             }
             Label { id: title; anchors.horizontalCenter: parent.horizontalCenter; text: "NVMe Recovery Studio AI"; font.pixelSize: 34; font.bold: true; color: theme.accentText; opacity: 0 }
             Label { id: sub; anchors.horizontalCenter: parent.horizontalCenter; color: theme.muted; font.pixelSize: 15; opacity: 0
                     text: controller.linuxEdition ? "Linux-Boot-Edition · KI startet …" : "Windows-Edition · KI startet …" }
             Rectangle {
-                id: loadBar; anchors.horizontalCenter: parent.horizontalCenter; width: 240; height: 4; radius: 2; color: "#f1e6f3"; opacity: 0
+                id: loadBar; anchors.horizontalCenter: parent.horizontalCenter; width: 240; height: 4; radius: 2; color: "#e5ebf3"; opacity: 0
                 Rectangle { id: loadFill; width: 0; height: 4; radius: 2
-                    gradient: Gradient { orientation: Gradient.Horizontal; GradientStop { position: 0; color: "#d4a017" } GradientStop { position: 0.5; color: "#a855f7" } GradientStop { position: 1; color: "#ec4899" } } }
+                    gradient: Gradient { orientation: Gradient.Horizontal; GradientStop { position: 0; color: "#60a5fa" } GradientStop { position: 1; color: "#1d4ed8" } } }
             }
         }
         SequentialAnimation {

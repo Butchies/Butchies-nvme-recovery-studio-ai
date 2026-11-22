@@ -1,5 +1,9 @@
 # Änderungsprotokoll
 
+## 22.11.2026 – Blau-Weiß
+- Alles wieder Blau-Weiß: Programm, Startanimation, Logo, Installer.
+- Build macht echte Bildschirmfotos der Oberfläche (Artefakt „bildschirmfotos“).
+
 ## 22.11.2026 – Design Gold · Weiß · Lila · Rosa
 - Farben Gold/Weiß/Lila/Rosa für Programm, Startanimation und Installer; Logo D in Lila-Rosa mit goldenem Funken; neues Installer-Seitenbild „by Butchies“.
 

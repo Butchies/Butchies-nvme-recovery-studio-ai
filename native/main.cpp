@@ -38,6 +38,7 @@
 #include <QDesktopServices>
 #include <QUrl>
 #include <QTimer>
+#include <QQuickWindow>
 #include <QTime>
 
 class RecoveryController final : public QObject {
@@ -1192,6 +1193,13 @@ int main(int argc,char *argv[]) {
     engine.loadFromModule("RecoveryStudio","Main");
     if(engine.rootObjects().isEmpty()) return -1;
     controller.refresh();
+    // Nur für den automatischen Build: echtes Bildschirmfoto der Oberfläche speichern.
+    if(qEnvironmentVariableIsSet("NVME_SCREENSHOT")) {
+        QTimer::singleShot(qEnvironmentVariableIntValue("NVME_SCREENSHOT_DELAY") > 0 ? qEnvironmentVariableIntValue("NVME_SCREENSHOT_DELAY") : 7000,&app,[&engine,&app]{
+            if(auto *w=qobject_cast<QQuickWindow*>(engine.rootObjects().first())) w->grabWindow().save(qEnvironmentVariable("NVME_SCREENSHOT"));
+            app.quit();
+        });
+    }
     return app.exec();
 }
 #include "main.moc"

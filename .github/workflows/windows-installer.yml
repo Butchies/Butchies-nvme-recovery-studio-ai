@@ -38,6 +38,26 @@ jobs:
           Copy-Item build\nvme-recovery-studio.exe dist\
           windeployqt --release --qmldir native --no-translations --compiler-runtime dist\nvme-recovery-studio.exe
 
+      - name: "[80 %] Echte Bildschirmfotos der Oberfläche"
+        shell: pwsh
+        continue-on-error: true
+        run: |
+          New-Item -ItemType Directory -Force shots | Out-Null
+          $env:QT_FORCE_STDERR_LOGGING = "1"
+          foreach ($s in @(@{n="start";d=1800},@{n="programm";d=7000})) {
+            $env:NVME_SCREENSHOT = "$PWD\shots\$($s.n).png"; $env:NVME_SCREENSHOT_DELAY = "$($s.d)"
+            $p = Start-Process dist\nvme-recovery-studio.exe -PassThru -RedirectStandardError "shots\$($s.n)-log.txt"
+            if (-not $p.WaitForExit(30000)) { $p.Kill() }
+          }
+          Get-ChildItem shots
+          Get-Content shots\programm-log.txt -ErrorAction SilentlyContinue | Select-Object -First 40
+
+      - name: "[82 %] Bildschirmfotos hochladen"
+        uses: actions/upload-artifact@v4
+        with:
+          name: bildschirmfotos
+          path: shots/
+
       - name: "[85 %] Installer bauen"
         shell: pwsh
         run: |
