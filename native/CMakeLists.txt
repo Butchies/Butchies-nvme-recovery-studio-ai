@@ -10,6 +10,9 @@ qt_add_qml_module(nvme-recovery-studio URI RecoveryStudio VERSION 1.0
     QML_FILES Main.qml
     RESOURCES
         icons/logo.svg
+        fonts/Inter-Regular.otf
+        fonts/Inter-SemiBold.otf
+        fonts/Inter-Bold.otf
         icons/box-amber.svg
         icons/box-blue.svg
         icons/box-green.svg

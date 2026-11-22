@@ -40,7 +40,7 @@ ApplicationWindow {
         readonly property color accent2: "#3b82f6"
         readonly property string mono: Qt.platform.os === "windows" ? "Consolas" : "DejaVu Sans Mono"
     }
-    font.family: Qt.fontFamilies().indexOf("Inter") >= 0 ? "Inter" : (Qt.platform.os === "windows" ? "Segoe UI Variable Text" : "DejaVu Sans")
+    font.family: interRegular.status === FontLoader.Ready ? interRegular.name : "Segoe UI"
     font.pixelSize: 14
     palette.window: theme.bg
     palette.base: "#ffffff"
@@ -75,6 +75,10 @@ ApplicationWindow {
         if (!controller.linuxEdition) p = p.replace(/^\//, "").replace(/\//g, "\\")
         return p
     }
+
+    FontLoader { id: interRegular; source: "fonts/Inter-Regular.otf" }
+    FontLoader { source: "fonts/Inter-SemiBold.otf" }
+    FontLoader { source: "fonts/Inter-Bold.otf" }
 
     // ------------------------------------------------- Reusable components
     component Card: Rectangle {
@@ -291,7 +295,7 @@ ApplicationWindow {
                         contentItem: RowLayout {
                             spacing: 10
                             Image { source: window.icon(modelData.icon, window.page === modelData.page ? "blue" : "grey"); sourceSize: Qt.size(18, 18) }
-                            Label { text: modelData.name; font.bold: window.page === modelData.page; color: window.page === modelData.page ? theme.accentText : "#475467" }
+                            Label { text: modelData.name; Layout.fillWidth: true; horizontalAlignment: Text.AlignLeft; font.bold: window.page === modelData.page; color: window.page === modelData.page ? theme.accentText : "#475467" }
                         }
                         onClicked: window.page = modelData.page
                     }
@@ -841,7 +845,7 @@ ApplicationWindow {
                                            barColor: index === 0 ? (modelData.ursache === "gesund" ? theme.good : "#ef4444") : (index === 1 ? theme.warn : theme.accent2) }
                             }
                         }
-                        Label { visible: window.report.kiModell && window.report.kiModell.gruende.length > 0; Layout.fillWidth: true; wrapMode: Text.WordWrap; color: theme.muted; font.pixelSize: 12
+                        Label { visible: !!window.report.kiModell && window.report.kiModell.gruende.length > 0; Layout.fillWidth: true; wrapMode: Text.WordWrap; color: theme.muted; font.pixelSize: 12
                                 text: window.report.kiModell ? "Gründe: " + window.report.kiModell.gruende.join(", ") : "" }
                         ComboBox { id: causeBox; Layout.fillWidth: true; model: controller.causeOptions(); textRole: "text"; valueRole: "id" }
                         ActionButton { Layout.fillWidth: true; text: "Ursache bestätigen – KI lernt"; onClicked: controller.confirmCause(causeBox.currentValue) }
