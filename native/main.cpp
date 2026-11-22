@@ -66,6 +66,12 @@ public:
     explicit RecoveryController(QObject *parent=nullptr):QObject(parent) {
         const QString seeded=FirmwareArchive::seedFromStick();
         if(!seeded.isEmpty()) ai(seeded);
+        // Archiv hält sich selbst aktuell: 20 s nach dem Start, danach stündlich prüfen
+        // (lädt höchstens alle 24 h), sobald Internet (LAN/WLAN) da ist.
+        QTimer::singleShot(20000,this,[this]{ autoArchive(); });
+        m_archiveTimer.setInterval(60*60*1000);
+        connect(&m_archiveTimer,&QTimer::timeout,this,[this]{ autoArchive(); });
+        m_archiveTimer.start();
         const auto k=m_kb.summary();
         ai(QStringLiteral("KI-Agent aktiv. Wissensbasis: %1 Einträge, %2 Geräte, %3 USB-Bridges, %4 Controller-Modelle.")
             .arg(k.value("cases").toInt()).arg(k.value("devices").toInt()).arg(k.value("bridges").toInt()).arg(k.value("controllers").toInt()));
@@ -889,9 +895,9 @@ public:
         for(const auto &v:sources) {
             const auto q=v.toObject();
             const QString art=q.value("art").toString();
-            if(art!=QStringLiteral("wd-dashboard") && art!=QStringLiteral("samsung-iso")) continue;
             ++m_archivePending;
-            auto *r=m_net.get(archiveRequest(QUrl(q.value("liste").toString())));
+            const QString listUrl=q.value("liste").toString().isEmpty() ? q.value("seite").toString() : q.value("liste").toString();
+            auto *r=m_net.get(archiveRequest(QUrl(listUrl)));
             connect(r,&QNetworkReply::finished,this,[this,r,q,art]{
                 r->deleteLater();
                 const QString body=QString::fromUtf8(r->readAll());
@@ -910,6 +916,29 @@ public:
                             {"basis",base+QStringLiteral("firmware/")+key+QLatin1Char('/')},{"modell",m.captured(1)},{"version",m.captured(2)},{"hersteller",q.value("hersteller").toString()}});
                         ++found;
                     }
+                } else if(art!=QStringLiteral("samsung-iso")) {
+                    // Herstellerseite nach direkten Firmware-Links durchsuchen.
+                    const QUrl pageUrl=r->url();
+                    QRegularExpression re(QStringLiteral("href\\s*=\\s*[\"']([^\"'#]+?\\.(?:iso|bin|fw|fluf|zip|ufw|img|rom|enc))(?:\\?[^\"']*)?[\"'][^>]*>([^<]{0,120})"),QRegularExpression::CaseInsensitiveOption);
+                    QSet<QString> seen;
+                    for(auto it=re.globalMatch(body);it.hasNext();) {
+                        const auto m=it.next();
+                        const QString url=pageUrl.resolved(QUrl(m.captured(1))).toString();
+                        const QString name=QUrl(url).fileName();
+                        const QString text=m.captured(2).trimmed();
+                        const QString hay=(name+QLatin1Char(' ')+text+QLatin1Char(' ')+url).toLower();
+                        if(!hay.contains(QStringLiteral("firm")) && !hay.contains(QStringLiteral("fw")) && !name.endsWith(QStringLiteral(".iso"),Qt::CaseInsensitive)) continue;
+                        if(hay.contains(QStringLiteral("manual")) || hay.contains(QStringLiteral("driver")) || hay.contains(QStringLiteral("toolbox"))) continue;
+                        if(seen.contains(url) || FirmwareArchive::hasSource(entries,url)) continue;
+                        seen.insert(url);
+                        QString model=text.isEmpty() ? QFileInfo(name).completeBaseName() : text;
+                        model.replace(QLatin1Char('_'),QLatin1Char(' '));
+                        const QString ver=QRegularExpression(QStringLiteral("([A-Z0-9]{4,}\\d[A-Z0-9]*)$")).match(QFileInfo(name).completeBaseName().toUpper()).captured(1);
+                        m_archiveQueue.append(QVariantMap{{"art","datei"},{"url",url},{"hersteller",q.value("hersteller").toString()},{"modell",model},
+                            {"version",ver.isEmpty() ? QFileInfo(name).completeBaseName() : ver},
+                            {"dateiart",name.endsWith(QStringLiteral(".iso"),Qt::CaseInsensitive) ? QStringLiteral("iso") : (name.endsWith(QStringLiteral(".zip"),Qt::CaseInsensitive) ? QStringLiteral("zip") : QStringLiteral("nvme-bild"))}});
+                        ++found;
+                    }
                 } else {
                     QRegularExpression re(QStringLiteral("https?://[^\"'\\s<>]+?\\.iso"));
                     QSet<QString> seen;
@@ -924,7 +953,9 @@ public:
                         ++found;
                     }
                 }
-                ai(QStringLiteral("Firmware-Archiv: %1 – %2 Firmwarestände gefunden.").arg(q.value("hersteller").toString()).arg(found));
+                ai(QStringLiteral("Firmware-Archiv: %1 – %2 neue Firmwarestände gefunden.").arg(q.value("hersteller").toString()).arg(found));
+                m_vendorResult[q.value("hersteller").toString()]=r->error()!=QNetworkReply::NoError ? QStringLiteral("Server nicht erreichbar")
+                    : (found>0 ? QStringLiteral("%1 neu").arg(found) : QStringLiteral("aktuell"));
                 if(--m_archivePending==0) { m_archiveTotal=m_archiveQueue.size(); archiveNext(); }
             });
         }
@@ -945,7 +976,14 @@ public:
     }
     Q_INVOKABLE QVariantList firmwareVendors() const {
         QVariantList out;
-        for(const auto &v:ToolManager::loadJson(QStringLiteral("firmware_sources.json")).value("quellen").toArray()) out.append(v.toObject().toVariantMap());
+        const auto entries=FirmwareArchive::load();
+        for(const auto &v:ToolManager::loadJson(QStringLiteral("firmware_sources.json")).value("quellen").toArray()) {
+            auto m=v.toObject().toVariantMap();
+            int files=0; for(const auto &e:entries) if(e.toObject().value("hersteller").toString()==m.value("hersteller").toString()) ++files;
+            m["dateien"]=files;
+            m["status"]=m_vendorResult.value(m.value("hersteller").toString(),files ? QStringLiteral("im Archiv") : QStringLiteral("noch nicht geprüft"));
+            out.append(m);
+        }
         return out;
     }
     Q_INVOKABLE void openUrl(const QString &url) { QDesktopServices::openUrl(QUrl(url)); }
@@ -1005,6 +1043,31 @@ private:
     QThread *m_repairWorker=nullptr;
     QVariantMap m_repair;
     QVariantMap m_archiveRun;
+    QVariantMap m_vendorResult;
+    QTimer m_archiveTimer;
+    void autoArchive() {
+        if(m_archiveRun.value("laeuft").toBool()) return;
+        const auto st=FirmwareArchive::stats();
+        const QDateTime last=QDateTime::fromString(st.value("stand").toString(),Qt::ISODate);
+        bool toolsMissing=false;
+        for(const auto &t:m_tools.status()) if(!t.toMap().value("installiert").toBool() && t.toMap().value("automatisch").toBool()) toolsMissing=true;
+        if(last.isValid() && last.secsTo(QDateTime::currentDateTime())<24*3600 && st.value("dateien").toInt()>0 && !toolsMissing) return;
+        auto *r=m_net.head(archiveRequest(QUrl(QStringLiteral("https://wddashboarddownloads.wdc.com/"))));
+        connect(r,&QNetworkReply::finished,this,[this,r]{
+            r->deleteLater();
+            const auto e=r->error();
+            if(e==QNetworkReply::HostNotFoundError || e==QNetworkReply::TimeoutError || e==QNetworkReply::UnknownNetworkError
+               || e==QNetworkReply::ConnectionRefusedError || e==QNetworkReply::TemporaryNetworkFailureError || e==QNetworkReply::NetworkSessionFailedError) return;
+            ai(QStringLiteral("Internet erkannt – Firmware-Archiv und Werkzeuge werden automatisch aktualisiert."));
+            fillArchive();
+            // Fehlende, automatisch ladbare Werkzeuge gleich mitholen (eins pro Durchgang).
+            if(!m_download.value("running").toBool())
+                for(const auto &t:m_tools.status()) {
+                    const auto m=t.toMap();
+                    if(!m.value("installiert").toBool() && m.value("automatisch").toBool()) { installTool(m.value("id").toString()); break; }
+                }
+        });
+    }
     QVariantList m_archiveQueue;
     int m_archivePending=0, m_archiveTotal=0, m_archiveDone=0, m_archiveNew=0, m_archiveStep=-1;
     QNetworkRequest archiveRequest(const QUrl &u) const {
@@ -1022,6 +1085,7 @@ private:
         if(p/5!=m_archiveStep) { m_archiveStep=p/5; ai(QStringLiteral("Firmware-Archiv [%1%2] %3 %").arg(QString(p/5,QChar(0x2588)),QString(20-p/5,QChar(0x2591))).arg(p)); }
     }
     void archiveFinish(const QString &msg) {
+        FirmwareArchive::save(FirmwareArchive::load());   // Zeitstempel „stand“ aktualisieren
         m_archiveRun={{"laeuft",false},{"prozent",100},{"phase",msg}};
         emit archiveChanged(); ai(QStringLiteral("Firmware-Archiv: ")+msg);
     }

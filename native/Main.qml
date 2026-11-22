@@ -611,10 +611,10 @@ ApplicationWindow {
                                 Pill { text: (controller.archive.dateien || 0) + " Dateien · " + (controller.archive.megabyte || 0) + " MB"; level: (controller.archive.dateien || 0) > 0 ? "good" : "grey" }
                             }
                             Label { Layout.fillWidth: true; wrapMode: Text.WordWrap; color: theme.muted
-                                    text: "Einmal mit Internet füllen – danach funktioniert alles offline. Beim Erstellen des Linux-Boot-Sticks kommen Archiv, Werkzeuge und KI-Wissen automatisch mit auf den Stick (Partition NVMEDATEN)." + (controller.archive.stand ? " Stand: " + controller.archive.stand.substring(0, 10) : "") }
+                                    text: "Läuft von allein: Sobald Internet da ist (LAN oder WLAN), lädt die KI neue Firmware und fehlende Werkzeuge selbst nach – beim Start und danach täglich. Ohne Internet wird das Archiv offline genutzt. Beim Erstellen des Linux-Boot-Sticks kommen Archiv, Werkzeuge und KI-Wissen automatisch mit auf den Stick (Partition NVMEDATEN)." + (controller.archive.stand ? " Stand: " + controller.archive.stand.substring(0, 10) : "") }
                             Flow {
                                 Layout.fillWidth: true; spacing: 8
-                                ActionButton { text: controller.archive.laeuft ? "Läuft …" : "Archiv füllen / aktualisieren"; primary: true; iconName: "refresh"; enabled: !controller.archive.laeuft; onClicked: controller.fillArchive() }
+                                ActionButton { text: controller.archive.laeuft ? "Aktualisiert …" : "Jetzt aktualisieren"; primary: true; iconName: "refresh"; enabled: !controller.archive.laeuft; onClicked: controller.fillArchive() }
                                 ActionButton { text: "Anhalten"; visible: !!controller.archive.laeuft; onClicked: controller.cancelArchive() }
                                 ActionButton { text: "Ordner / Stick übernehmen"; iconName: "folder"; onClicked: archiveImportDialog.open() }
                                 ActionButton { text: "Archiv exportieren"; iconName: "usb"; onClicked: archiveExportDialog.open() }
@@ -628,7 +628,7 @@ ApplicationWindow {
                             Label { Layout.fillWidth: true; wrapMode: Text.WordWrap; visible: !controller.archive.laeuft && !!controller.archive.phase; text: controller.archive.phase || ""; color: theme.goodText }
                             Label { text: "Passend für die gewählte SSD"; font.bold: true; visible: window.hasDevice; Layout.topMargin: 4 }
                             Label { visible: window.hasDevice && controller.archiveMatches.length === 0; Layout.fillWidth: true; wrapMode: Text.WordWrap; color: theme.muted
-                                    text: "Für dieses Modell liegt noch nichts im Archiv. Archiv füllen oder die Datei von der Herstellerseite laden und mit „Ordner / Stick übernehmen“ zuordnen." }
+                                    text: "Für dieses Modell liegt noch keine Firmware im Archiv. Die KI sucht bei der nächsten Aktualisierung automatisch danach." }
                             Repeater {
                                 model: controller.archiveMatches
                                 Rectangle {
@@ -658,14 +658,15 @@ ApplicationWindow {
                             Layout.fillWidth: true
                             Heading { text: "Firmware-Quellen der Hersteller"; iconName: "box" }
                             Label { Layout.fillWidth: true; wrapMode: Text.WordWrap; color: theme.muted
-                                    text: "„automatisch“ lädt die KI selbst ins Archiv. Bei den übrigen öffnet sich die offizielle Downloadseite; die geladene Datei danach mit „Ordner / Stick übernehmen“ der SSD zuordnen." }
+                                    text: "Die KI durchsucht alle Herstellerseiten selbstständig nach Firmware. Anbieter, die ihre Dateien nur in eigenen Programmen ausliefern, werden trotzdem bei jeder Aktualisierung neu geprüft." }
                             Repeater {
                                 model: controller.firmwareVendors()
                                 RowLayout {
                                     Layout.fillWidth: true; spacing: 10
                                     Label { text: modelData.hersteller; font.bold: true; Layout.preferredWidth: 200; elide: Text.ElideRight }
                                     Label { text: modelData.modelle; color: theme.muted; Layout.fillWidth: true; elide: Text.ElideRight; font.pixelSize: 12 }
-                                    Pill { text: modelData.art === "manuell" ? "manuell" : "automatisch"; level: modelData.art === "manuell" ? "grey" : "good" }
+                                    Label { text: modelData.dateien + " Dateien"; color: theme.muted; font.pixelSize: 12 }
+                                    Pill { text: modelData.status; level: modelData.dateien > 0 ? "good" : (modelData.status === "Server nicht erreichbar" ? "warn" : "grey") }
                                     ToolButton { text: "Seite"; onClicked: controller.openUrl(modelData.seite) }
                                 }
                             }
@@ -739,7 +740,7 @@ ApplicationWindow {
                                 Label { id: offl; anchors.fill: parent; anchors.margins: 10; wrapMode: Text.WordWrap; color: theme.accentText; textFormat: Text.StyledText
                                         text: "<b>Offline-Paket kommt mit auf den Stick:</b> " + (controller.archive.dateien || 0) + " Firmwaredateien (" + (controller.archive.megabyte || 0) + " MB), "
                                               + controller.tools.filter(function (t) { return t.installiert }).length + " Werkzeuge und das KI-Wissen – in der Partition NVMEDATEN. Am Rechner mit der defekten SSD wird kein Internet gebraucht."
-                                              + ((controller.archive.dateien || 0) === 0 ? " Tipp: vorher unter „Firmware“ das Archiv füllen." : "") }
+                                              + ((controller.archive.dateien || 0) === 0 ? " Das Archiv füllt sich automatisch, sobald dieser PC Internet hat." : "") }
                             }
                             RowLayout {
                                 Layout.fillWidth: true
