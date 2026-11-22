@@ -1,5 +1,8 @@
 # Änderungsprotokoll
 
+## 22.11.2026 – Startanimation
+- Startanimation: Butchies-Logo, dann Programmlogo mit Leuchtimpuls, Titel und Ladebalken (ca. 3,6 s, Klick überspringt). Eigenes Logo als native/icons/butchies.png.
+
 ## 22.11.2026 – Neues Logo und verfeinertes Design
 - Logo D (M.2 mit KI-Funke) für Programm, Taskleiste und Installer.
 - Indigo-Farben, weiche Schatten, Hauptknopf mit Verlauf, Kacheln mit Füllbalken, Diagnose mit farbigem Seitenstreifen, Firmware aus dem Archiv direkt in der Diagnose, Archiv-Stand unten links.
