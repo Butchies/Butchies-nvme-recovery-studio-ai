@@ -109,9 +109,10 @@ inline QVariantMap zeroFillTest(const QString &dev, std::atomic_bool &cancel, co
     QElapsedTimer timer; timer.start();
     for(int pass=0;pass<2 && !cancel.load();++pass) {
         std::vector<std::thread> pool;
+        std::atomic<int> finished{0};
         for(int t=0;t<threads;++t) pool.emplace_back([&,t,pass]{
             const int fd=::open(QFile::encodeName(dev).constData(),O_RDWR|O_DIRECT|O_CLOEXEC);
-            if(fd<0) { writeErr++; return; }
+            if(fd<0) { writeErr++; finished++; return; }
             auto *buf=static_cast<unsigned char*>(PlatformIO::allocAligned(chunk,4096));
             if(pass==0) memset(buf,0,chunk);
             for(quint64 c=quint64(t);c<chunks && !cancel.load();c+=quint64(threads)) {
@@ -129,20 +130,18 @@ inline QVariantMap zeroFillTest(const QString &dev, std::atomic_bool &cancel, co
             if(pass==0) fdatasync(fd);
             ::close(fd);
             PlatformIO::freeAligned(buf);
+            finished++;
         });
         int last=-1;
         while(true) {
-            bool running=false;
-            for(auto &th:pool) if(th.joinable()) running=true;
             const int pct=int(done.load()*100/(2*size));
             if(pct!=last) {
                 last=pct;
                 const double secs=timer.elapsed()/1000.0, rate=secs>0 ? done.load()/1048576.0/secs : 0;
                 progress(pct,QStringLiteral("%1 – %2 MiB/s").arg(pass==0 ? QStringLiteral("Nullfüll-Test: beschreibe SSD bis voll") : QStringLiteral("Nullfüll-Test: prüfe alle Bereiche")).arg(rate,0,'f',0));
             }
-            if(done.load()>=quint64(pass+1)*size || cancel.load()) break;
+            if(finished.load()>=threads) break;
             QThread::msleep(500);
-            Q_UNUSED(running)
         }
         for(auto &th:pool) th.join();
     }
