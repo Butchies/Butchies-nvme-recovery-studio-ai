@@ -633,6 +633,8 @@ private:
         m_verified=verified;
         m_experience=m_kb.experience(verified);
         m_aiReport=RecoveryAgent::analyze(verified,m_experience);
+        m_aiReport["geraet"]=verified;
+        m_aiReport["index"]=index;
         m_kb.recordDiagnosis(verified,m_aiReport);
         {
             auto entry=m_devices[index].toMap();

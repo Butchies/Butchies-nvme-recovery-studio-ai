@@ -1,5 +1,9 @@
 # Änderungsprotokoll
 
+## 22.11.2026 – Helle Oberfläche
+- Main.qml komplett im freigegebenen hellen Design neu: Kopfzeile, Navigation, Gerätekarten, Gesundheitsring, Kacheln, Controller-Meldungen mit Übersetzung, Platinenansicht, KI-Assistent rechts; alle Funktionen und Dialoge übernommen.
+- 84 SVG-Symbole (native/icons).
+
 ## 2026-11-22 – Vortrainierte KI
 - `tools/pretrain_model.py`: erzeugt 28.000 synthetische Fälle aus dokumentierten Fehlerbildern (7 Ursachen: gesund, Flash-Verschleiß, Firmwarefehler, Bridge-Problem, Notmodus, Controllerausfall, Cache defekt; je USB/PCIe und Controllerfamilie) und trainiert das Ursachenmodell (Testgenauigkeit auf synthetischen Fällen 98,4 %).
 - `data/catalog/ki-startmodell.json` wird eingebettet und ist Startwissen, bis eigene Fälle vorliegen; echte Fälle verfeinern es weiter.
