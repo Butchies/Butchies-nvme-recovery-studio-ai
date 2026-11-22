@@ -245,12 +245,12 @@ inline QVariantMap inspect(const QVariantMap &device) {
     }
     unsigned char fw[512]{};
     if(getLog(fd,0x03,fw,512)==0) {
-        QVariantList slots;
+        QVariantList slotRevs;
         for(int s=0;s<7;++s) {
             const QString rev=QString::fromLatin1(reinterpret_cast<const char*>(fw+8+8*s),8).trimmed();
-            slots.append(rev.isEmpty() ? QStringLiteral("leer") : rev);
+            slotRevs.append(rev.isEmpty() ? QStringLiteral("leer") : rev);
         }
-        r["firmwareSlotRevisions"]=slots;
+        r["firmwareSlotRevisions"]=slotRevs;
         r["firmwareActiveSlot"]=int(fw[0]&0x7);
         r["firmwareNextSlot"]=int((fw[0]>>4)&0x7);
     }

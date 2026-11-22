@@ -74,8 +74,8 @@ inline QVariantMap prepare(const QVariantMap &device, const QVariantMap &report,
         check(QStringLiteral("Zustand"),true,QStringLiteral("SSD ist kritisch: Ein Firmware-Update repariert keinen Flash-Verschleiß und kann einen geschwächten Controller endgültig ausfallen lassen."),false);
 
     const bool slot1ro=device.value("firmwareSlot1ReadOnly").toBool();
-    const int slots=device.value("firmwareSlots").toInt();
-    const int slot=(slot1ro && slots>1) ? 2 : 0; // 0 = controller chooses
+    const int slotCount=device.value("firmwareSlots").toInt();
+    const int slot=(slot1ro && slotCount>1) ? 2 : 0; // 0 = controller chooses
     const bool immediate=device.value("firmwareActivateWithoutReset").toBool();
     plan["slot"]=slot;
     plan["action"]=immediate ? 3 : 1;
