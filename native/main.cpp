@@ -29,6 +29,7 @@
 #include "cache_tester.h"
 #include "error_translator.h"
 #include "repair_chain.h"
+#include "board_map.h"
 #include <QSet>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -179,6 +180,15 @@ public:
     }
     QVariantMap cacheProgress() const { return m_cache; }
     QVariantMap repairProgress() const { return m_repair; }
+    Q_INVOKABLE QVariantList boardLayouts() const { return BoardMap::layoutList(); }
+    // User picks the board layout once; the KI remembers it for this SSD.
+    Q_INVOKABLE void setBoardLayout(const QString &id) {
+        if(m_verified.isEmpty()) return;
+        m_kb.setBoardLayout(m_verified,id);
+        m_experience=m_kb.experience(m_verified);
+        updateBoard();
+        ai(QStringLiteral("Platinen-Bauform gespeichert: %1").arg(m_aiReport.value("platine").toMap().value("layoutName").toString()));
+    }
     // Automatic repair chain (Linux Boot Edition; data on the SSD is lost).
     Q_INVOKABLE void startRepair(int index, bool fullSurface, const QString &firmwareUrl) {
         if(m_worker || m_fwWorker || m_stickWorker || m_cacheWorker || m_repairWorker) { ai(QStringLiteral("Reparatur nicht möglich, solange ein anderer Vorgang läuft.")); return; }
@@ -210,6 +220,7 @@ public:
                 m_repair["running"]=false; m_repair["phase"]=res.value("message"); m_repair["result"]=res;
                 emit repairChanged();
                 ai(QStringLiteral("Reparatur-Ergebnis: %1").arg(res.value("message").toString()));
+                m_repairByDevice[KnowledgeBase::Store::deviceKey(m_verified)]=res;
                 m_kb.recordAction(QStringLiteral("reparatur_ergebnis"),m_verified,{{"ok",res.value("ok")},{"durch",res.value("repariertDurch")},{"naechsterWeg",res.value("naechsterWeg")}});
                 // The model learns which cause the outcome points to.
                 QString cause;
@@ -263,7 +274,7 @@ public:
                 if(ev.value("selbsttestFehlgeschlagen").toBool() || ev.value("cacheNichtWirksam").toBool())
                     m_model.learn(m_features,QStringLiteral("cache_defekt"),0.5);
                 m_aiReport["kiModell"]=m_model.predict(m_features);
-                emit aiReportChanged();
+                updateBoard();
             },Qt::QueuedConnection);
         });
         m_cacheWorker->start();
@@ -668,6 +679,7 @@ private:
                 .arg(pred.value("text").toString()).arg(qRound(pred.value("wahrscheinlichkeit").toDouble()*100))
                 .arg(pred.value("gruende").toStringList().isEmpty() ? QString() : QStringLiteral(" – wegen: ")+pred.value("gruende").toStringList().join(QStringLiteral(", "))));
         }
+        updateBoard();
         if(m_aiReport.value("learnedFindings").toInt()>0)
             ai(QStringLiteral("Erfahrung genutzt: %1 Erkenntnisse aus früheren Fällen.").arg(m_aiReport.value("learnedFindings").toInt()));
         emit aiReportChanged();
@@ -771,6 +783,14 @@ private:
             });
             proc->start(target,args);
         });
+    }
+    void updateBoard() {
+        const QString choice=m_experience.value("device").toMap().value("platinenLayout").toString();
+        const auto repair=m_repairByDevice.value(KnowledgeBase::Store::deviceKey(m_verified)).toMap();
+        m_aiReport["platine"]=BoardMap::build(m_verified,m_aiReport,repair,choice);
+        for(const auto &f:m_aiReport.value("platine").toMap().value("befunde").toList())
+            ai(QStringLiteral("Platine: %1 markiert – %2").arg(f.toMap().value("typ").toString(),f.toMap().value("grund").toString()));
+        emit aiReportChanged();
     }
     void checkDevices() {
         const QString toolSig=m_tools.signature();
@@ -876,6 +896,7 @@ private:
     QVariantMap m_cache;
     QThread *m_repairWorker=nullptr;
     QVariantMap m_repair;
+    QVariantMap m_repairByDevice;
     QThread *m_fwWorker=nullptr;
     QVariantMap m_fwPlan;
     QVariantMap m_fwProgress;

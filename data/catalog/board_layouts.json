@@ -1,0 +1,354 @@
+{
+ "version": "2026-11-22",
+ "hinweis": "Schematische Bauform-Pläne (Maße in mm, 0/0 = Stecker oben links). Keine Fotos einzelner Modelle: Lage der Bauteile ist typisch, nicht exakt. Markiert wird das betroffene Bauteil bzw. bei Flash-Fehlern die Flash-Gruppe, weil NVMe nicht verrät, auf welchem Chip eine Adresse liegt.",
+ "layouts": [
+  {
+   "id": "2280_dram_2nand",
+   "name": "M.2 2280 · DRAM · 2 Flash-Chips (einseitig)",
+   "laenge": 80,
+   "breite": 22,
+   "teile": [
+    {
+     "id": "stecker",
+     "typ": "stecker",
+     "x": 0,
+     "y": 4,
+     "w": 3.5,
+     "h": 14,
+     "name": "M.2-Stecker",
+     "seite": "oben"
+    },
+    {
+     "id": "controller",
+     "typ": "controller",
+     "x": 6,
+     "y": 5,
+     "w": 12,
+     "h": 12,
+     "name": "Controller",
+     "seite": "oben"
+    },
+    {
+     "id": "dram",
+     "typ": "dram",
+     "x": 20,
+     "y": 6,
+     "w": 9,
+     "h": 10,
+     "name": "DRAM-Cache",
+     "seite": "oben"
+    },
+    {
+     "id": "nand1",
+     "typ": "nand",
+     "x": 32,
+     "y": 3,
+     "w": 18,
+     "h": 16,
+     "name": "Flash 1",
+     "seite": "oben"
+    },
+    {
+     "id": "nand2",
+     "typ": "nand",
+     "x": 54,
+     "y": 3,
+     "w": 18,
+     "h": 16,
+     "name": "Flash 2",
+     "seite": "oben"
+    },
+    {
+     "id": "pmic",
+     "typ": "pmic",
+     "x": 73,
+     "y": 15,
+     "w": 5,
+     "h": 5,
+     "name": "Spannungsregler",
+     "seite": "oben"
+    }
+   ]
+  },
+  {
+   "id": "2280_dram_4nand",
+   "name": "M.2 2280 · DRAM · 4 Flash-Chips (beidseitig)",
+   "laenge": 80,
+   "breite": 22,
+   "teile": [
+    {
+     "id": "stecker",
+     "typ": "stecker",
+     "x": 0,
+     "y": 4,
+     "w": 3.5,
+     "h": 14,
+     "name": "M.2-Stecker",
+     "seite": "oben"
+    },
+    {
+     "id": "controller",
+     "typ": "controller",
+     "x": 6,
+     "y": 5,
+     "w": 12,
+     "h": 12,
+     "name": "Controller",
+     "seite": "oben"
+    },
+    {
+     "id": "dram",
+     "typ": "dram",
+     "x": 20,
+     "y": 6,
+     "w": 9,
+     "h": 10,
+     "name": "DRAM-Cache",
+     "seite": "oben"
+    },
+    {
+     "id": "nand1",
+     "typ": "nand",
+     "x": 32,
+     "y": 3,
+     "w": 18,
+     "h": 16,
+     "name": "Flash 1",
+     "seite": "oben"
+    },
+    {
+     "id": "nand2",
+     "typ": "nand",
+     "x": 54,
+     "y": 3,
+     "w": 18,
+     "h": 16,
+     "name": "Flash 2",
+     "seite": "oben"
+    },
+    {
+     "id": "pmic",
+     "typ": "pmic",
+     "x": 73,
+     "y": 15,
+     "w": 5,
+     "h": 5,
+     "name": "Spannungsregler",
+     "seite": "oben"
+    },
+    {
+     "id": "nand3",
+     "typ": "nand",
+     "x": 32,
+     "y": 3,
+     "w": 18,
+     "h": 16,
+     "name": "Flash 3",
+     "seite": "unten"
+    },
+    {
+     "id": "nand4",
+     "typ": "nand",
+     "x": 54,
+     "y": 3,
+     "w": 18,
+     "h": 16,
+     "name": "Flash 4",
+     "seite": "unten"
+    }
+   ]
+  },
+  {
+   "id": "2280_dramlos_1nand",
+   "name": "M.2 2280 · DRAM-los (HMB) · 1 Flash-Chip",
+   "laenge": 80,
+   "breite": 22,
+   "teile": [
+    {
+     "id": "stecker",
+     "typ": "stecker",
+     "x": 0,
+     "y": 4,
+     "w": 3.5,
+     "h": 14,
+     "name": "M.2-Stecker",
+     "seite": "oben"
+    },
+    {
+     "id": "controller",
+     "typ": "controller",
+     "x": 8,
+     "y": 5,
+     "w": 12,
+     "h": 12,
+     "name": "Controller",
+     "seite": "oben"
+    },
+    {
+     "id": "nand1",
+     "typ": "nand",
+     "x": 26,
+     "y": 3,
+     "w": 18,
+     "h": 16,
+     "name": "Flash 1",
+     "seite": "oben"
+    },
+    {
+     "id": "pmic",
+     "typ": "pmic",
+     "x": 73,
+     "y": 15,
+     "w": 5,
+     "h": 5,
+     "name": "Spannungsregler",
+     "seite": "oben"
+    }
+   ]
+  },
+  {
+   "id": "2280_dramlos_2nand",
+   "name": "M.2 2280 · DRAM-los (HMB) · 2 Flash-Chips",
+   "laenge": 80,
+   "breite": 22,
+   "teile": [
+    {
+     "id": "stecker",
+     "typ": "stecker",
+     "x": 0,
+     "y": 4,
+     "w": 3.5,
+     "h": 14,
+     "name": "M.2-Stecker",
+     "seite": "oben"
+    },
+    {
+     "id": "controller",
+     "typ": "controller",
+     "x": 8,
+     "y": 5,
+     "w": 12,
+     "h": 12,
+     "name": "Controller",
+     "seite": "oben"
+    },
+    {
+     "id": "nand1",
+     "typ": "nand",
+     "x": 26,
+     "y": 3,
+     "w": 18,
+     "h": 16,
+     "name": "Flash 1",
+     "seite": "oben"
+    },
+    {
+     "id": "nand2",
+     "typ": "nand",
+     "x": 48,
+     "y": 3,
+     "w": 18,
+     "h": 16,
+     "name": "Flash 2",
+     "seite": "oben"
+    },
+    {
+     "id": "pmic",
+     "typ": "pmic",
+     "x": 73,
+     "y": 15,
+     "w": 5,
+     "h": 5,
+     "name": "Spannungsregler",
+     "seite": "oben"
+    }
+   ]
+  },
+  {
+   "id": "2242_dramlos_1nand",
+   "name": "M.2 2242 · DRAM-los · 1 Flash-Chip",
+   "laenge": 42,
+   "breite": 22,
+   "teile": [
+    {
+     "id": "stecker",
+     "typ": "stecker",
+     "x": 0,
+     "y": 4,
+     "w": 3.5,
+     "h": 14,
+     "name": "M.2-Stecker",
+     "seite": "oben"
+    },
+    {
+     "id": "controller",
+     "typ": "controller",
+     "x": 6,
+     "y": 5,
+     "w": 11,
+     "h": 11,
+     "name": "Controller",
+     "seite": "oben"
+    },
+    {
+     "id": "nand1",
+     "typ": "nand",
+     "x": 19,
+     "y": 3,
+     "w": 16,
+     "h": 16,
+     "name": "Flash 1",
+     "seite": "oben"
+    },
+    {
+     "id": "pmic",
+     "typ": "pmic",
+     "x": 36,
+     "y": 15,
+     "w": 5,
+     "h": 5,
+     "name": "Spannungsregler",
+     "seite": "oben"
+    }
+   ]
+  },
+  {
+   "id": "2230_dramlos_1nand",
+   "name": "M.2 2230 · DRAM-los · 1 Flash-Chip",
+   "laenge": 30,
+   "breite": 22,
+   "teile": [
+    {
+     "id": "stecker",
+     "typ": "stecker",
+     "x": 0,
+     "y": 4,
+     "w": 3.5,
+     "h": 14,
+     "name": "M.2-Stecker",
+     "seite": "oben"
+    },
+    {
+     "id": "controller",
+     "typ": "controller",
+     "x": 5,
+     "y": 5,
+     "w": 9,
+     "h": 9,
+     "name": "Controller",
+     "seite": "oben"
+    },
+    {
+     "id": "nand1",
+     "typ": "nand",
+     "x": 15,
+     "y": 4,
+     "w": 13,
+     "h": 14,
+     "name": "Flash 1",
+     "seite": "oben"
+    }
+   ]
+  }
+ ]
+}

@@ -189,6 +189,64 @@ ApplicationWindow {
                             color: modelData.ok ? "#b8f2c8" : "#ffb4a2" }
                 }
                 Label {
+                    visible: !!controller.aiReport.platine
+                    text: "Platine (schematisch): " + (controller.aiReport.platine ? controller.aiReport.platine.layoutName : "")
+                    font.bold: true; color: "#ffffff"
+                }
+                RowLayout {
+                    visible: !!controller.aiReport.platine
+                    Label { text: "Bauform:"; color: "#c6e2f2" }
+                    ComboBox {
+                        id: layoutBox; implicitWidth: 420
+                        model: controller.boardLayouts(); textRole: "name"; valueRole: "id"
+                        currentIndex: controller.aiReport.platine ? indexOfValue(controller.aiReport.platine.layoutId) : -1
+                        onActivated: controller.setBoardLayout(currentValue)
+                    }
+                }
+                Row {
+                    id: boardRow
+                    visible: !!controller.aiReport.platine
+                    spacing: 24
+                    property var board: controller.aiReport.platine || ({})
+                    property real s: 9
+                    Repeater {
+                        model: boardRow.board.beidseitig ? ["oben", "unten"] : ["oben"]
+                        Column {
+                            spacing: 4
+                            property string side: modelData
+                            Label { text: side === "oben" ? "Oberseite" : "Unterseite"; color: "#a5bed3"; font.pixelSize: 12 }
+                            Rectangle {
+                                width: (boardRow.board.laenge || 80) * boardRow.s; height: (boardRow.board.breite || 22) * boardRow.s
+                                radius: 6; color: "#14532d"; border.color: "#2f7d4f"
+                                Repeater {
+                                    model: (boardRow.board.teile || []).filter(function(p){ return p.typ === "stecker" || p.seite === side })
+                                    Rectangle {
+                                        x: modelData.x * boardRow.s; y: modelData.y * boardRow.s
+                                        width: modelData.w * boardRow.s; height: modelData.h * boardRow.s; radius: 3
+                                        color: modelData.typ === "stecker" ? "#b8902f" : (modelData.typ === "nand" ? "#1f2937" : (modelData.typ === "dram" ? "#374151" : "#111827"))
+                                        border.width: modelData.defekt ? 4 : 1
+                                        border.color: modelData.defekt ? (modelData.schwere === "kritisch" ? "#ff3b30" : "#ff9f0a") : "#6b7280"
+                                        Label {
+                                            anchors.centerIn: parent; width: parent.width - 4; horizontalAlignment: Text.AlignHCenter
+                                            wrapMode: Text.WordWrap; font.pixelSize: 11; color: "#f3f4f6"
+                                            text: modelData.name + (modelData.defekt ? "\n⚠" : "")
+                                        }
+                                        HoverHandler { id: partHover }
+                                        ToolTip.visible: partHover.hovered && modelData.defekt
+                                        ToolTip.text: modelData.gruende.join("\n")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                Repeater {
+                    model: controller.aiReport.platine ? controller.aiReport.platine.befunde : []
+                    Label { Layout.fillWidth: true; wrapMode: Text.WordWrap
+                            text: "⚠ " + ({"controller":"Controller","dram":"Cache/DRAM","nand":"Flash-Speicher","pmic":"Spannungsversorgung","stecker":"Stecker/Verbindung"}[modelData.typ]) + ": " + modelData.grund
+                            color: modelData.schwere === "kritisch" ? "#ffb4a2" : "#ffd59e" }
+                }
+                Label {
                     visible: !!controller.aiReport.controllerMeldungen
                     text: "Was der Controller meldet: " + (controller.aiReport.controllerMeldungen ? controller.aiReport.controllerMeldungen.zusammenfassung : "")
                     font.bold: true; color: "#ffffff"; Layout.fillWidth: true; wrapMode: Text.WordWrap

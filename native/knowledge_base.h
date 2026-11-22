@@ -219,6 +219,14 @@ public:
         recordAction(QStringLiteral("rettung"),d,last.toVariantMap());
     }
 
+    void setBoardLayout(const QVariantMap &d, const QString &id) {
+        auto devices=m_root.value("devices").toObject();
+        auto dev=devices.value(deviceKey(d)).toObject();
+        dev["platinenLayout"]=id;
+        devices[deviceKey(d)]=dev;
+        m_root["devices"]=devices;
+        recordAction(QStringLiteral("platinen_layout"),d,{{"layout",id}});
+    }
     void recordCacheTest(const QVariantMap &d, const QVariantMap &eval) {
         auto devices=m_root.value("devices").toObject();
         auto dev=devices.value(deviceKey(d)).toObject();

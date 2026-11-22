@@ -1,5 +1,10 @@
 # Änderungsprotokoll
 
+## 2026-11-22 – Platinen-Ansicht mit Defektmarkierung
+- `data/catalog/board_layouts.json`: schematische Bauformen (M.2 2280 mit/ohne DRAM, 1–4 Flash-Chips, ein-/beidseitig; 2242; 2230).
+- `native/board_map.h`: KI wählt die Bauform (DRAM-los laut Cache-Test, Kapazität) oder nutzt die gespeicherte Wahl; markiert betroffene Bauteile (Controller, Cache/DRAM, Flash-Gruppe, Spannungsversorgung, Stecker) aus Controller-Meldungen, SMART, Cache-Test, KI-Modell und Nullfüll-Test. Einzelne Flash-Chips sind über NVMe nicht bestimmbar – markiert wird die Flash-Gruppe.
+- Oberfläche: Platine mit roter/oranger Markierung, Tooltips mit Gründen, Bauform-Auswahl (wird je SSD gemerkt).
+
 ## 2026-11-22 – Nullfüll-Test parallel
 - Nullfüll-Test mit 8 parallelen Datenströmen und 16-MiB-Blöcken (gleiche Gründlichkeit, nahe Höchstgeschwindigkeit der SSD), Geschwindigkeitsanzeige und Dauer.
 
