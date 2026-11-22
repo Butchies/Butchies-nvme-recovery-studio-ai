@@ -18,7 +18,8 @@ qt_add_resources(nvme-recovery-studio "catalog"
         ../data/catalog/firmware_issues.json
         ../data/catalog/tools.json
         ../data/catalog/nvme_codes.json
-        ../data/catalog/board_layouts.json)
+        ../data/catalog/board_layouts.json
+        ../data/catalog/ki-startmodell.json)
 target_link_libraries(nvme-recovery-studio PRIVATE Qt6::Core Qt6::Gui Qt6::Qml Qt6::Quick Qt6::Network)
 set_target_properties(nvme-recovery-studio PROPERTIES
     WIN32_EXECUTABLE TRUE MACOSX_BUNDLE TRUE)

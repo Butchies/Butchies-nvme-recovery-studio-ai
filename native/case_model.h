@@ -126,6 +126,18 @@ public:
         const int nc=int(causes().size()), nf=int(featureNames().size());
         m_w.assign(size_t(nc),std::vector<double>(size_t(nf),0.0));
         seedPriors();
+        // Pre-trained start knowledge (tools/pretrain_model.py), used until
+        // the user's own model file exists.
+        for(const auto &sp:{QDir(dir).filePath(QStringLiteral("vorlagen/ki-startmodell.json")),QStringLiteral(":/catalog/ki-startmodell.json")}) {
+            QFile sf(sp);
+            if(!sf.open(QIODevice::ReadOnly)) continue;
+            const auto o=QJsonDocument::fromJson(sf.readAll()).object();
+            if(o.value("features").toInt()!=nf || o.value("klassen").toInt()!=nc) continue;
+            const auto w=o.value("gewichte").toArray();
+            for(int c=0;c<nc && c<w.size();++c) for(int j=0;j<nf;++j) m_w[size_t(c)][size_t(j)]=w[c].toArray().at(j).toDouble();
+            m_pretrained=o.value("vortraining").toObject().value("faelle").toInt();
+            break;
+        }
         QFile f(m_path);
         if(f.open(QIODevice::ReadOnly)) {
             const auto o=QJsonDocument::fromJson(f.readAll()).object();
@@ -138,6 +150,7 @@ public:
         }
     }
     int trainedCases() const { return m_trained; }
+    int pretrainedCases() const { return m_pretrained; }
     int rescueCases() const { return int(m_rescues.size()); }
 
     // Probabilities per cause, sorted, with explanation of the top cause.
@@ -248,6 +261,7 @@ private:
     QString m_path;
     std::vector<std::vector<double>> m_w;
     int m_trained=0;
+    int m_pretrained=0;
     QJsonArray m_rescues;
 };
 

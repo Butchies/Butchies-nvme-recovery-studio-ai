@@ -68,7 +68,8 @@ public:
         ai(QStringLiteral("Vorlagen geladen: %1 Hersteller, %2 NVMe-Controller/-Produkte (pci.ids %3), %4 Controllerfamilien, %5 bekannte Firmwarefehler, %6 USB-Bridges.")
             .arg(c.value("vendors").toInt()).arg(c.value("devices").toInt()).arg(c.value("pciVersion").toString())
             .arg(c.value("families").toInt()).arg(c.value("firmwareIssues").toInt()).arg(c.value("bridges").toInt()));
-        ai(QStringLiteral("Lernende KI geladen: %1 gelernte Fälle, %2 Rettungen als Vergleich.").arg(m_model.trainedCases()).arg(m_model.rescueCases()));
+        ai(QStringLiteral("Lernende KI geladen: vortrainiert mit %1 typischen Fehlerbildern, %2 eigene gelernte Fälle, %3 Rettungen als Vergleich.")
+            .arg(m_model.pretrainedCases()).arg(m_model.trainedCases()).arg(m_model.rescueCases()));
         if(linuxEdition()) ai(QStringLiteral("Expertenmodus (Linux-Boot-Edition): keine Rückfragen, kein Bestätigungscode, keine Sicherungspflicht. Nur Boot-Stick und Quelle=Ziel bleiben gesperrt."));
         ai(QStringLiteral("Überwache USB-Anschlüsse: neue SSDs werden automatisch erkannt und untersucht."));
         int installed=0;

@@ -1,5 +1,9 @@
 # Änderungsprotokoll
 
+## 2026-11-22 – Vortrainierte KI
+- `tools/pretrain_model.py`: erzeugt 28.000 synthetische Fälle aus dokumentierten Fehlerbildern (7 Ursachen: gesund, Flash-Verschleiß, Firmwarefehler, Bridge-Problem, Notmodus, Controllerausfall, Cache defekt; je USB/PCIe und Controllerfamilie) und trainiert das Ursachenmodell (Testgenauigkeit auf synthetischen Fällen 98,4 %).
+- `data/catalog/ki-startmodell.json` wird eingebettet und ist Startwissen, bis eigene Fälle vorliegen; echte Fälle verfeinern es weiter.
+
 ## 2026-11-22 – Platinen-Ansicht mit Defektmarkierung
 - `data/catalog/board_layouts.json`: schematische Bauformen (M.2 2280 mit/ohne DRAM, 1–4 Flash-Chips, ein-/beidseitig; 2242; 2230).
 - `native/board_map.h`: KI wählt die Bauform (DRAM-los laut Cache-Test, Kapazität) oder nutzt die gespeicherte Wahl; markiert betroffene Bauteile (Controller, Cache/DRAM, Flash-Gruppe, Spannungsversorgung, Stecker) aus Controller-Meldungen, SMART, Cache-Test, KI-Modell und Nullfüll-Test. Einzelne Flash-Chips sind über NVMe nicht bestimmbar – markiert wird die Flash-Gruppe.
