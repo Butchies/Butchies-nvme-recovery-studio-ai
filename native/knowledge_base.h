@@ -219,6 +219,16 @@ public:
         recordAction(QStringLiteral("rettung"),d,last.toVariantMap());
     }
 
+    void recordCacheTest(const QVariantMap &d, const QVariantMap &eval) {
+        auto devices=m_root.value("devices").toObject();
+        auto dev=devices.value(deviceKey(d)).toObject();
+        dev["letzterCacheTest"]=QJsonObject{{"zeit",now()},{"urteil",eval.value("urteil").toString()},
+            {"auffaellig",eval.value("auffaellig").toBool()},{"selbsttestFehlgeschlagen",eval.value("selbsttestFehlgeschlagen").toBool()},
+            {"cacheNichtWirksam",eval.value("cacheNichtWirksam").toBool()},{"latenzInstabil",eval.value("latenzInstabil").toBool()}};
+        devices[deviceKey(d)]=dev;
+        m_root["devices"]=devices;
+        recordAction(QStringLiteral("cache_test"),d,{{"urteil",eval.value("urteil")}});
+    }
     // Learned: which bridge protocol (smartctl -d type) works for a bridge.
     void recordBridgeProtocol(const QVariantMap &d, const QString &type) {
         auto bridges=m_root.value("bridges").toObject();

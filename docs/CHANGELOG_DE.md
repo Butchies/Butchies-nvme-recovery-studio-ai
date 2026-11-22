@@ -1,5 +1,11 @@
 # Änderungsprotokoll
 
+## 2026-11-22 – Cache-Test
+- `native/cache_tester.h`: Cache-Ausstattung (DRAM oder DRAM-los/HMB, angeforderter und zugeteilter Host-Speicher, Schreibcache vorhanden/aktiv), NVMe-Controller-Selbsttest kurz/lang mit Ergebnis und Fehlersegment (Linux direkt, Windows über smartctl), Lesetest (wiederholt vs. zufällig, Ausreißer, sequenziell), Schreibtest nur Linux/Expertenmodus (Cache-Einbruch, Flush-Zeit; überschreibt Daten).
+- Bewertung „Cache wird nicht angesprochen / defekt / instabil“; Ergebnis fließt in Wissensbasis und KI-Modell (neue Ursache „Cache defekt“, drei neue Merkmale; vorhandene Modelldatei wird dadurch neu initialisiert).
+- Oberfläche: „Cache testen“, langer Selbsttest, Schreibtest (Linux), Fortschritt in Prozent, Ergebnis im Diagnosebereich.
+- Nicht gebaut und nicht auf Hardware getestet.
+
 ## 2026-11-22 – Kleine lernende KI und Expertenmodus
 - `native/case_model.h`: lernendes Ursachenmodell (logistische Regression, 31 Merkmale, 6 Ursachen: gesund, Flash-Verschleiß, Firmwarefehler, Bridge-Problem, Notmodus, Controllerausfall), startet mit Regelwissen und lernt aus jeder Rettung und jeder bestätigten Ursache; begründet jede Vorhersage. Rettungs-Tuner übernimmt Einstellungen der ähnlichsten erfolgreichen Rettung. Kein Sprachmodell, keine Grafikkarte nötig.
 - Oberfläche: Vorhersage im Diagnosebereich, „Tatsächliche Ursache bestätigen – KI lernt“.

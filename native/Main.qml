@@ -30,6 +30,8 @@ ApplicationWindow {
             Button { text: "Zielordner wählen"; enabled: !controller.recoveryRunning; onClicked: folderDialog.open() }
             Button { text: "Linux-Boot-Stick erstellen"; visible: !controller.linuxEdition; enabled: !controller.recoveryRunning; onClicked: stickDialog.open() }
             Button { text: "Ziel prüfen"; onClicked: controller.inspectDestination(destination.text) }
+            CheckBox { id: longTestBox; text: "Langer Selbsttest" }
+            CheckBox { id: writeTestBox; visible: controller.linuxEdition; text: "Cache-Schreibtest (überschreibt Daten!)" }
             TextField {
                 id: destination
                 Layout.fillWidth: true
@@ -167,6 +169,22 @@ ApplicationWindow {
                     ComboBox { id: causeBox; model: controller.causeOptions(); textRole: "text"; valueRole: "id"; implicitWidth: 360 }
                     Button { text: "Bestätigen – KI lernt"; onClicked: controller.confirmCause(causeBox.currentValue) }
                 }
+                RowLayout {
+                    Layout.fillWidth: true
+                    visible: !!controller.cacheProgress.running
+                    ProgressBar { Layout.fillWidth: true; from: 0; to: 100; value: controller.cacheProgress.percent || 0 }
+                    Label { text: (controller.cacheProgress.percent || 0) + " % · " + (controller.cacheProgress.phase || ""); color: "#c6e2f2" }
+                }
+                Label {
+                    visible: !!controller.aiReport.cacheTest
+                    Layout.fillWidth: true; wrapMode: Text.WordWrap; font.bold: true
+                    text: controller.aiReport.cacheTest ? "Cache: " + controller.aiReport.cacheTest.urteil : ""
+                    color: controller.aiReport.cacheTest && controller.aiReport.cacheTest.auffaellig ? "#ffb4a2" : "#b8f2c8"
+                }
+                Repeater {
+                    model: controller.aiReport.cacheTest ? controller.aiReport.cacheTest.details : []
+                    Label { Layout.fillWidth: true; wrapMode: Text.WordWrap; text: "  " + modelData; color: "#b5d0e6" }
+                }
                 Label {
                     visible: (controller.aiReport.repairPaths || []).length > 0
                     text: "Reparaturwege (Vorlage: " + ((controller.aiReport.catalog && controller.aiReport.catalog.family) ? controller.aiReport.catalog.family.hersteller : "allgemein") + ")"
@@ -219,6 +237,11 @@ ApplicationWindow {
                                     text: "Automatisch retten"
                                     enabled: !controller.recoveryRunning
                                     onClicked: controller.startAutoRecovery(index, destination.text)
+                                }
+                                Button {
+                                    text: "Cache testen"
+                                    enabled: !controller.recoveryRunning
+                                    onClicked: controller.runCacheTest(index, longTestBox.checked, writeTestBox.checked)
                                 }
                                 Button {
                                     text: "Firmware …"

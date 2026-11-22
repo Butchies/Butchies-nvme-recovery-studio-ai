@@ -30,7 +30,7 @@ namespace CaseModel {
 inline const QStringList &causes() {
     static const QStringList c{
         QStringLiteral("gesund"), QStringLiteral("flash_verschleiss"), QStringLiteral("firmware_fehler"),
-        QStringLiteral("bridge_problem"), QStringLiteral("notmodus"), QStringLiteral("controller_ausfall")};
+        QStringLiteral("bridge_problem"), QStringLiteral("notmodus"), QStringLiteral("controller_ausfall"), QStringLiteral("cache_defekt")};
     return c;
 }
 inline QString causeText(const QString &c) {
@@ -39,6 +39,7 @@ inline QString causeText(const QString &c) {
     if(c==QStringLiteral("firmware_fehler")) return QStringLiteral("Firmwarefehler");
     if(c==QStringLiteral("bridge_problem")) return QStringLiteral("Problem mit USB-Gehäuse/Bridge oder Verbindung");
     if(c==QStringLiteral("notmodus")) return QStringLiteral("Controller im Notmodus");
+    if(c==QStringLiteral("cache_defekt")) return QStringLiteral("Cache defekt oder nicht angesprochen");
     return QStringLiteral("Controller antwortet nicht stabil / Elektronikdefekt");
 }
 
@@ -55,7 +56,8 @@ inline const QStringList &featureNames() {
         QStringLiteral("USB-Anschluss"), QStringLiteral("PCIe-Anschluss"),
         QStringLiteral("Familie Phison"), QStringLiteral("Familie Silicon Motion"), QStringLiteral("Familie Samsung"),
         QStringLiteral("Familie WD/SanDisk"), QStringLiteral("Familie Realtek/Maxio"), QStringLiteral("Familie andere"),
-        QStringLiteral("NVMe-Fehler nicht wiederholbar")};
+        QStringLiteral("NVMe-Fehler nicht wiederholbar"), QStringLiteral("Selbsttest fehlgeschlagen"),
+        QStringLiteral("Cache nicht wirksam"), QStringLiteral("Antwortzeiten instabil")};
     return f;
 }
 
@@ -108,6 +110,10 @@ inline std::vector<double> features(const QVariantMap &d, const QVariantMap &rep
     set(fam.isEmpty() || (fam!=QStringLiteral("phison") && fam!=QStringLiteral("siliconmotion") && fam!=QStringLiteral("samsung")
         && fam!=QStringLiteral("wd_sandisk") && fam!=QStringLiteral("realtek") && fam!=QStringLiteral("maxio")) ? 1 : 0);
     set(dnr ? 1 : 0);
+    const auto cache=exp.value("device").toMap().value("letzterCacheTest").toMap();
+    set(cache.value("selbsttestFehlgeschlagen").toBool() ? 1 : 0);
+    set(cache.value("cacheNichtWirksam").toBool() ? 1 : 0);
+    set(cache.value("latenzInstabil").toBool() ? 1 : 0);
     return x;
 }
 
@@ -225,6 +231,8 @@ private:
         prior(QStringLiteral("bridge_problem"),16,2.5); prior(QStringLiteral("bridge_problem"),17,3.0);
         prior(QStringLiteral("bridge_problem"),2,1.0); prior(QStringLiteral("bridge_problem"),22,0.5);
         prior(QStringLiteral("controller_ausfall"),18,2.5);
+        prior(QStringLiteral("cache_defekt"),31,3.0); prior(QStringLiteral("cache_defekt"),32,4.0); prior(QStringLiteral("cache_defekt"),33,2.5);
+        prior(QStringLiteral("controller_ausfall"),31,2.0); prior(QStringLiteral("gesund"),31,-3.0); prior(QStringLiteral("gesund"),32,-2.0);
         prior(QStringLiteral("gesund"),6,-1.0); prior(QStringLiteral("gesund"),11,-3.0); prior(QStringLiteral("gesund"),3,-3.0);
     }
     void save() const {

@@ -26,6 +26,7 @@
 #include "firmware_manager.h"
 #include "stick_writer.h"
 #include "case_model.h"
+#include "cache_tester.h"
 #include <QSet>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -53,6 +54,7 @@ class RecoveryController final : public QObject {
     Q_PROPERTY(QVariantMap firmwareProgress READ firmwareProgress NOTIFY firmwareChanged)
     Q_PROPERTY(bool linuxEdition READ linuxEdition CONSTANT)
     Q_PROPERTY(QVariantMap stickProgress READ stickProgress NOTIFY stickChanged)
+    Q_PROPERTY(QVariantMap cacheProgress READ cacheProgress NOTIFY cacheChanged)
 public:
     explicit RecoveryController(QObject *parent=nullptr):QObject(parent) {
         const auto k=m_kb.summary();
@@ -171,6 +173,52 @@ public:
 #else
         return true;
 #endif
+    }
+    QVariantMap cacheProgress() const { return m_cache; }
+    // Cache diagnosis: equipment, controller self-test, read test and (Linux
+    // expert mode) write test. Results feed the knowledge base and the model.
+    Q_INVOKABLE void runCacheTest(int index, bool extended, bool writeTest) {
+        if(m_worker || m_fwWorker || m_stickWorker || m_cacheWorker) { ai(QStringLiteral("Cache-Test nicht möglich, solange ein anderer Vorgang läuft.")); return; }
+        if(!diagnose(index)) return;
+        if(writeTest && !linuxEdition()) writeTest=false;
+        const QVariantMap device=m_verified;
+        const QString smartctl=m_tools.path(QStringLiteral("smartctl"));
+        m_cancel=false;
+        m_cache={{"running",true},{"percent",0},{"phase",QStringLiteral("Start …")}};
+        emit cacheChanged();
+        ai(QStringLiteral("Cache-Test gestartet: %1%2").arg(extended ? QStringLiteral("langer Selbsttest") : QStringLiteral("kurzer Selbsttest"),
+            writeTest ? QStringLiteral(", Schreibtest (überschreibt Daten)") : QString()));
+        m_kb.recordAction(QStringLiteral("cache_test_start"),device,{{"lang",extended},{"schreibtest",writeTest}});
+        m_cacheWorker=QThread::create([this,device,extended,writeTest,smartctl]{
+            int lastStep=-1;
+            const auto prog=[this,&lastStep](int p,const QString &t){
+                const bool step=p/5!=lastStep; lastStep=p/5;
+                QMetaObject::invokeMethod(this,[this,p,t,step]{ m_cache["percent"]=p; m_cache["phase"]=t; emit cacheChanged();
+                    if(step) ai(QStringLiteral("%1 [%2%3] %4 %").arg(t,QString(p/5,QChar(0x2588)),QString(20-p/5,QChar(0x2591))).arg(p)); },Qt::QueuedConnection);
+            };
+            const auto eq=CacheTester::equipmentAndSelfTest(device,extended,smartctl,m_cancel,prog);
+            lastStep=-1;
+            const auto rd=CacheTester::readTest(device.value("devicePath").toString(),m_cancel,prog);
+            lastStep=-1;
+            const auto wr=writeTest ? CacheTester::writeTest(device,m_cancel,prog) : QVariantMap();
+            const auto ev=CacheTester::evaluate(eq,rd,wr);
+            QMetaObject::invokeMethod(this,[this,ev]{
+                if(m_cacheWorker) { m_cacheWorker->wait(); m_cacheWorker->deleteLater(); m_cacheWorker=nullptr; }
+                m_cache["running"]=false; m_cache["phase"]=ev.value("urteil"); m_cache["result"]=ev;
+                emit cacheChanged();
+                m_aiReport["cacheTest"]=ev;
+                ai(QStringLiteral("Cache-Ergebnis: %1").arg(ev.value("urteil").toString()));
+                for(const auto &l:ev.value("details").toStringList()) ai(QStringLiteral("Cache: %1").arg(l));
+                m_kb.recordCacheTest(m_verified,ev);
+                m_experience=m_kb.experience(m_verified);
+                m_features=CaseModel::features(m_verified,m_aiReport,m_experience);
+                if(ev.value("selbsttestFehlgeschlagen").toBool() || ev.value("cacheNichtWirksam").toBool())
+                    m_model.learn(m_features,QStringLiteral("cache_defekt"),0.5);
+                m_aiReport["kiModell"]=m_model.predict(m_features);
+                emit aiReportChanged();
+            },Qt::QueuedConnection);
+        });
+        m_cacheWorker->start();
     }
     // The user confirms the real cause of the last diagnosed SSD: strongest training signal.
     Q_INVOKABLE void confirmCause(const QString &cause) {
@@ -294,8 +342,9 @@ public:
         if(m_worker) { m_worker->wait(); }
         if(m_fwWorker) { m_fwWorker->wait(); }
         if(m_stickWorker) { m_stickWorker->wait(); }
+        if(m_cacheWorker) { m_cacheWorker->wait(); }
     }
-    bool recoveryRunning() const { return m_worker!=nullptr || m_fwWorker!=nullptr; }
+    bool recoveryRunning() const { return m_worker!=nullptr || m_fwWorker!=nullptr || m_cacheWorker!=nullptr; }
     QVariantMap recoveryProgress() const { return m_progress; }
     QVariantMap recoveryResult() const { return m_result; }
     QStringList recoveryLog() const { return m_log; }
@@ -671,7 +720,7 @@ private:
             emit toolsChanged();
             ai(QStringLiteral("Werkzeugänderung erkannt – die KI berücksichtigt neue Werkzeuge ab der nächsten Diagnose."));
         }
-        if(m_worker || m_fwWorker || m_stickWorker) return;
+        if(m_worker || m_fwWorker || m_stickWorker || m_cacheWorker) return;
 #ifdef Q_OS_WIN
         const QString sig=UsbBridge::usbDiskSignature();
 #else
@@ -740,6 +789,7 @@ signals:
     void toolsChanged();
     void firmwareChanged();
     void stickChanged();
+    void cacheChanged();
 private:
     void setStatus(const QString &text){m_status=text;emit statusChanged();}
     QVariantList m_devices;
@@ -762,6 +812,8 @@ private:
     QString m_toolSig;
     CaseModel::Model m_model;
     std::vector<double> m_features;
+    QThread *m_cacheWorker=nullptr;
+    QVariantMap m_cache;
     QThread *m_fwWorker=nullptr;
     QVariantMap m_fwPlan;
     QVariantMap m_fwProgress;
