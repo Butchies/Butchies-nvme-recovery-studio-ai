@@ -906,6 +906,8 @@ private:
     QString m_status=QStringLiteral("Bereit. Keine Schreibzugriffe auf SSDs.");
 };
 int main(int argc,char *argv[]) {
+    // Same look on Windows and Linux: Fusion controls style for both editions.
+    if(qEnvironmentVariableIsEmpty("QT_QUICK_CONTROLS_STYLE")) qputenv("QT_QUICK_CONTROLS_STYLE","Fusion");
     QGuiApplication app(argc,argv);
     RecoveryController controller;
     QQmlApplicationEngine engine;
