@@ -150,6 +150,82 @@ ApplicationWindow {
         }
     }
 
+
+    // ------------------------------------------------ Start-Animation
+    // „Butchies präsentiert“ → Programm-Logo ploppt auf → Name mit Schimmer → Ladebalken.
+    // Klick überspringt.
+    Rectangle {
+        id: splash
+        parent: Overlay.overlay
+        anchors.fill: parent
+        z: 10000
+        visible: opacity > 0
+        gradient: Gradient { GradientStop { position: 0; color: "#ffffff" } GradientStop { position: 1; color: "#eef1fb" } }
+        Rectangle { width: 380; height: 380; radius: 190; x: -120; y: -120; color: "#a78bfa"; opacity: 0.18 }
+        Rectangle { width: 340; height: 340; radius: 170; x: parent.width - 230; y: parent.height - 210; color: "#60a5fa"; opacity: 0.18 }
+        MouseArea { anchors.fill: parent; onClicked: { intro.stop(); fadeOut.start() } }
+
+        Column {
+            id: brand
+            anchors.centerIn: parent; spacing: 6; opacity: 0; scale: 0.85
+            Label { anchors.horizontalCenter: parent.horizontalCenter; text: "Butchies"; font.pixelSize: 72; font.weight: Font.ExtraBold; font.letterSpacing: -1.5; color: "#0f172a" }
+            Label { id: presents; anchors.horizontalCenter: parent.horizontalCenter; text: "PRÄSENTIERT"; font.pixelSize: 16; font.letterSpacing: 5; color: "#667085"; opacity: 0 }
+        }
+        Column {
+            anchors.centerIn: parent; spacing: 0
+            Item {
+                anchors.horizontalCenter: parent.horizontalCenter; width: 150; height: 150
+                Rectangle { id: popRing; anchors.centerIn: parent; width: 150; height: 150; radius: 75; color: "transparent"; border.color: "#a78bfa"; border.width: 3; opacity: 0 }
+                Image { id: bigLogo; anchors.fill: parent; source: "icons/logo.svg"; sourceSize: Qt.size(300, 300); opacity: 0; scale: 0.2; rotation: -25 }
+            }
+            Item { width: 1; height: 22 }
+            Row {
+                id: nameRow; anchors.horizontalCenter: parent.horizontalCenter; spacing: 10; opacity: 0
+                Label { text: "NVMe Recovery Studio"; font.pixelSize: 34; font.weight: Font.ExtraBold; color: "#0f172a" }
+                Label { id: aiLabel; text: "AI"; font.pixelSize: 34; font.weight: Font.ExtraBold; color: "#6d5df5"
+                    SequentialAnimation on color { loops: Animation.Infinite; running: splash.visible
+                        ColorAnimation { to: "#2563eb"; duration: 1200 } ColorAnimation { to: "#a78bfa"; duration: 1200 } ColorAnimation { to: "#6d5df5"; duration: 1200 } } }
+            }
+            Label { id: subLine; anchors.horizontalCenter: parent.horizontalCenter; topPadding: 8; text: "Diagnose · Rettung · Reparatur"; font.pixelSize: 14; color: "#667085"; opacity: 0 }
+            Item { width: 1; height: 26 }
+            Rectangle {
+                id: loadTrack; anchors.horizontalCenter: parent.horizontalCenter; width: 220; height: 4; radius: 2; color: "#e6e8f0"; opacity: 0
+                Rectangle { id: loadFill; width: 0; height: 4; radius: 2
+                    gradient: Gradient { orientation: Gradient.Horizontal; GradientStop { position: 0; color: "#a78bfa" } GradientStop { position: 1; color: "#4f46e5" } } }
+            }
+        }
+
+        SequentialAnimation {
+            id: intro
+            running: true
+            ParallelAnimation {
+                NumberAnimation { target: brand; property: "opacity"; to: 1; duration: 900; easing.type: Easing.OutCubic }
+                NumberAnimation { target: brand; property: "scale"; to: 1; duration: 1100; easing.type: Easing.OutCubic }
+                SequentialAnimation { PauseAnimation { duration: 600 } NumberAnimation { target: presents; property: "opacity"; to: 1; duration: 700 } }
+            }
+            PauseAnimation { duration: 700 }
+            ParallelAnimation {
+                NumberAnimation { target: brand; property: "opacity"; to: 0; duration: 600; easing.type: Easing.InCubic }
+                NumberAnimation { target: brand; property: "scale"; to: 1.08; duration: 600; easing.type: Easing.InCubic }
+            }
+            ParallelAnimation {
+                NumberAnimation { target: bigLogo; property: "opacity"; to: 1; duration: 500 }
+                NumberAnimation { target: bigLogo; property: "scale"; to: 1; duration: 1000; easing.type: Easing.OutBack; easing.overshoot: 2.2 }
+                NumberAnimation { target: bigLogo; property: "rotation"; to: 0; duration: 1000; easing.type: Easing.OutBack }
+                SequentialAnimation { PauseAnimation { duration: 150 }
+                    ParallelAnimation {
+                        NumberAnimation { target: popRing; property: "opacity"; from: 0.9; to: 0; duration: 1000; easing.type: Easing.OutCubic }
+                        NumberAnimation { target: popRing; property: "scale"; from: 0.6; to: 1.9; duration: 1000; easing.type: Easing.OutCubic } } }
+                SequentialAnimation { PauseAnimation { duration: 600 } NumberAnimation { target: nameRow; property: "opacity"; to: 1; duration: 700 } }
+                SequentialAnimation { PauseAnimation { duration: 1000 } NumberAnimation { target: subLine; property: "opacity"; to: 1; duration: 700 } }
+                SequentialAnimation { PauseAnimation { duration: 1200 } NumberAnimation { target: loadTrack; property: "opacity"; to: 1; duration: 400 } }
+            }
+            NumberAnimation { target: loadFill; property: "width"; to: 220; duration: 1600; easing.type: Easing.InOutQuad }
+            ScriptAction { script: fadeOut.start() }
+        }
+        NumberAnimation { id: fadeOut; target: splash; property: "opacity"; to: 0; duration: 500; easing.type: Easing.InOutQuad }
+    }
+
     // ------------------------------------------------------------- Dialogs
     FolderDialog {
         id: folderDialog

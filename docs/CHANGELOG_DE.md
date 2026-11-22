@@ -1,5 +1,8 @@
 # Änderungsprotokoll
 
+## 22.11.2026 – Start-Animation
+- „Butchies präsentiert“, danach ploppt das Programm-Logo auf, Name mit schimmerndem „AI“, Ladebalken; Klick überspringt.
+
 ## 22.11.2026 – Blau-Weiß
 - Alles wieder Blau-Weiß: Programm, Startanimation, Logo, Installer.
 - Build macht echte Bildschirmfotos der Oberfläche (Artefakt „bildschirmfotos“).
