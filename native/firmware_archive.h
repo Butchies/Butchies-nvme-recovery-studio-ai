@@ -182,7 +182,7 @@ inline QVariantMap importFolder(const QString &folder, const QVariantMap &forDev
     while(it.hasNext()) {
         const QFileInfo fi(it.next());
         if(!ext.contains(fi.suffix().toLower())) continue;
-        const auto r=add(fi.absoluteFilePath(),{{"hersteller",forDevice.value("catalogVendor").toString(QStringLiteral("Eigene Dateien"))},
+        const auto r=add(fi.absoluteFilePath(),{{"hersteller",forDevice.value("catalogVendor",QStringLiteral("Eigene Dateien")).toString()},
             {"modelle",QJsonArray{model}},{"version",fi.completeBaseName()},{"art",fi.suffix().toLower()==QStringLiteral("iso")?QStringLiteral("samsung-iso"):QStringLiteral("nvme-bild")},
             {"quelle",QStringLiteral("import:")+fi.fileName()},{"hinweis",QStringLiteral("Vom Benutzer übernommen")}});
         if(!r.isEmpty()) ++added;
