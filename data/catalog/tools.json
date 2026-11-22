@@ -7,12 +7,26 @@
       "name": "smartmontools (smartctl)",
       "zweck": "NVMe-Identify, SMART/Health und Fehlerprotokoll auch hinter USB-Bridges (JMicron, ASMedia, Realtek) auslesen.",
       "kiNutzung": "automatisch bei jeder Diagnose, wenn Windows selbst keine NVMe-Daten über USB liefert",
-      "familien": ["alle"],
-      "plattform": ["windows", "linux"],
+      "familien": [
+        "alle"
+      ],
+      "plattform": [
+        "windows",
+        "linux"
+      ],
       "lizenz": "GPL-2.0 (frei, darf weitergegeben werden)",
       "offizielleSeite": "https://www.smartmontools.org/wiki/Download",
-      "automatischerDownload": {"githubRepo": "smartmontools/smartmontools", "assetEndung": ".win32-setup.exe", "stilleInstallation": ["/S"]},
-      "erkennung": ["%ProgramFiles%/smartmontools/bin/smartctl.exe", "%ProgramFiles(x86)%/smartmontools/bin/smartctl.exe"],
+      "automatischerDownload": {
+        "githubRepo": "smartmontools/smartmontools",
+        "assetEndung": ".win32-setup.exe",
+        "stilleInstallation": [
+          "/S"
+        ]
+      },
+      "erkennung": [
+        "%ProgramFiles%/smartmontools/bin/smartctl.exe",
+        "%ProgramFiles(x86)%/smartmontools/bin/smartctl.exe"
+      ],
       "vertrauen": "bestaetigt"
     },
     {
@@ -20,11 +34,18 @@
       "name": "nvme-cli",
       "zweck": "Vollständiger NVMe-Zugriff unter Linux: Identify, Logs, Firmware-Slots, Firmware-Download/Commit.",
       "kiNutzung": "Linux-Boot-Edition (Firmware-Manager, Notmodus-Prüfung)",
-      "familien": ["alle"],
-      "plattform": ["linux"],
+      "familien": [
+        "alle"
+      ],
+      "plattform": [
+        "linux"
+      ],
       "lizenz": "GPL-2.0",
       "offizielleSeite": "https://github.com/linux-nvme/nvme-cli",
-      "erkennung": ["/usr/sbin/nvme", "/usr/bin/nvme"],
+      "erkennung": [
+        "/usr/sbin/nvme",
+        "/usr/bin/nvme"
+      ],
       "vertrauen": "bestaetigt"
     },
     {
@@ -32,11 +53,18 @@
       "name": "GNU ddrescue",
       "zweck": "Alternative Rettungsabbild-Erstellung unter Linux; liest dieselbe Lesekarte (abbild.map) wie dieses Programm.",
       "kiNutzung": "Linux-Boot-Edition; Fortsetzen einer unter Windows begonnenen Rettung",
-      "familien": ["alle"],
-      "plattform": ["linux"],
+      "familien": [
+        "alle"
+      ],
+      "plattform": [
+        "linux"
+      ],
       "lizenz": "GPL-3.0",
       "offizielleSeite": "https://www.gnu.org/software/ddrescue/",
-      "erkennung": ["/usr/bin/ddrescue", "/usr/sbin/ddrescue"],
+      "erkennung": [
+        "/usr/bin/ddrescue",
+        "/usr/sbin/ddrescue"
+      ],
       "vertrauen": "bestaetigt"
     },
     {
@@ -44,11 +72,18 @@
       "name": "Samsung Magician / Samsung Firmware-ISO",
       "zweck": "Offizielle Firmware-Updates und Diagnose für Samsung-SSDs.",
       "kiNutzung": "empfohlen bei bekanntem Samsung-Firmwarefehler; Firmware nur aus dieser Quelle",
-      "familien": ["samsung"],
-      "plattform": ["windows"],
+      "familien": [
+        "samsung"
+      ],
+      "plattform": [
+        "windows"
+      ],
       "lizenz": "proprietär, kostenlos",
       "offizielleSeite": "https://semiconductor.samsung.com/consumer-storage/support/tools/",
-      "erkennung": ["%ProgramFiles(x86)%/Samsung/Samsung Magician/SamsungMagician.exe", "%ProgramFiles%/Samsung/Samsung Magician/SamsungMagician.exe"],
+      "erkennung": [
+        "%ProgramFiles(x86)%/Samsung/Samsung Magician/SamsungMagician.exe",
+        "%ProgramFiles%/Samsung/Samsung Magician/SamsungMagician.exe"
+      ],
       "hinweis": "Nur am internen Anschluss bzw. mit Samsung-Gehäuse; USB-Gehäuse anderer Hersteller werden meist nicht unterstützt.",
       "vertrauen": "bestaetigt"
     },
@@ -57,11 +92,18 @@
       "name": "Western Digital / SanDisk Dashboard",
       "zweck": "Offizielle Firmware-Updates und Diagnose für WD- und SanDisk-SSDs.",
       "kiNutzung": "empfohlen bei bekanntem WD/SanDisk-Firmwarefehler",
-      "familien": ["wd_sandisk"],
-      "plattform": ["windows"],
+      "familien": [
+        "wd_sandisk"
+      ],
+      "plattform": [
+        "windows"
+      ],
       "lizenz": "proprietär, kostenlos",
       "offizielleSeite": "https://support.wdc.com/knowledgebase/answer.aspx?ID=14217",
-      "erkennung": ["%ProgramFiles%/Western Digital/Western Digital Dashboard/WDDashboard.exe", "%ProgramFiles(x86)%/Western Digital/Western Digital Dashboard/WDDashboard.exe"],
+      "erkennung": [
+        "%ProgramFiles%/Western Digital/Western Digital Dashboard/WDDashboard.exe",
+        "%ProgramFiles(x86)%/Western Digital/Western Digital Dashboard/WDDashboard.exe"
+      ],
       "vertrauen": "bestaetigt"
     },
     {
@@ -69,11 +111,19 @@
       "name": "Crucial Storage Executive",
       "zweck": "Offizielle Firmware-Updates für Crucial-SSDs (P-, T-, MX-, BX-Serie); Firmware-ISO für Updates außerhalb von Windows.",
       "kiNutzung": "empfohlen bei Crucial-SSDs",
-      "familien": ["micron_crucial", "phison", "siliconmotion"],
-      "plattform": ["windows"],
+      "familien": [
+        "micron_crucial",
+        "phison",
+        "siliconmotion"
+      ],
+      "plattform": [
+        "windows"
+      ],
       "lizenz": "proprietär, kostenlos",
       "offizielleSeite": "https://www.crucial.com/support/storage-executive",
-      "erkennung": ["%ProgramFiles%/Crucial/Crucial Storage Executive/StorageExecutive.exe"],
+      "erkennung": [
+        "%ProgramFiles%/Crucial/Crucial Storage Executive/StorageExecutive.exe"
+      ],
       "vertrauen": "bestaetigt"
     },
     {
@@ -81,11 +131,20 @@
       "name": "Kingston SSD Manager",
       "zweck": "Offizielle Firmware-Updates und Diagnose für Kingston-SSDs.",
       "kiNutzung": "empfohlen bei Kingston-SSDs (nur interner Anschluss, keine USB-Gehäuse)",
-      "familien": ["marken_ohne_controllerangabe", "phison", "siliconmotion"],
-      "plattform": ["windows"],
+      "familien": [
+        "marken_ohne_controllerangabe",
+        "phison",
+        "siliconmotion"
+      ],
+      "plattform": [
+        "windows"
+      ],
       "lizenz": "proprietär, kostenlos",
       "offizielleSeite": "https://www.kingston.com/de/support/technical/ssdmanager",
-      "erkennung": ["%ProgramFiles%/Kingston/Kingston SSD Manager/KSM.exe", "%ProgramFiles(x86)%/Kingston_SSD_Manager/KSM.exe"],
+      "erkennung": [
+        "%ProgramFiles%/Kingston/Kingston SSD Manager/KSM.exe",
+        "%ProgramFiles(x86)%/Kingston_SSD_Manager/KSM.exe"
+      ],
       "vertrauen": "bestaetigt"
     },
     {
@@ -93,11 +152,18 @@
       "name": "SK hynix Drive Manager Easy Kit",
       "zweck": "Offizielle Firmware-Updates und Diagnose für SK-hynix-SSDs.",
       "kiNutzung": "empfohlen bei SK-hynix-SSDs",
-      "familien": ["skhynix_solidigm"],
-      "plattform": ["windows"],
+      "familien": [
+        "skhynix_solidigm"
+      ],
+      "plattform": [
+        "windows"
+      ],
       "lizenz": "proprietär, kostenlos",
       "offizielleSeite": "https://ssd.skhynix.com/",
-      "erkennung": ["%ProgramFiles%/SK hynix/Drive Manager Easy Kit/DriveManager.exe", "%ProgramFiles(x86)%/SK hynix/Drive Manager Easy Kit/DriveManager.exe"],
+      "erkennung": [
+        "%ProgramFiles%/SK hynix/Drive Manager Easy Kit/DriveManager.exe",
+        "%ProgramFiles(x86)%/SK hynix/Drive Manager Easy Kit/DriveManager.exe"
+      ],
       "vertrauen": "dokumentiert"
     },
     {
@@ -105,11 +171,20 @@
       "name": "Solidigm Storage Tool (SST) / Synergy Toolkit",
       "zweck": "Offizielle Firmware-Updates für Solidigm- und Intel-NAND-SSDs; CLI auch unter Linux.",
       "kiNutzung": "empfohlen bei Solidigm/Intel-SSDs; CLI in der Linux-Boot-Edition nutzbar",
-      "familien": ["skhynix_solidigm", "intel"],
-      "plattform": ["windows", "linux"],
+      "familien": [
+        "skhynix_solidigm",
+        "intel"
+      ],
+      "plattform": [
+        "windows",
+        "linux"
+      ],
       "lizenz": "proprietär, kostenlos",
       "offizielleSeite": "https://www.solidigm.com/support-page/drivers-downloads/ka-00085.html",
-      "erkennung": ["%ProgramFiles%/Solidigm/Solidigm(TM) Storage Tool/Solidigm.UI.exe", "/usr/bin/sst"],
+      "erkennung": [
+        "%ProgramFiles%/Solidigm/Solidigm(TM) Storage Tool/Solidigm.UI.exe",
+        "/usr/bin/sst"
+      ],
       "vertrauen": "bestaetigt"
     },
     {
@@ -117,11 +192,18 @@
       "name": "KIOXIA SSD Utility",
       "zweck": "Offizielle Firmware-Updates für KIOXIA-SSDs (EXCERIA-Serien).",
       "kiNutzung": "empfohlen bei KIOXIA-SSDs",
-      "familien": ["kioxia"],
-      "plattform": ["windows"],
+      "familien": [
+        "kioxia"
+      ],
+      "plattform": [
+        "windows"
+      ],
       "lizenz": "proprietär, kostenlos (EULA)",
       "offizielleSeite": "https://europe.kioxia.com/en-mea/personal/ssd/ssd-utility.html",
-      "erkennung": ["%ProgramFiles%/KIOXIA/SSD Utility/SSDUtility.exe", "%ProgramFiles(x86)%/KIOXIA/SSD Utility/SSDUtility.exe"],
+      "erkennung": [
+        "%ProgramFiles%/KIOXIA/SSD Utility/SSDUtility.exe",
+        "%ProgramFiles(x86)%/KIOXIA/SSD Utility/SSDUtility.exe"
+      ],
       "vertrauen": "bestaetigt"
     },
     {
@@ -129,11 +211,18 @@
       "name": "Seagate SeaTools / Firmware-Downloads",
       "zweck": "Diagnose und Firmware (per Seriennummer) für Seagate-SSDs (FireCuda/BarraCuda, Phison-basiert).",
       "kiNutzung": "empfohlen bei Seagate-SSDs",
-      "familien": ["phison"],
-      "plattform": ["windows", "linux"],
+      "familien": [
+        "phison"
+      ],
+      "plattform": [
+        "windows",
+        "linux"
+      ],
       "lizenz": "proprietär, kostenlos",
       "offizielleSeite": "https://www.seagate.com/support/downloads/seatools/",
-      "erkennung": ["%ProgramFiles%/Seagate/SeaTools5/SeaTools.exe"],
+      "erkennung": [
+        "%ProgramFiles%/Seagate/SeaTools5/SeaTools.exe"
+      ],
       "vertrauen": "bestaetigt"
     },
     {
@@ -141,8 +230,13 @@
       "name": "Phison MPTool (Notmodus-Neuinitialisierung)",
       "zweck": "Controller im ROM-/Safe-Mode neu laden. Datenverlust!",
       "kiNutzung": "nur Linux-Boot-Edition bzw. direkter PCIe-Anschluss, nur nach ausdrücklicher Freigabe",
-      "familien": ["phison"],
-      "plattform": ["windows", "linux"],
+      "familien": [
+        "phison"
+      ],
+      "plattform": [
+        "windows",
+        "linux"
+      ],
       "lizenz": "proprietär, nicht öffentlich verteilt",
       "offizielleSeite": "",
       "nutzerBereitgestellt": true,
@@ -153,8 +247,12 @@
       "name": "Silicon Motion MPTool",
       "zweck": "SMI-Controller im ROM-Modus neu laden. Datenverlust!",
       "kiNutzung": "nur Linux-Boot-Edition bzw. direkter PCIe-Anschluss, nur nach ausdrücklicher Freigabe",
-      "familien": ["siliconmotion"],
-      "plattform": ["windows"],
+      "familien": [
+        "siliconmotion"
+      ],
+      "plattform": [
+        "windows"
+      ],
       "lizenz": "proprietär, nicht öffentlich verteilt",
       "offizielleSeite": "",
       "nutzerBereitgestellt": true,
@@ -165,8 +263,12 @@
       "name": "Realtek SSD MPTool",
       "zweck": "Realtek-SSD-Controller neu initialisieren. Datenverlust!",
       "kiNutzung": "nur direkter PCIe-Anschluss, nur nach ausdrücklicher Freigabe",
-      "familien": ["realtek"],
-      "plattform": ["windows"],
+      "familien": [
+        "realtek"
+      ],
+      "plattform": [
+        "windows"
+      ],
       "lizenz": "proprietär, nicht öffentlich verteilt",
       "offizielleSeite": "",
       "nutzerBereitgestellt": true,
@@ -177,12 +279,52 @@
       "name": "Maxio MPTool",
       "zweck": "Maxio-Controller neu initialisieren. Datenverlust!",
       "kiNutzung": "nur direkter PCIe-Anschluss, nur nach ausdrücklicher Freigabe",
-      "familien": ["maxio"],
-      "plattform": ["windows"],
+      "familien": [
+        "maxio"
+      ],
+      "plattform": [
+        "windows"
+      ],
       "lizenz": "proprietär, nicht öffentlich verteilt",
       "offizielleSeite": "",
       "nutzerBereitgestellt": true,
       "vertrauen": "unbestaetigt"
+    },
+    {
+      "id": "fwupd",
+      "name": "fwupd / LVFS",
+      "zweck": "Offizielle Firmware aus dem Linux Vendor Firmware Service – viele Hersteller und OEM-SSDs (Lenovo, Dell, HP …) liefern ihre SSD-Firmware dort für Linux aus.",
+      "kiNutzung": "automatisch in der Linux-Edition: Firmware-Archiv lädt passende LVFS-Pakete vor, Flashen offline mit fwupdtool",
+      "familien": [
+        "alle"
+      ],
+      "plattform": [
+        "linux"
+      ],
+      "lizenz": "LGPL-2.1 (im Boot-Stick enthalten)",
+      "offizielleSeite": "https://fwupd.org/",
+      "erkennung": [
+        "/usr/bin/fwupdtool"
+      ],
+      "vertrauen": "bestaetigt"
+    },
+    {
+      "id": "openseachest",
+      "name": "openSeaChest (Seagate)",
+      "zweck": "Herstellerunabhängiges Open-Source-Werkzeug: Firmware-Download/-Aktivierung, Selbsttests, Format und Sanitize für NVMe.",
+      "kiNutzung": "Linux-Edition: Ausweichweg, wenn nvme-cli beim Firmware-Download scheitert",
+      "familien": [
+        "alle"
+      ],
+      "plattform": [
+        "linux"
+      ],
+      "lizenz": "MPL-2.0 (im Boot-Stick enthalten)",
+      "offizielleSeite": "https://github.com/Seagate/openSeaChest",
+      "erkennung": [
+        "/usr/local/bin/openSeaChest_Firmware"
+      ],
+      "vertrauen": "bestaetigt"
     }
   ]
 }

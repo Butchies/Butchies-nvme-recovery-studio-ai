@@ -6,6 +6,16 @@ cmake -S /opt/src/native -B /opt/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTAL
 cmake --build /opt/build --parallel "$(nproc)"
 cmake --install /opt/build
 rm -rf /opt/build /opt/src
+# openSeaChest (Seagate, Open Source, MPL-2.0): herstellerunabhängiges
+# Firmware-Werkzeug für NVMe – neueste Linux-Version von GitHub.
+URL=$(curl -fsSL https://api.github.com/repos/Seagate/openSeaChest/releases/latest \
+      | grep -o '"browser_download_url": *"[^"]*' | cut -d'"' -f4 \
+      | grep -iE 'linux.*(x86_64|amd64)|(x86_64|amd64).*linux' | grep -iE '\.tar\.(xz|gz)$|\.tgz$' | head -n1 || true)
+if [ -n "$URL" ]; then
+  mkdir -p /opt/openseachest && curl -fsSL "$URL" | tar -xJ -C /opt/openseachest --strip-components=1 2>/dev/null \
+    || curl -fsSL "$URL" | tar -xz -C /opt/openseachest --strip-components=1 || true
+  find /opt/openseachest -name 'openSeaChest_*' -type f -exec chmod +x {} \; -exec ln -sf {} /usr/local/bin/ \; || true
+fi
 # Laufzeitbibliotheken behalten, bevor die Build-Pakete entfernt werden
 apt-mark manual $(dpkg-query -W -f='${Package}\n' 'libqt6*' 'qt6-*' 'qml6-*' 2>/dev/null | grep -v -- '-dev$') >/dev/null
 apt-get purge -y build-essential cmake qt6-base-dev qt6-declarative-dev || true

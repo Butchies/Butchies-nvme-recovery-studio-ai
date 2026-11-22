@@ -639,14 +639,14 @@ ApplicationWindow {
                                             Layout.fillWidth: true; spacing: 2
                                             Label { text: modelData.hersteller + " · Version " + modelData.version; font.bold: true; color: theme.strong }
                                             Label { Layout.fillWidth: true; elide: Text.ElideRight; font.pixelSize: 12; color: theme.muted
-                                                    text: modelData.treffer + (modelData.voraussetzungen && modelData.voraussetzungen.length ? " · setzt voraus: " + modelData.voraussetzungen.join(", ") : "") + (modelData.art === "samsung-iso" ? " · Samsung-ISO" : "") }
+                                                    text: modelData.treffer + (modelData.voraussetzungen && modelData.voraussetzungen.length ? " · setzt voraus: " + modelData.voraussetzungen.join(", ") : "") + (modelData.art === "samsung-iso" ? " · Samsung-ISO" : (modelData.art === "lvfs-cab" ? " · LVFS-Paket" : "")) }
                                         }
                                         Pill { text: modelData.istAktuell ? "bereits installiert" : (modelData.vorhanden ? "offline verfügbar" : "Datei fehlt"); level: modelData.istAktuell ? "grey" : (modelData.vorhanden ? "good" : "bad") }
                                         ActionButton {
                                             text: "Verwenden"; primary: !modelData.istAktuell; iconName: "chip"
-                                            enabled: modelData.vorhanden && !controller.recoveryRunning && (modelData.art !== "samsung-iso" || controller.linuxEdition)
+                                            enabled: modelData.vorhanden && !controller.recoveryRunning && ((modelData.art !== "samsung-iso" && modelData.art !== "lvfs-cab") || controller.linuxEdition)
                                             onClicked: {
-                                                if (modelData.art === "samsung-iso") controller.runArchivedIso(modelData.pfad)
+                                                if (modelData.art === "samsung-iso" || modelData.art === "lvfs-cab") controller.runArchived(modelData.pfad, modelData.art)
                                                 else { firmwareDialog.fileUrl = "file:///" + modelData.pfad.replace(/^\/+/, ""); controller.prepareFirmware(window.selected, firmwareDialog.fileUrl, noBackupBox.checked); firmwareDialog.open() }
                                             }
                                         }

@@ -959,6 +959,38 @@ public:
                 if(--m_archivePending==0) { m_archiveTotal=m_archiveQueue.size(); archiveNext(); }
             });
         }
+#ifndef Q_OS_WIN
+        // LVFS: fwupd fragt die passenden Firmwarepakete für alle eingebauten Geräte ab.
+        if(QFile::exists(QStringLiteral("/usr/bin/fwupdmgr"))) {
+            ++m_archivePending;
+            auto *proc=new QProcess(this);
+            proc->setProcessChannelMode(QProcess::SeparateChannels);
+            connect(proc,&QProcess::finished,this,[this,proc]{
+                proc->deleteLater();
+                int found=0;
+                const auto entries=FirmwareArchive::load();
+                const QByteArray out=proc->readAllStandardOutput();
+                const auto devs=QJsonDocument::fromJson(out.mid(out.indexOf('{'))).object().value("Devices").toArray();
+                for(const auto &dv:devs) {
+                    const auto d=dv.toObject();
+                    for(const auto &rv:d.value("Releases").toArray()) {
+                        const auto rel=rv.toObject();
+                        QString uri=rel.value("Uri").toString();
+                        if(uri.isEmpty() && !rel.value("Locations").toArray().isEmpty()) uri=rel.value("Locations").toArray().first().toString();
+                        if(uri.isEmpty() || FirmwareArchive::hasSource(entries,uri)) continue;
+                        m_archiveQueue.append(QVariantMap{{"art","datei"},{"url",uri},{"hersteller",QStringLiteral("LVFS · ")+d.value("Vendor").toString()},
+                            {"modell",d.value("Name").toString()},{"modelle",QStringList{d.value("Name").toString(),d.value("Plugin").toString()==QStringLiteral("nvme") ? d.value("Name").toString() : QString()}},
+                            {"version",rel.value("Version").toString()},{"dateiart",QStringLiteral("lvfs-cab")}});
+                        ++found;
+                    }
+                }
+                ai(QStringLiteral("Firmware-Archiv: LVFS – %1 neue Firmwarepakete für die eingebauten Geräte.").arg(found));
+                m_vendorResult[QStringLiteral("LVFS")]=found ? QStringLiteral("%1 neu").arg(found) : QStringLiteral("aktuell");
+                if(--m_archivePending==0) { m_archiveTotal=m_archiveQueue.size(); archiveNext(); }
+            });
+            proc->start(QStringLiteral("/bin/sh"),{QStringLiteral("-c"),QStringLiteral("fwupdmgr refresh --force >/dev/null 2>&1; fwupdmgr get-updates --json 2>/dev/null")});
+        }
+#endif
         if(m_archivePending==0) archiveFinish(QStringLiteral("Keine automatisch ladbaren Quellen in firmware_sources.json."));
     }
     Q_INVOKABLE void cancelArchive() { m_archiveQueue.clear(); }
@@ -988,13 +1020,16 @@ public:
     }
     Q_INVOKABLE void openUrl(const QString &url) { QDesktopServices::openUrl(QUrl(url)); }
     // Samsung-ISO aus dem Archiv direkt ausführen (Linux-Edition).
-    Q_INVOKABLE void runArchivedIso(const QString &path) {
+    Q_INVOKABLE void runArchivedIso(const QString &path) { runArchived(path,QStringLiteral("samsung-iso")); }
+    // Archivierte Pakete, die ihr eigenes Updateverfahren mitbringen (Samsung-ISO, LVFS-Paket).
+    Q_INVOKABLE void runArchived(const QString &path, const QString &art) {
         if(m_worker || m_fwWorker || m_repairWorker || m_cacheWorker) { ai(QStringLiteral("Bitte warten, bis der laufende Vorgang beendet ist.")); return; }
         m_fwProgress={{"phase",QStringLiteral("Samsung-Firmware-Update …")},{"percent",0},{"running",true}};
         emit firmwareChanged(); emit recoveryChanged();
         m_kb.recordAction(QStringLiteral("firmware_samsung_iso"),m_aiReport.value("geraet").toMap(),{{"datei",QFileInfo(path).fileName()}});
-        m_fwWorker=QThread::create([this,path]{
-            const auto r=FirmwareArchive::runSamsungIso(path,[this](const QString &l){ QMetaObject::invokeMethod(this,[this,l]{ ai(l); },Qt::QueuedConnection); });
+        m_fwWorker=QThread::create([this,path,art]{
+            auto log=[this](const QString &l){ QMetaObject::invokeMethod(this,[this,l]{ ai(l); },Qt::QueuedConnection); };
+            const auto r=art==QStringLiteral("lvfs-cab") ? FirmwareArchive::runLvfsCab(path,log) : FirmwareArchive::runSamsungIso(path,log);
             QMetaObject::invokeMethod(this,[this,r]{
                 if(m_fwWorker) { m_fwWorker->wait(); m_fwWorker->deleteLater(); m_fwWorker=nullptr; }
                 m_fwProgress={{"phase",r.value("message")},{"percent",r.value("ok").toBool()?100:0},{"running",false},{"result",r}};

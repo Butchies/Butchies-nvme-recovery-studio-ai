@@ -1,6 +1,7 @@
 # Änderungsprotokoll
 
 ## 22.11.2026 – Offline-Firmware-Archiv
+- Linux-Stick: fwupd/LVFS (Firmware vieler Hersteller und OEM-SSDs, offline einspielbar) und openSeaChest (herstellerunabhängiges Firmware-Werkzeug) eingebaut.
 - Archiv aktualisiert sich selbst (Start + täglich bei Internet), durchsucht alle Herstellerseiten automatisch und lädt fehlende Werkzeuge nach.
 - Firmware-Archiv: lädt offizielle Firmware von Western Digital/SanDisk (.fluf) und Samsung (ISO) automatisch, 19 Herstellerquellen mit offizieller Seite, Import loser Dateien und ganzer Ordner, Export.
 - Passende Firmware wird zur gewählten SSD offline vorgeschlagen; Samsung-ISOs laufen in der Linux-Edition direkt (fumagician).

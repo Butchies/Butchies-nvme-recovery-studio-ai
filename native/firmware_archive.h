@@ -265,4 +265,24 @@ inline QVariantMap runSamsungIso(const QString &iso, const std::function<void(co
 #endif
 }
 
+// LVFS-Paket (.cab) offline mit fwupdtool einspielen (Linux-Edition).
+inline QVariantMap runLvfsCab(const QString &cab, const std::function<void(const QString&)> &log) {
+#ifdef Q_OS_WIN
+    Q_UNUSED(cab); Q_UNUSED(log);
+    return {{"ok",false},{"message",QStringLiteral("LVFS-Pakete werden in der Linux-Boot-Edition eingespielt.")}};
+#else
+    log(QStringLiteral("Spiele LVFS-Firmwarepaket ein (fwupdtool) – Stromversorgung nicht unterbrechen."));
+    QProcess p; p.setProcessChannelMode(QProcess::MergedChannels);
+    p.start(QStringLiteral("fwupdtool"),{QStringLiteral("install"),cab,QStringLiteral("--force"),QStringLiteral("--no-reboot-check")});
+    if(!p.waitForStarted()) return {{"ok",false},{"message",QStringLiteral("fwupdtool ließ sich nicht starten.")}};
+    while(p.state()!=QProcess::NotRunning) {
+        p.waitForReadyRead(1000);
+        for(const auto &l:QString::fromLocal8Bit(p.readAll()).split(QLatin1Char('\n'),Qt::SkipEmptyParts)) log(QStringLiteral("LVFS: ")+l.trimmed());
+    }
+    const bool ok=p.exitStatus()==QProcess::NormalExit && p.exitCode()==0;
+    return {{"ok",ok},{"message",ok ? QStringLiteral("LVFS-Firmware eingespielt. Rechner ausschalten und neu starten, damit sie aktiv wird.")
+                                    : QStringLiteral("fwupdtool meldet einen Fehler (Code %1) – Ausgabe im Verlauf.").arg(p.exitCode())}};
+#endif
+}
+
 } // namespace FirmwareArchive
