@@ -24,6 +24,8 @@
 #include <atomic>
 #include <functional>
 #include <vector>
+#include <thread>
+#include <QMutex>
 #include "linux_nvme.h"
 #include "error_translator.h"
 #include "firmware_manager.h"
@@ -92,34 +94,64 @@ inline QVariantMap surfaceTest(const QString &dev, bool full, std::atomic_bool &
 // Zero-fill test: writes zeros over the whole capacity until full, then reads
 // everything back and checks every byte is zero. Tests all flash chips.
 inline QVariantMap zeroFillTest(const QString &dev, std::atomic_bool &cancel, const Progress &progress) {
+    // Parallel version: several threads with their own file descriptors keep
+    // many large requests in flight, so the SSD works on all flash chips at
+    // once (full test, same thoroughness, close to the SSD's top speed).
     QVariantMap r;
-    const int fd=::open(QFile::encodeName(dev).constData(),O_RDWR|O_DIRECT|O_CLOEXEC);
-    if(fd<0) { r["ok"]=false; r["fehler"]=QStringLiteral("%1 nicht beschreibbar").arg(dev); return r; }
-    unsigned long long size=0; ioctl(fd,BLKGETSIZE64,&size);
-    const quint64 chunk=8ULL<<20;
-    auto *buf=static_cast<unsigned char*>(PlatformIO::allocAligned(chunk,4096));
-    quint64 writeErr=0, readErr=0, badChunks=0; QVariantList badAreas; int last=-1;
+    int probe=::open(QFile::encodeName(dev).constData(),O_RDWR|O_DIRECT|O_CLOEXEC);
+    if(probe<0) { r["ok"]=false; r["fehler"]=QStringLiteral("%1 nicht beschreibbar").arg(dev); return r; }
+    unsigned long long size=0; ioctl(probe,BLKGETSIZE64,&size); ::close(probe);
+    const quint64 chunk=16ULL<<20;
+    const int threads=8;
+    const quint64 chunks=(size+chunk-1)/chunk;
+    std::atomic<quint64> done{0}, writeErr{0}, readErr{0}, badChunks{0};
+    QMutex badMutex; QVariantList badAreas;
+    QElapsedTimer timer; timer.start();
     for(int pass=0;pass<2 && !cancel.load();++pass) {
-        for(quint64 off=0;off<size && !cancel.load();off+=chunk) {
-            const quint64 len=qMin(chunk,size-off);
-            if(pass==0) { memset(buf,0,len); if(pwrite(fd,buf,len,off_t(off))!=ssize_t(len)) ++writeErr; }
-            else {
-                if(pread(fd,buf,len,off_t(off))!=ssize_t(len)) { ++readErr; if(badAreas.size()<100) badAreas.append(QStringLiteral("Lesefehler ab Byte %1").arg(off)); continue; }
-                bool zero=true; for(quint64 i=0;i<len;++i) if(buf[i]) { zero=false; break; }
-                if(!zero) { ++badChunks; if(badAreas.size()<100) badAreas.append(QStringLiteral("Nicht null ab Byte %1 (8 MiB-Block)").arg(off)); }
+        std::vector<std::thread> pool;
+        for(int t=0;t<threads;++t) pool.emplace_back([&,t,pass]{
+            const int fd=::open(QFile::encodeName(dev).constData(),O_RDWR|O_DIRECT|O_CLOEXEC);
+            if(fd<0) { writeErr++; return; }
+            auto *buf=static_cast<unsigned char*>(PlatformIO::allocAligned(chunk,4096));
+            if(pass==0) memset(buf,0,chunk);
+            for(quint64 c=quint64(t);c<chunks && !cancel.load();c+=quint64(threads)) {
+                const quint64 off=c*chunk, len=qMin(chunk,size-off);
+                if(pass==0) { if(pwrite(fd,buf,len,off_t(off))!=ssize_t(len)) writeErr++; }
+                else if(pread(fd,buf,len,off_t(off))!=ssize_t(len)) {
+                    readErr++; QMutexLocker l(&badMutex); if(badAreas.size()<100) badAreas.append(QStringLiteral("Lesefehler ab Byte %1").arg(off));
+                } else {
+                    const quint64 *w=reinterpret_cast<const quint64*>(buf); bool zero=true;
+                    for(quint64 i=0;i<len/8;++i) if(w[i]) { zero=false; break; }
+                    if(!zero) { badChunks++; QMutexLocker l(&badMutex); if(badAreas.size()<100) badAreas.append(QStringLiteral("Nicht null ab Byte %1 (16 MiB-Block)").arg(off)); }
+                }
+                done+=len;
             }
-            const int pct=int((pass*size+off+len)*100/(2*size));
-            if(pct!=last) { last=pct; progress(pct,pass==0 ? QStringLiteral("Nullfüll-Test: beschreibe SSD bis voll …") : QStringLiteral("Nullfüll-Test: prüfe alle Bereiche …")); }
+            if(pass==0) fdatasync(fd);
+            ::close(fd);
+            PlatformIO::freeAligned(buf);
+        });
+        int last=-1;
+        while(true) {
+            bool running=false;
+            for(auto &th:pool) if(th.joinable()) running=true;
+            const int pct=int(done.load()*100/(2*size));
+            if(pct!=last) {
+                last=pct;
+                const double secs=timer.elapsed()/1000.0, rate=secs>0 ? done.load()/1048576.0/secs : 0;
+                progress(pct,QStringLiteral("%1 – %2 MiB/s").arg(pass==0 ? QStringLiteral("Nullfüll-Test: beschreibe SSD bis voll") : QStringLiteral("Nullfüll-Test: prüfe alle Bereiche")).arg(rate,0,'f',0));
+            }
+            if(done.load()>=quint64(pass+1)*size || cancel.load()) break;
+            QThread::msleep(500);
+            Q_UNUSED(running)
         }
-        if(pass==0) fdatasync(fd);
+        for(auto &th:pool) th.join();
     }
-    ::close(fd);
-    PlatformIO::freeAligned(buf);
     r["ok"]=!cancel.load() && writeErr==0 && readErr==0 && badChunks==0;
     r["kapazitaetGiB"]=size/1073741824.0;
-    r["schreibfehler"]=QString::number(writeErr);
-    r["lesefehler"]=QString::number(readErr);
-    r["fehlerhafteBloecke"]=QString::number(badChunks);
+    r["dauerMinuten"]=timer.elapsed()/60000.0;
+    r["schreibfehler"]=QString::number(writeErr.load());
+    r["lesefehler"]=QString::number(readErr.load());
+    r["fehlerhafteBloecke"]=QString::number(badChunks.load());
     r["fehlerbereiche"]=badAreas;
     return r;
 }

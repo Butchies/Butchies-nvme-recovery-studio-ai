@@ -1,5 +1,8 @@
 # Änderungsprotokoll
 
+## 2026-11-22 – Nullfüll-Test parallel
+- Nullfüll-Test mit 8 parallelen Datenströmen und 16-MiB-Blöcken (gleiche Gründlichkeit, nahe Höchstgeschwindigkeit der SSD), Geschwindigkeitsanzeige und Dauer.
+
 ## 2026-11-22 – Nullfüll-Test nach erfolgreicher Reparatur
 - Pflichtschritt nach jeder erfolgreichen Reparatur: SSD komplett mit 0 beschreiben bis voll, danach alles zurücklesen und prüfen (Fortschritt in Prozent, Liste fehlerhafter Bereiche). Erst wenn er besteht, gilt die SSD als repariert; sonst „Speicherchips defekt“.
 
