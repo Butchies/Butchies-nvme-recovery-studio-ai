@@ -7,6 +7,7 @@
 | `usb_nvme_bridges.json` | USB-NVMe-Bridgechips und was sie durchreichen | Fachwissen, mit Vertrauensangabe |
 | `controller_families.json` | Controllerfamilien je Hersteller: Notmodus, Reparaturwege, Werkzeuge, Datenverlust, Fehlerbilder | Fachwissen, mit Vertrauensangabe |
 | `tools.json` | Werkzeuge der KI mit offiziellen Quellen, Erkennung und Nutzung (Liste: `docs/WERKZEUGE_DOWNLOADLISTE_DE.md`) | recherchiert |
+| `nvme_codes.json` | Übersetzung von NVMe-Statuscodes, CSTS, SMART-Warnbits, Selbsttest und Kernelmeldungen | NVMe-Spezifikation, Linux-Treiber |
 | `firmware_issues.json` | Bekannte fehlerhafte Firmwarestände und offizielle Korrekturen | recherchiert, mit Belegen |
 
 Die Dateien werden in das Programm eingebettet. Eine gleichnamige Datei in `%APPDATA%/NVMeRecoveryStudioAI/vorlagen/` hat Vorrang (Aktualisierung ohne Neubau).

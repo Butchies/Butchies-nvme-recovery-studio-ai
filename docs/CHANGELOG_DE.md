@@ -1,5 +1,12 @@
 # Änderungsprotokoll
 
+## 2026-11-22 – Reparaturkette und Übersetzung der Controller-Meldungen
+- `data/catalog/nvme_codes.json`: 45 NVMe-Statuscodes (allgemein, befehlsspezifisch, Flash/Datenintegrität, Verbindung), CSTS-Bits und Sonderwerte (z. B. 0xffffffff = SSD vom PCIe-Bus verschwunden), SMART-Warnbits, Selbsttest-Ergebnisse, 12 Linux-Kernelmeldungen (controller is down, Device not ready, I/O timeout, capacity change to 0, AER …) – jeweils mit verständlicher Übersetzung und Bedeutung.
+- `native/error_translator.h`: „Was der Controller meldet“ – Fehlerprotokoll (bis 16 Einträge inkl. LBA), SMART-Warnungen und Kernelmeldungen zum Gerät, übersetzt, mit Schweregrad; Merkmale für die KI.
+- `native/repair_chain.h` (Linux, Daten werden gelöscht): PCIe-Funktionsreset → PCIe entfernen/neu einlesen → Controller-Reset → anderen Firmware-Slot aktivieren → Format NVM mit Löschen (Verwaltungstabelle neu) → Sanitize Block Erase (mit Fortschritt) → Firmware neu aufspielen; nach jedem Schritt Prüfung (Identify, Kapazität, SMART, Oberflächen-Stichprobe), Abbruch bei Erfolg; Abschluss-Oberflächentest (Stichprobe oder ganze SSD). Ergebnis trainiert das KI-Modell.
+- Oberfläche: „Reparieren“ (Linux), Schritte mit Controller-Antwort, Bereich „Was der Controller meldet“ (Rohmeldung + Übersetzung).
+- Nicht gebaut und nicht auf Hardware getestet.
+
 ## 2026-11-22 – Cache-Test
 - `native/cache_tester.h`: Cache-Ausstattung (DRAM oder DRAM-los/HMB, angeforderter und zugeteilter Host-Speicher, Schreibcache vorhanden/aktiv), NVMe-Controller-Selbsttest kurz/lang mit Ergebnis und Fehlersegment (Linux direkt, Windows über smartctl), Lesetest (wiederholt vs. zufällig, Ausreißer, sequenziell), Schreibtest nur Linux/Expertenmodus (Cache-Einbruch, Flush-Zeit; überschreibt Daten).
 - Bewertung „Cache wird nicht angesprochen / defekt / instabil“; Ergebnis fließt in Wissensbasis und KI-Modell (neue Ursache „Cache defekt“, drei neue Merkmale; vorhandene Modelldatei wird dadurch neu initialisiert).

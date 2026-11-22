@@ -27,6 +27,8 @@
 #include "stick_writer.h"
 #include "case_model.h"
 #include "cache_tester.h"
+#include "error_translator.h"
+#include "repair_chain.h"
 #include <QSet>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -55,6 +57,7 @@ class RecoveryController final : public QObject {
     Q_PROPERTY(bool linuxEdition READ linuxEdition CONSTANT)
     Q_PROPERTY(QVariantMap stickProgress READ stickProgress NOTIFY stickChanged)
     Q_PROPERTY(QVariantMap cacheProgress READ cacheProgress NOTIFY cacheChanged)
+    Q_PROPERTY(QVariantMap repairProgress READ repairProgress NOTIFY repairChanged)
 public:
     explicit RecoveryController(QObject *parent=nullptr):QObject(parent) {
         const auto k=m_kb.summary();
@@ -175,6 +178,51 @@ public:
 #endif
     }
     QVariantMap cacheProgress() const { return m_cache; }
+    QVariantMap repairProgress() const { return m_repair; }
+    // Automatic repair chain (Linux Boot Edition; data on the SSD is lost).
+    Q_INVOKABLE void startRepair(int index, bool fullSurface, const QString &firmwareUrl) {
+        if(m_worker || m_fwWorker || m_stickWorker || m_cacheWorker || m_repairWorker) { ai(QStringLiteral("Reparatur nicht möglich, solange ein anderer Vorgang läuft.")); return; }
+        if(!diagnose(index)) return;
+        if(!linuxEdition()) { ai(QStringLiteral("Reparaturkette nur in der Linux-Boot-Edition: USB-Gehäuse reichen Format/Sanitize/Reset nicht durch. Unter Windows ist nur der Lese-/Cache-Test möglich.")); return; }
+        RepairChain::Options opt;
+        opt.fullSurface=fullSurface;
+        opt.firmwareFile=firmwareUrl.startsWith(QStringLiteral("file:")) ? QUrl(firmwareUrl).toLocalFile() : firmwareUrl;
+        QSet<QString> vendors;
+        for(const auto &f:ControllerCatalog::Catalog::instance().families.value("familien").toArray())
+            for(const auto &v:f.toObject().value("pciVendor").toArray()) vendors.insert(v.toString());
+        const QVariantMap device=m_verified;
+        m_cancel=false;
+        m_repair={{"running",true},{"percent",0},{"phase",QStringLiteral("Start …")}};
+        emit repairChanged();
+        ai(QStringLiteral("Reparaturkette gestartet für %1 – Daten auf der SSD werden gelöscht.").arg(device.value("name").toString()));
+        m_kb.recordAction(QStringLiteral("reparatur_start"),device,{{"vollerTest",fullSurface}});
+        m_repairWorker=QThread::create([this,device,opt,vendors]{
+            int lastStep=-1;
+            const auto res=RepairChain::run(device,opt,vendors,m_cancel,
+                [this](const QString &l){ QMetaObject::invokeMethod(this,[this,l]{ ai(QStringLiteral("Reparatur: %1").arg(l)); },Qt::QueuedConnection); },
+                [this,&lastStep](int p,const QString &t){
+                    const bool step=p/5!=lastStep; lastStep=p/5;
+                    QMetaObject::invokeMethod(this,[this,p,t,step]{ m_repair["percent"]=p; m_repair["phase"]=t; emit repairChanged();
+                        if(step) ai(QStringLiteral("%1 [%2%3] %4 %").arg(t,QString(p/5,QChar(0x2588)),QString(20-p/5,QChar(0x2591))).arg(p)); },Qt::QueuedConnection);
+                });
+            QMetaObject::invokeMethod(this,[this,res]{
+                if(m_repairWorker) { m_repairWorker->wait(); m_repairWorker->deleteLater(); m_repairWorker=nullptr; }
+                m_repair["running"]=false; m_repair["phase"]=res.value("message"); m_repair["result"]=res;
+                emit repairChanged();
+                ai(QStringLiteral("Reparatur-Ergebnis: %1").arg(res.value("message").toString()));
+                m_kb.recordAction(QStringLiteral("reparatur_ergebnis"),m_verified,{{"ok",res.value("ok")},{"durch",res.value("repariertDurch")},{"naechsterWeg",res.value("naechsterWeg")}});
+                // The model learns which cause the outcome points to.
+                QString cause;
+                const QString by=res.value("repariertDurch").toString();
+                if(res.value("ok").toBool()) cause=by.contains(QStringLiteral("PCIe")) || by.contains(QStringLiteral("Reset")) ? QStringLiteral("controller_ausfall") : QStringLiteral("firmware_fehler");
+                else if(res.value("naechsterWeg").toString()==QStringLiteral("notmodus_hersteller_werkzeug")) cause=QStringLiteral("notmodus");
+                else cause=QStringLiteral("flash_verschleiss");
+                if(!m_features.empty()) { m_model.learn(m_features,cause,0.7); ai(QStringLiteral("KI-Modell gelernt aus Reparatur: „%1“.").arg(CaseModel::causeText(cause))); }
+                refresh();
+            },Qt::QueuedConnection);
+        });
+        m_repairWorker->start();
+    }
     // Cache diagnosis: equipment, controller self-test, read test and (Linux
     // expert mode) write test. Results feed the knowledge base and the model.
     Q_INVOKABLE void runCacheTest(int index, bool extended, bool writeTest) {
@@ -343,8 +391,9 @@ public:
         if(m_fwWorker) { m_fwWorker->wait(); }
         if(m_stickWorker) { m_stickWorker->wait(); }
         if(m_cacheWorker) { m_cacheWorker->wait(); }
+        if(m_repairWorker) { m_repairWorker->wait(); }
     }
-    bool recoveryRunning() const { return m_worker!=nullptr || m_fwWorker!=nullptr || m_cacheWorker!=nullptr; }
+    bool recoveryRunning() const { return m_worker!=nullptr || m_fwWorker!=nullptr || m_cacheWorker!=nullptr || m_repairWorker!=nullptr; }
     QVariantMap recoveryProgress() const { return m_progress; }
     QVariantMap recoveryResult() const { return m_result; }
     QStringList recoveryLog() const { return m_log; }
@@ -602,6 +651,16 @@ private:
             m_aiReport["recommendedTools"]=recommended;
         }
         {
+            const auto msgs=ErrorTranslator::report(verified);
+            m_aiReport["controllerMeldungen"]=msgs;
+            ai(QStringLiteral("Controller-Meldungen: %1").arg(msgs.value("zusammenfassung").toString()));
+            for(const auto &e:msgs.value("eintraege").toList()) {
+                const auto m=e.toMap();
+                if(m.value("schwere").toString()==QStringLiteral("kritisch") || m.value("schwere").toString()==QStringLiteral("hoch"))
+                    ai(QStringLiteral("Warnung: %1 → %2").arg(m.value("roh").toString().left(140),m.value("uebersetzung").toString()));
+            }
+        }
+        {
             m_features=CaseModel::features(verified,m_aiReport,m_experience);
             const auto pred=m_model.predict(m_features);
             m_aiReport["kiModell"]=pred;
@@ -720,7 +779,7 @@ private:
             emit toolsChanged();
             ai(QStringLiteral("Werkzeugänderung erkannt – die KI berücksichtigt neue Werkzeuge ab der nächsten Diagnose."));
         }
-        if(m_worker || m_fwWorker || m_stickWorker || m_cacheWorker) return;
+        if(m_worker || m_fwWorker || m_stickWorker || m_cacheWorker || m_repairWorker) return;
 #ifdef Q_OS_WIN
         const QString sig=UsbBridge::usbDiskSignature();
 #else
@@ -790,6 +849,7 @@ signals:
     void firmwareChanged();
     void stickChanged();
     void cacheChanged();
+    void repairChanged();
 private:
     void setStatus(const QString &text){m_status=text;emit statusChanged();}
     QVariantList m_devices;
@@ -814,6 +874,8 @@ private:
     std::vector<double> m_features;
     QThread *m_cacheWorker=nullptr;
     QVariantMap m_cache;
+    QThread *m_repairWorker=nullptr;
+    QVariantMap m_repair;
     QThread *m_fwWorker=nullptr;
     QVariantMap m_fwPlan;
     QVariantMap m_fwProgress;

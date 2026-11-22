@@ -155,6 +155,8 @@ inline QVariantMap querySmartctl(const QString &smartctl, const QString &deviceP
             item["statusCode"]=o.value("status_field").toObject().value("status_code").toInt();
             item["statusCodeType"]=o.value("status_field").toObject().value("status_code_type").toInt();
             item["doNotRetry"]=o.value("status_field").toObject().value("do_not_retry").toBool();
+            item["statusOhnePhase"]=true; // smartctl reports the 15-bit status without phase tag
+            if(o.contains("lba")) item["lba"]=QString::number(qint64(o.value("lba").toObject().value("value").toDouble()));
             errors.append(item);
         }
         out["recentNvmeErrors"]=errors;

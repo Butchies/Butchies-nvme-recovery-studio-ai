@@ -1,0 +1,358 @@
+{
+ "version": "2026-11-22",
+ "hinweis": "Übersetzung von NVMe-Statuscodes (Schlüssel = SCT und SC als Hex, z. B. '281' = SCT 2, SC 0x81), CSTS-Bits, SMART-Warnbits, Selbsttest-Ergebnissen und Linux-Kernelmeldungen. Quelle: NVM-Express-Spezifikation (Statuswerte), Linux-nvme-Treiber; Bedeutungen sind Erläuterungen für Nutzer.",
+ "statusTypen": {
+  "0": "Allgemeiner Befehlsstatus",
+  "1": "Befehlsspezifischer Status",
+  "2": "Flash-/Datenintegritätsfehler",
+  "3": "Verbindungs-/Pfadfehler",
+  "7": "Herstellerspezifisch (nur der Hersteller kann ihn deuten)"
+ },
+ "status": {
+  "000": {
+   "name": "Erfolgreich",
+   "bedeutung": "Befehl ohne Fehler ausgeführt.",
+   "schwere": "info"
+  },
+  "001": {
+   "name": "Unbekannter Befehl",
+   "bedeutung": "Der Controller kennt diesen Befehl nicht (Funktion nicht unterstützt).",
+   "schwere": "info"
+  },
+  "002": {
+   "name": "Ungültiges Feld im Befehl",
+   "bedeutung": "Befehl mit Parametern, die der Controller nicht unterstützt.",
+   "schwere": "info"
+  },
+  "003": {
+   "name": "Befehls-ID doppelt",
+   "bedeutung": "Interner Ablauffehler des Treibers/Controllers.",
+   "schwere": "mittel"
+  },
+  "004": {
+   "name": "Datenübertragungsfehler",
+   "bedeutung": "Daten konnten zwischen PC und SSD nicht sauber übertragen werden – Kontakt, PCIe-Verbindung, USB-Bridge oder Controller.",
+   "schwere": "hoch"
+  },
+  "005": {
+   "name": "Abbruch wegen Stromausfall-Meldung",
+   "bedeutung": "Befehl abgebrochen, weil ein Stromausfall gemeldet wurde.",
+   "schwere": "mittel"
+  },
+  "006": {
+   "name": "Interner Gerätefehler",
+   "bedeutung": "Der Controller meldet einen internen Fehler – häufig Firmware-, Cache- oder Controllerproblem.",
+   "schwere": "hoch"
+  },
+  "007": {
+   "name": "Abbruch auf Anforderung",
+   "bedeutung": "Befehl wurde abgebrochen (meist nach Zeitüberschreitung durch den Treiber).",
+   "schwere": "mittel"
+  },
+  "008": {
+   "name": "Abbruch: Warteschlange gelöscht",
+   "bedeutung": "Befehl verworfen, weil die Befehlswarteschlange gelöscht wurde (Reset).",
+   "schwere": "mittel"
+  },
+  "00b": {
+   "name": "Ungültiger Namespace oder Format",
+   "bedeutung": "Der Speicherbereich (Namespace) existiert nicht oder hat ein ungültiges Format – typisch nach beschädigter Konfiguration.",
+   "schwere": "hoch"
+  },
+  "00c": {
+   "name": "Befehlsreihenfolge falsch",
+   "bedeutung": "Befehl zur falschen Zeit gesendet.",
+   "schwere": "info"
+  },
+  "080": {
+   "name": "Adresse außerhalb des Bereichs",
+   "bedeutung": "Zugriff hinter dem Ende des Speichers.",
+   "schwere": "mittel"
+  },
+  "081": {
+   "name": "Kapazität überschritten",
+   "bedeutung": "Speicher meldet keine freie Kapazität mehr.",
+   "schwere": "mittel"
+  },
+  "082": {
+   "name": "Namespace nicht bereit",
+   "bedeutung": "Speicherbereich ist (noch) nicht bereit – Controller startet nicht vollständig.",
+   "schwere": "hoch"
+  },
+  "084": {
+   "name": "Formatierung läuft",
+   "bedeutung": "Ein Format-Vorgang ist noch aktiv.",
+   "schwere": "info"
+  },
+  "085": {
+   "name": "Sanitize läuft",
+   "bedeutung": "Ein Lösch-Vorgang (Sanitize) ist noch aktiv.",
+   "schwere": "info"
+  },
+  "086": {
+   "name": "Ungültiger Sanitize-Zustand",
+   "bedeutung": "Ein früherer Sanitize-Vorgang ist fehlgeschlagen; die SSD verlangt einen neuen.",
+   "schwere": "hoch"
+  },
+  "087": {
+   "name": "Sanitize fehlgeschlagen",
+   "bedeutung": "Löschen fehlgeschlagen – Flash- oder Controllerdefekt wahrscheinlich.",
+   "schwere": "hoch"
+  },
+  "100": {
+   "name": "Ungültige Completion Queue",
+   "bedeutung": "",
+   "schwere": "info"
+  },
+  "101": {
+   "name": "Ungültige Queue-ID",
+   "bedeutung": "",
+   "schwere": "info"
+  },
+  "106": {
+   "name": "Ungültiger Firmware-Slot",
+   "bedeutung": "Slot existiert nicht oder ist schreibgeschützt.",
+   "schwere": "mittel"
+  },
+  "107": {
+   "name": "Ungültiges Firmware-Abbild",
+   "bedeutung": "Controller lehnt die Firmwaredatei ab (falsches Modell, Signatur, beschädigt).",
+   "schwere": "hoch"
+  },
+  "10a": {
+   "name": "Ungültiges Format",
+   "bedeutung": "Gewünschtes Format wird nicht unterstützt.",
+   "schwere": "mittel"
+  },
+  "10b": {
+   "name": "Firmware-Aktivierung braucht Neustart",
+   "bedeutung": "Firmware gespeichert; aktiv nach Neustart/Reset.",
+   "schwere": "info"
+  },
+  "110": {
+   "name": "Firmware-Aktivierung braucht Subsystem-Reset",
+   "bedeutung": "",
+   "schwere": "info"
+  },
+  "111": {
+   "name": "Firmware-Aktivierung braucht Controller-Reset",
+   "bedeutung": "",
+   "schwere": "info"
+  },
+  "112": {
+   "name": "Firmware-Aktivierung braucht max. Zeitüberschreitung",
+   "bedeutung": "",
+   "schwere": "info"
+  },
+  "113": {
+   "name": "Firmware-Aktivierung verboten",
+   "bedeutung": "Der Controller erlaubt diese Aktivierung nicht.",
+   "schwere": "mittel"
+  },
+  "114": {
+   "name": "Überlappender Firmware-Bereich",
+   "bedeutung": "Firmware-Teile wurden überlappend übertragen.",
+   "schwere": "mittel"
+  },
+  "11d": {
+   "name": "Selbsttest läuft bereits",
+   "bedeutung": "",
+   "schwere": "info"
+  },
+  "11e": {
+   "name": "Boot-Partition schreibgeschützt",
+   "bedeutung": "",
+   "schwere": "mittel"
+  },
+  "180": {
+   "name": "Widersprüchliche Attribute",
+   "bedeutung": "",
+   "schwere": "info"
+  },
+  "182": {
+   "name": "Schreibschutz-Bereich",
+   "bedeutung": "Schreiben in einen schreibgeschützten Bereich – SSD ist (teilweise) nur noch lesbar.",
+   "schwere": "hoch"
+  },
+  "280": {
+   "name": "Schreibfehler (Write Fault)",
+   "bedeutung": "Daten konnten nicht in den Flash geschrieben werden – Flash-Zellen defekt oder Reserve erschöpft.",
+   "schwere": "kritisch"
+  },
+  "281": {
+   "name": "Nicht korrigierbarer Lesefehler",
+   "bedeutung": "Daten konnten trotz Fehlerkorrektur nicht gelesen werden – defekte Flash-Bereiche.",
+   "schwere": "kritisch"
+  },
+  "282": {
+   "name": "Ende-zu-Ende-Prüfung (Guard) fehlgeschlagen",
+   "bedeutung": "Daten auf dem Weg im Controller verfälscht – Controller/Cache defekt.",
+   "schwere": "kritisch"
+  },
+  "283": {
+   "name": "Ende-zu-Ende-Prüfung (Application Tag)",
+   "bedeutung": "",
+   "schwere": "hoch"
+  },
+  "284": {
+   "name": "Ende-zu-Ende-Prüfung (Reference Tag)",
+   "bedeutung": "",
+   "schwere": "hoch"
+  },
+  "285": {
+   "name": "Vergleich fehlgeschlagen",
+   "bedeutung": "Gelesene Daten stimmen nicht mit den erwarteten überein.",
+   "schwere": "hoch"
+  },
+  "286": {
+   "name": "Zugriff verweigert",
+   "bedeutung": "Bereich gesperrt (Sicherheitsfunktion/Passwort).",
+   "schwere": "mittel"
+  },
+  "287": {
+   "name": "Nicht geschriebener Block gelesen",
+   "bedeutung": "Block wurde nie beschrieben bzw. gelöscht.",
+   "schwere": "info"
+  },
+  "300": {
+   "name": "Interner Pfadfehler",
+   "bedeutung": "Interner Verbindungsfehler im Controller.",
+   "schwere": "hoch"
+  },
+  "360": {
+   "name": "Controller-Pfadfehler",
+   "bedeutung": "Verbindung zum Controller gestört.",
+   "schwere": "hoch"
+  },
+  "370": {
+   "name": "Host-Pfadfehler",
+   "bedeutung": "Verbindung PC ↔ SSD gestört.",
+   "schwere": "hoch"
+  },
+  "371": {
+   "name": "Vom PC abgebrochen",
+   "bedeutung": "Der PC hat den Befehl abgebrochen, weil die SSD nicht rechtzeitig antwortete (Zeitüberschreitung).",
+   "schwere": "hoch"
+  }
+ },
+ "csts": {
+  "bits": {
+   "0": "RDY – Controller bereit",
+   "1": "CFS – schwerer Controllerfehler (Controller Fatal Status)",
+   "2-3": "SHST – Herunterfahr-Status",
+   "4": "NSSRO – Subsystem-Reset erfolgt",
+   "5": "PP – Verarbeitung angehalten"
+  },
+  "sonderwerte": {
+   "0xffffffff": "Die SSD antwortet am PCIe-Bus überhaupt nicht mehr (Verbindung weg, Controller hängt oder ohne Strom). Oft Energiesparmodus-Problem, Überhitzung, Kontakt oder Controllerdefekt.",
+   "0x0": "Controller nicht bereit – startet nicht (Firmware lädt nicht, Notmodus oder Defekt).",
+   "0x3": "Bereit, aber schwerer Controllerfehler gemeldet (CFS) – Controller ist intern abgestürzt."
+  }
+ },
+ "smartWarnbits": {
+  "0": "Ersatzblock-Reserve unter Grenzwert",
+  "1": "Temperatur außerhalb des zulässigen Bereichs",
+  "2": "Zuverlässigkeit beeinträchtigt (viele Flash-/Controllerfehler)",
+  "3": "SSD in Nur-Lese-Modus versetzt",
+  "4": "Flüchtiger Sicherungsspeicher (Kondensator/Cache-Schutz) ausgefallen",
+  "5": "Persistenter Speicherbereich nur lesbar"
+ },
+ "kernelMuster": [
+  {
+   "muster": "controller is down; will reset: CSTS=0xffffffff",
+   "uebersetzung": "SSD ist vom PCIe-Bus verschwunden und antwortet gar nicht mehr.",
+   "bedeutung": "Typisch für Energiesparmodus-Fehler (APST), Überhitzung, Stromversorgung/Kontakt oder Controllerausfall. Kalt-Neustart nötig.",
+   "schwere": "kritisch",
+   "merkmal": "pcie_weg"
+  },
+  {
+   "muster": "controller is down; will reset",
+   "uebersetzung": "Controller abgestürzt, Treiber setzt ihn zurück.",
+   "bedeutung": "Controller hat intern einen schweren Fehler (CSTS zeigt Details).",
+   "schwere": "kritisch",
+   "merkmal": "controller_absturz"
+  },
+  {
+   "muster": "Device not ready; aborting (reset|initialisation)",
+   "uebersetzung": "Controller wird nach Reset/Start nicht bereit.",
+   "bedeutung": "Firmware startet nicht vollständig – Firmware-/Flash-Verwaltungsdefekt oder Notmodus.",
+   "schwere": "kritisch",
+   "merkmal": "nicht_bereit"
+  },
+  {
+   "muster": "I/O \\d+ .*QID \\d+ timeout",
+   "uebersetzung": "SSD hat auf einen Befehl nicht rechtzeitig geantwortet.",
+   "bedeutung": "Controller hängt bei bestimmten Zugriffen – defekte Flash-Bereiche, Firmwarefehler oder Überhitzung.",
+   "schwere": "hoch",
+   "merkmal": "zeitueberschreitung"
+  },
+  {
+   "muster": "Removing after probe failure",
+   "uebersetzung": "Treiber gibt die SSD auf und entfernt sie.",
+   "bedeutung": "Controller ließ sich nach mehreren Versuchen nicht initialisieren.",
+   "schwere": "kritisch",
+   "merkmal": "aufgegeben"
+  },
+  {
+   "muster": "I/O error, dev nvme",
+   "uebersetzung": "Lese-/Schreibfehler auf der SSD.",
+   "bedeutung": "Einzelne Bereiche nicht lesbar/schreibbar – Flash-Defekt.",
+   "schwere": "hoch",
+   "merkmal": "io_fehler"
+  },
+  {
+   "muster": "detected capacity change from \\d+ to 0",
+   "uebersetzung": "SSD meldet plötzlich 0 Byte Kapazität.",
+   "bedeutung": "Controller hat seine Konfiguration verloren – Format/Sanitize oder Neuinitialisierung nötig.",
+   "schwere": "kritisch",
+   "merkmal": "kapazitaet_null"
+  },
+  {
+   "muster": "Does your device have a faulty power saving mode enabled",
+   "uebersetzung": "Treiber vermutet fehlerhaften Energiesparmodus.",
+   "bedeutung": "Abhilfe: Energiesparzustände abschalten (Kernelparameter nvme_core.default_ps_max_latency_us=0 – im Boot-Stick bereits gesetzt).",
+   "schwere": "mittel",
+   "merkmal": "apst"
+  },
+  {
+   "muster": "(AER|PCIe Bus Error).*(Uncorrected|Fatal)",
+   "uebersetzung": "Schwerer PCIe-Übertragungsfehler.",
+   "bedeutung": "Verbindung zwischen Mainboard und SSD gestört – Kontakt, Steckplatz, Signal oder Controller.",
+   "schwere": "hoch",
+   "merkmal": "pcie_fehler"
+  },
+  {
+   "muster": "(AER|PCIe Bus Error).*Corrected",
+   "uebersetzung": "Korrigierter PCIe-Übertragungsfehler.",
+   "bedeutung": "Einzelne Übertragungsfehler, noch korrigiert – Kontakt/Signalqualität prüfen.",
+   "schwere": "mittel",
+   "merkmal": "pcie_korrigiert"
+  },
+  {
+   "muster": "Identify Controller failed",
+   "uebersetzung": "Controller beantwortet nicht einmal die Grundabfrage.",
+   "bedeutung": "Firmware nicht funktionsfähig – Notmodus oder schwerer Defekt.",
+   "schwere": "kritisch",
+   "merkmal": "identify_fehler"
+  },
+  {
+   "muster": "Abort status: 0x371",
+   "uebersetzung": "Befehl vom PC abgebrochen (Status 0x371 = vom Host abgebrochen).",
+   "bedeutung": "Folge einer Zeitüberschreitung – SSD reagierte nicht.",
+   "schwere": "hoch",
+   "merkmal": "zeitueberschreitung"
+  }
+ ],
+ "selbsttest": {
+  "0": "bestanden",
+  "1": "abgebrochen durch Befehl",
+  "2": "abgebrochen durch Reset",
+  "3": "abgebrochen (Namespace entfernt)",
+  "4": "abgebrochen durch Format",
+  "5": "fehlgeschlagen: schwerer Fehler",
+  "6": "fehlgeschlagen: unbekanntes Segment",
+  "7": "fehlgeschlagen in einem Testsegment",
+  "8": "abgebrochen (unbekannter Grund)",
+  "9": "abgebrochen durch Sanitize"
+ }
+}

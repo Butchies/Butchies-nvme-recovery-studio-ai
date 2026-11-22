@@ -226,15 +226,16 @@ inline QVariantMap inspect(const QVariantMap &device) {
         r["mediaErrors"]=u128(160);
         r["errorLogEntries"]=u128(176);
     }
-    unsigned char err[4*64]{};
+    unsigned char err[16*64]{};
     if(getLog(fd,0x01,err,sizeof(err))==0) {
         QVariantList errors;
-        for(int e=0;e<4;++e) {
+        for(int e=0;e<16;++e) {
             const unsigned char *p=err+e*64;
             quint64 count=0; for(int i=7;i>=0;--i) count=(count<<8)|p[i];
             if(!count) continue;
             const unsigned status=unsigned(p[12])|(unsigned(p[13])<<8);
-            errors.append(QVariantMap{{"errorCount",QString::number(count)},
+            quint64 lba=0; for(int i=23;i>=16;--i) lba=(lba<<8)|p[i];
+            errors.append(QVariantMap{{"errorCount",QString::number(count)},{"lba",QString::number(lba)},
                 {"submissionQueueId",unsigned(p[8])|(unsigned(p[9])<<8)},{"commandId",unsigned(p[10])|(unsigned(p[11])<<8)},
                 {"statusField",QStringLiteral("0x%1").arg(status,4,16,QLatin1Char('0'))},{"statusCode",(status>>1)&0xff},
                 {"statusCodeType",(status>>9)&0x7},{"doNotRetry",(status&0x8000)!=0}});

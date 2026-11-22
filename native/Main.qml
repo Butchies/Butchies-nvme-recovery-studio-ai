@@ -31,6 +31,7 @@ ApplicationWindow {
             Button { text: "Linux-Boot-Stick erstellen"; visible: !controller.linuxEdition; enabled: !controller.recoveryRunning; onClicked: stickDialog.open() }
             Button { text: "Ziel prüfen"; onClicked: controller.inspectDestination(destination.text) }
             CheckBox { id: longTestBox; text: "Langer Selbsttest" }
+            CheckBox { id: fullSurfaceBox; visible: controller.linuxEdition; text: "Reparatur: ganze SSD prüfen" }
             CheckBox { id: writeTestBox; visible: controller.linuxEdition; text: "Cache-Schreibtest (überschreibt Daten!)" }
             TextField {
                 id: destination
@@ -175,6 +176,33 @@ ApplicationWindow {
                     ProgressBar { Layout.fillWidth: true; from: 0; to: 100; value: controller.cacheProgress.percent || 0 }
                     Label { text: (controller.cacheProgress.percent || 0) + " % · " + (controller.cacheProgress.phase || ""); color: "#c6e2f2" }
                 }
+                RowLayout {
+                    Layout.fillWidth: true
+                    visible: !!controller.repairProgress.phase
+                    ProgressBar { Layout.fillWidth: true; from: 0; to: 100; value: controller.repairProgress.percent || 0; visible: !!controller.repairProgress.running }
+                    Label { Layout.fillWidth: true; wrapMode: Text.WordWrap; font.bold: true; color: "#ffe8a3"
+                            text: (controller.repairProgress.running ? (controller.repairProgress.percent || 0) + " % · " : "Reparatur: ") + (controller.repairProgress.phase || "") }
+                }
+                Repeater {
+                    model: controller.repairProgress.result ? controller.repairProgress.result.schritte : []
+                    Label { Layout.fillWidth: true; wrapMode: Text.WordWrap; text: (modelData.ok ? "✓ " : "✗ ") + modelData.schritt + ": " + modelData.antwort
+                            color: modelData.ok ? "#b8f2c8" : "#ffb4a2" }
+                }
+                Label {
+                    visible: !!controller.aiReport.controllerMeldungen
+                    text: "Was der Controller meldet: " + (controller.aiReport.controllerMeldungen ? controller.aiReport.controllerMeldungen.zusammenfassung : "")
+                    font.bold: true; color: "#ffffff"; Layout.fillWidth: true; wrapMode: Text.WordWrap
+                }
+                Repeater {
+                    model: controller.aiReport.controllerMeldungen ? controller.aiReport.controllerMeldungen.eintraege : []
+                    ColumnLayout {
+                        Layout.fillWidth: true; spacing: 0
+                        Label { Layout.fillWidth: true; wrapMode: Text.WrapAnywhere; text: modelData.roh; color: "#8fa5b8"; font.family: "monospace"; font.pixelSize: 12 }
+                        Label { Layout.fillWidth: true; wrapMode: Text.WordWrap
+                                text: "→ " + modelData.uebersetzung + (modelData.detail ? " (" + modelData.detail + ")" : "") + (modelData.bedeutung ? ": " + modelData.bedeutung : "")
+                                color: modelData.schwere === "kritisch" ? "#ffb4a2" : (modelData.schwere === "hoch" ? "#ffd59e" : "#c6e2f2") }
+                    }
+                }
                 Label {
                     visible: !!controller.aiReport.cacheTest
                     Layout.fillWidth: true; wrapMode: Text.WordWrap; font.bold: true
@@ -242,6 +270,12 @@ ApplicationWindow {
                                     text: "Cache testen"
                                     enabled: !controller.recoveryRunning
                                     onClicked: controller.runCacheTest(index, longTestBox.checked, writeTestBox.checked)
+                                }
+                                Button {
+                                    text: "Reparieren"
+                                    visible: controller.linuxEdition
+                                    enabled: !controller.recoveryRunning
+                                    onClicked: controller.startRepair(index, fullSurfaceBox.checked, "")
                                 }
                                 Button {
                                     text: "Firmware …"
