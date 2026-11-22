@@ -160,6 +160,16 @@ ApplicationWindow {
         nameFilters: ["Boot-Abbild (*.iso *.img)"]
         onAccepted: stickImage.text = selectedFile.toString()
     }
+    FolderDialog {
+        id: archiveImportDialog
+        title: "Ordner oder Stick mit Firmware wählen"
+        onAccepted: controller.importArchive(selectedFolder.toString())
+    }
+    FolderDialog {
+        id: archiveExportDialog
+        title: "Ziel für das Offline-Paket wählen (z. B. USB-Stick)"
+        onAccepted: controller.exportArchive(selectedFolder.toString())
+    }
     Dialog {
         id: firmwareDialog
         property string fileUrl: ""
@@ -592,6 +602,74 @@ ApplicationWindow {
                             Label { visible: window.hasDevice; text: "Aktuell: " + (window.dev.nvmeFirmware || "–") + (window.dev.firmwareSlotRevisions ? " · Slots: " + window.dev.firmwareSlotRevisions.join(", ") : ""); color: theme.text }
                             ActionButton { text: "Firmwaredatei wählen …"; primary: true; iconName: "chip"; enabled: window.hasDevice && !controller.recoveryRunning; onClicked: firmwareFileDialog.open() }
                         }
+                        // Offline-Firmware-Archiv
+                        Card {
+                            Layout.fillWidth: true
+                            RowLayout { Layout.fillWidth: true
+                                Heading { text: "Offline-Firmware-Archiv"; iconName: "save" }
+                                Item { Layout.fillWidth: true }
+                                Pill { text: (controller.archive.dateien || 0) + " Dateien · " + (controller.archive.megabyte || 0) + " MB"; level: (controller.archive.dateien || 0) > 0 ? "good" : "grey" }
+                            }
+                            Label { Layout.fillWidth: true; wrapMode: Text.WordWrap; color: theme.muted
+                                    text: "Einmal mit Internet füllen – danach funktioniert alles offline. Beim Erstellen des Linux-Boot-Sticks kommen Archiv, Werkzeuge und KI-Wissen automatisch mit auf den Stick (Partition NVMEDATEN)." + (controller.archive.stand ? " Stand: " + controller.archive.stand.substring(0, 10) : "") }
+                            Flow {
+                                Layout.fillWidth: true; spacing: 8
+                                ActionButton { text: controller.archive.laeuft ? "Läuft …" : "Archiv füllen / aktualisieren"; primary: true; iconName: "refresh"; enabled: !controller.archive.laeuft; onClicked: controller.fillArchive() }
+                                ActionButton { text: "Anhalten"; visible: !!controller.archive.laeuft; onClicked: controller.cancelArchive() }
+                                ActionButton { text: "Ordner / Stick übernehmen"; iconName: "folder"; onClicked: archiveImportDialog.open() }
+                                ActionButton { text: "Archiv exportieren"; iconName: "usb"; onClicked: archiveExportDialog.open() }
+                            }
+                            RowLayout {
+                                Layout.fillWidth: true; visible: !!controller.archive.laeuft
+                                Label { text: controller.archive.phase || ""; Layout.fillWidth: true; elide: Text.ElideRight }
+                                Label { text: (controller.archive.fortschritt || "") + " · " + (controller.archive.prozent || 0) + " %"; font.bold: true }
+                            }
+                            Progress { Layout.fillWidth: true; visible: !!controller.archive.laeuft; value: controller.archive.prozent || 0 }
+                            Label { Layout.fillWidth: true; wrapMode: Text.WordWrap; visible: !controller.archive.laeuft && !!controller.archive.phase; text: controller.archive.phase || ""; color: theme.goodText }
+                            Label { text: "Passend für die gewählte SSD"; font.bold: true; visible: window.hasDevice; Layout.topMargin: 4 }
+                            Label { visible: window.hasDevice && controller.archiveMatches.length === 0; Layout.fillWidth: true; wrapMode: Text.WordWrap; color: theme.muted
+                                    text: "Für dieses Modell liegt noch nichts im Archiv. Archiv füllen oder die Datei von der Herstellerseite laden und mit „Ordner / Stick übernehmen“ zuordnen." }
+                            Repeater {
+                                model: controller.archiveMatches
+                                Rectangle {
+                                    Layout.fillWidth: true; radius: 8; border.color: theme.line; implicitHeight: mRow.implicitHeight + 16
+                                    RowLayout {
+                                        id: mRow; anchors.fill: parent; anchors.margins: 8; anchors.leftMargin: 12; spacing: 10
+                                        ColumnLayout {
+                                            Layout.fillWidth: true; spacing: 2
+                                            Label { text: modelData.hersteller + " · Version " + modelData.version; font.bold: true; color: theme.strong }
+                                            Label { Layout.fillWidth: true; elide: Text.ElideRight; font.pixelSize: 12; color: theme.muted
+                                                    text: modelData.treffer + (modelData.voraussetzungen && modelData.voraussetzungen.length ? " · setzt voraus: " + modelData.voraussetzungen.join(", ") : "") + (modelData.art === "samsung-iso" ? " · Samsung-ISO" : "") }
+                                        }
+                                        Pill { text: modelData.istAktuell ? "bereits installiert" : (modelData.vorhanden ? "offline verfügbar" : "Datei fehlt"); level: modelData.istAktuell ? "grey" : (modelData.vorhanden ? "good" : "bad") }
+                                        ActionButton {
+                                            text: "Verwenden"; primary: !modelData.istAktuell; iconName: "chip"
+                                            enabled: modelData.vorhanden && !controller.recoveryRunning && (modelData.art !== "samsung-iso" || controller.linuxEdition)
+                                            onClicked: {
+                                                if (modelData.art === "samsung-iso") controller.runArchivedIso(modelData.pfad)
+                                                else { firmwareDialog.fileUrl = "file:///" + modelData.pfad.replace(/^\/+/, ""); controller.prepareFirmware(window.selected, firmwareDialog.fileUrl, noBackupBox.checked); firmwareDialog.open() }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        Card {
+                            Layout.fillWidth: true
+                            Heading { text: "Firmware-Quellen der Hersteller"; iconName: "box" }
+                            Label { Layout.fillWidth: true; wrapMode: Text.WordWrap; color: theme.muted
+                                    text: "„automatisch“ lädt die KI selbst ins Archiv. Bei den übrigen öffnet sich die offizielle Downloadseite; die geladene Datei danach mit „Ordner / Stick übernehmen“ der SSD zuordnen." }
+                            Repeater {
+                                model: controller.firmwareVendors()
+                                RowLayout {
+                                    Layout.fillWidth: true; spacing: 10
+                                    Label { text: modelData.hersteller; font.bold: true; Layout.preferredWidth: 200; elide: Text.ElideRight }
+                                    Label { text: modelData.modelle; color: theme.muted; Layout.fillWidth: true; elide: Text.ElideRight; font.pixelSize: 12 }
+                                    Pill { text: modelData.art === "manuell" ? "manuell" : "automatisch"; level: modelData.art === "manuell" ? "grey" : "good" }
+                                    ToolButton { text: "Seite"; onClicked: controller.openUrl(modelData.seite) }
+                                }
+                            }
+                        }
                     }
 
                     // ===== 4 Cache-Test
@@ -656,6 +734,13 @@ ApplicationWindow {
                             Heading { text: "Linux-Boot-Stick erstellen"; iconName: "usb" }
                             Label { Layout.fillWidth: true; wrapMode: Text.WordWrap; color: theme.muted
                                     text: "Der Stick wird vollständig überschrieben. Danach startet der Rechner vom Stick direkt in NVMe Recovery Studio AI mit direktem Zugriff auf interne M.2-SSDs." }
+                            Rectangle {
+                                Layout.fillWidth: true; radius: 8; color: theme.accentSoft; implicitHeight: offl.implicitHeight + 20
+                                Label { id: offl; anchors.fill: parent; anchors.margins: 10; wrapMode: Text.WordWrap; color: theme.accentText; textFormat: Text.StyledText
+                                        text: "<b>Offline-Paket kommt mit auf den Stick:</b> " + (controller.archive.dateien || 0) + " Firmwaredateien (" + (controller.archive.megabyte || 0) + " MB), "
+                                              + controller.tools.filter(function (t) { return t.installiert }).length + " Werkzeuge und das KI-Wissen – in der Partition NVMEDATEN. Am Rechner mit der defekten SSD wird kein Internet gebraucht."
+                                              + ((controller.archive.dateien || 0) === 0 ? " Tipp: vorher unter „Firmware“ das Archiv füllen." : "") }
+                            }
                             RowLayout {
                                 Layout.fillWidth: true
                                 TextField { id: stickImage; Layout.fillWidth: true; placeholderText: controller.stickProgress.image ? "Geladen: " + controller.stickProgress.image : "Boot-Abbild (.iso)" }

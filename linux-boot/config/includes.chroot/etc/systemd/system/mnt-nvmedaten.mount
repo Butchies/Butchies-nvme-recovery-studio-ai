@@ -1,0 +1,13 @@
+[Unit]
+Description=NVMe Recovery Studio AI – Datenpartition des Boot-Sticks (Firmware-Archiv, Werkzeuge, KI-Wissen)
+Before=nvme-recovery-kiosk.service
+ConditionPathExists=/dev/disk/by-label/NVMEDATEN
+
+[Mount]
+What=/dev/disk/by-label/NVMEDATEN
+Where=/mnt/nvmedaten
+Type=exfat
+Options=rw,noatime,nofail
+
+[Install]
+WantedBy=multi-user.target

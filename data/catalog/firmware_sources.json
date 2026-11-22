@@ -1,0 +1,24 @@
+{
+  "hinweis": "Quellen für das Offline-Firmware-Archiv. art=wd-dashboard und samsung-iso werden automatisch von den offiziellen Herstellerservern geladen; art=manuell öffnet die offizielle Downloadseite – die geladene Datei wird mit „Ordner/Datei übernehmen“ dem Archiv zugeordnet.",
+  "quellen": [
+    {"hersteller": "Western Digital / SanDisk", "art": "wd-dashboard", "basis": "https://wddashboarddownloads.wdc.com/wdDashboard/", "liste": "https://wddashboarddownloads.wdc.com/wdDashboard/config/devices/lista_devices.xml", "seite": "https://support-en.wd.com/", "format": ".fluf (Standard-NVMe-Firmware-Download)", "modelle": "WD_BLACK SN7xx/SN8xx, WD Blue/Green SN5xx, SanDisk"},
+    {"hersteller": "Samsung", "art": "samsung-iso", "liste": "https://semiconductor.samsung.com/consumer-storage/support/tools/", "seite": "https://semiconductor.samsung.com/consumer-storage/support/tools/", "format": "bootfähiges ISO mit Samsung-Updateprogramm", "modelle": "970/980/990 EVO/PRO u. a."},
+    {"hersteller": "Crucial / Micron", "art": "manuell", "seite": "https://www.crucial.com/support/ssd-support", "format": "ISO bzw. Storage Executive", "modelle": "P1, P2, P3, P5, T500, T700 …"},
+    {"hersteller": "Kingston", "art": "manuell", "seite": "https://www.kingston.com/en/support/technical/ssd-firmware", "format": "Kingston SSD Manager", "modelle": "NV1/NV2/NV3, KC3000, Fury Renegade …"},
+    {"hersteller": "SK hynix", "art": "manuell", "seite": "https://ssd.skhynix.com/download/", "format": "Drive Manager", "modelle": "Platinum P41, Gold P31 …"},
+    {"hersteller": "Solidigm / Intel", "art": "manuell", "seite": "https://www.solidigm.com/support-page.html", "format": "Solidigm Storage Tool", "modelle": "P41 Plus, P44 Pro, Intel 660p/670p …"},
+    {"hersteller": "Kioxia / Toshiba", "art": "manuell", "seite": "https://personal.kioxia.com/en-jp/ssd/support/", "format": "SSD Utility", "modelle": "Exceria, Exceria Plus …"},
+    {"hersteller": "Seagate", "art": "manuell", "seite": "https://www.seagate.com/support/downloads/", "format": "SeaTools / Firmware-ISO", "modelle": "FireCuda 520/530 …"},
+    {"hersteller": "Corsair", "art": "manuell", "seite": "https://www.corsair.com/us/en/s/downloads", "format": "iCUE / SSD Toolbox", "modelle": "MP600, MP700 …"},
+    {"hersteller": "Lexar", "art": "manuell", "seite": "https://www.lexar.com/support/downloads/", "format": "Firmware-Werkzeug", "modelle": "NM620, NM790 …"},
+    {"hersteller": "Teamgroup", "art": "manuell", "seite": "https://www.teamgroupinc.com/en/support/download", "format": "Firmware-Werkzeug", "modelle": "MP33, MP44 …"},
+    {"hersteller": "ADATA / XPG", "art": "manuell", "seite": "https://www.adata.com/en/support/downloads/", "format": "SSD ToolBox", "modelle": "Legend, Gammix …"},
+    {"hersteller": "Sabrent", "art": "manuell", "seite": "https://sabrent.com/pages/sabrent-rocket-control-panel", "format": "Rocket Control Panel / Firmware", "modelle": "Rocket 4/4 Plus/5 …"},
+    {"hersteller": "Transcend", "art": "manuell", "seite": "https://www.transcend-info.com/support/software", "format": "SSD Scope", "modelle": "MTE …"},
+    {"hersteller": "Silicon Power", "art": "manuell", "seite": "https://www.silicon-power.com/web/download", "format": "Firmware-Werkzeug", "modelle": "UD/US/XS …"},
+    {"hersteller": "PNY", "art": "manuell", "seite": "https://www.pny.com/support", "format": "Firmware-Werkzeug", "modelle": "CS-Serie"},
+    {"hersteller": "Lenovo (OEM-SSDs)", "art": "manuell", "seite": "https://pcsupport.lenovo.com/", "format": "Firmware über Laptop-Support", "modelle": "SSDs ab Werk in Lenovo-Geräten"},
+    {"hersteller": "Dell (OEM-SSDs)", "art": "manuell", "seite": "https://www.dell.com/support/", "format": "Firmware über Laptop-Support", "modelle": "SSDs ab Werk in Dell-Geräten"},
+    {"hersteller": "HP (OEM-SSDs)", "art": "manuell", "seite": "https://support.hp.com/", "format": "Firmware über Laptop-Support", "modelle": "SSDs ab Werk in HP-Geräten"}
+  ]
+}

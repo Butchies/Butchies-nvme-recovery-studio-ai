@@ -46,3 +46,8 @@ build-essential
 cmake
 qt6-base-dev
 qt6-declarative-dev
+
+# Firmware-Archiv: Samsung-ISOs auspacken
+libarchive-tools
+cpio
+xz-utils

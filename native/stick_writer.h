@@ -9,6 +9,12 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QCryptographicHash>
+#include <QDir>
+#include <QDirIterator>
+#include <QProcess>
+#include <QStorageInfo>
+#include <QTemporaryFile>
+#include <QThread>
 #include <atomic>
 #include <functional>
 #include <vector>
@@ -117,6 +123,57 @@ inline QVariantMap write(const QString &image, const QString &diskPath, const QS
                       : QStringLiteral("Prüfung fehlgeschlagen: Gelesene Daten weichen ab. Stick defekt oder getrennt?");
     return r;
 #endif
+}
+
+// Datenpartition NVMEDATEN (exFAT) im freien Bereich hinter dem Abbild anlegen
+// und Firmware-Archiv, Werkzeuge und KI-Wissen hineinkopieren. Der Rest des
+// Sticks bleibt frei – dort legt die Linux-Edition beim ersten Start ihren
+// dauerhaften Speicher an. Größe: Inhalt + 2 GiB Reserve, mindestens 4 GiB.
+inline QVariantMap addDataPartition(const QString &diskPath, const QString &appData) {
+    qint64 bytes=0;
+    for(QDirIterator it(appData,QDir::Files,QDirIterator::Subdirectories);it.hasNext();) { it.next(); bytes+=it.fileInfo().size(); }
+    const qint64 sizeMb=qMax<qint64>(4096,bytes/1048576+2048);
+#ifdef Q_OS_WIN
+    bool ok=false;
+    const uint diskNumber=diskPath.mid(QStringLiteral("\\\\.\\PHYSICALDRIVE").size()).toUInt(&ok);
+    if(!ok) return {{"ok",false},{"message",QStringLiteral("Datenpartition: Datenträgernummer unbekannt.")}};
+    auto diskpart=[&](const QString &sizeArg)->QString {
+        QTemporaryFile script; script.setAutoRemove(true);
+        if(!script.open()) return QStringLiteral("Skript nicht anlegbar");
+        script.write(QStringLiteral("select disk %1\r\nrescan\r\ncreate partition primary %2\r\nformat fs=exfat label=NVMEDATEN quick\r\nassign\r\nexit\r\n").arg(diskNumber).arg(sizeArg).toLocal8Bit());
+        script.close();
+        QProcess p; p.setProcessChannelMode(QProcess::MergedChannels);
+        p.start(QStringLiteral("diskpart.exe"),{QStringLiteral("/s"),QDir::toNativeSeparators(script.fileName())});
+        p.waitForFinished(180000);
+        return QString::fromLocal8Bit(p.readAll());
+    };
+    QString out=diskpart(QStringLiteral("size=%1").arg(sizeMb));
+    if(!out.contains(QStringLiteral("NVMEDATEN"),Qt::CaseInsensitive) && !out.contains(QStringLiteral("100")))
+        out+=diskpart(QString());
+    QString root;
+    for(int i=0;i<30 && root.isEmpty();++i) {
+        QThread::sleep(1);
+        for(const auto &v:QStorageInfo::mountedVolumes())
+            if(v.isValid() && v.isReady() && v.name().compare(QStringLiteral("NVMEDATEN"),Qt::CaseInsensitive)==0) root=v.rootPath();
+    }
+    if(root.isEmpty()) return {{"ok",false},{"message",QStringLiteral("Datenpartition konnte nicht angelegt werden – Firmware-Archiv bitte später unter „Firmware → Archiv exportieren“ auf den Stick kopieren.")}};
+#else
+    Q_UNUSED(diskPath)
+    const QString root=QStringLiteral("/mnt/nvmedaten");
+    if(!QDir(root).exists()) return {{"ok",false},{"message",QStringLiteral("Datenpartition fehlt.")}};
+#endif
+    const QString base=QDir(root).filePath(QStringLiteral("nvme-recovery-studio"));
+    int copied=0;
+    for(QDirIterator it(appData,QDir::Files,QDirIterator::Subdirectories);it.hasNext();) {
+        const QString src=it.next();
+        const QString rel=QDir(appData).relativeFilePath(src);
+        if(rel.startsWith(QStringLiteral("boot/"))) continue;   // das Boot-Abbild selbst nicht doppelt
+        const QString dst=QDir(base).filePath(rel);
+        QDir().mkpath(QFileInfo(dst).path());
+        QFile::remove(dst);
+        if(QFile::copy(src,dst)) ++copied;
+    }
+    return {{"ok",true},{"message",QStringLiteral("Offline-Paket auf dem Stick: %1 Dateien (Firmware-Archiv, Werkzeuge, KI-Wissen) in Partition NVMEDATEN.").arg(copied)}};
 }
 
 } // namespace StickWriter

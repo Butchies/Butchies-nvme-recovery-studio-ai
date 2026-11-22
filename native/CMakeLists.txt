@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Qt6 6.5 REQUIRED COMPONENTS Core Gui Qml Quick Network)
 qt_standard_project_setup(REQUIRES 6.5)
 qt_add_executable(nvme-recovery-studio
-    WIN32 main.cpp usb_bridge.h recovery_agent.h rescue_imager.h knowledge_base.h controller_catalog.h tool_manager.h platform_io.h linux_nvme.h firmware_manager.h stick_writer.h case_model.h cache_tester.h error_translator.h repair_chain.h board_map.h)
+    WIN32 main.cpp usb_bridge.h recovery_agent.h rescue_imager.h knowledge_base.h controller_catalog.h tool_manager.h platform_io.h linux_nvme.h firmware_manager.h firmware_archive.h stick_writer.h case_model.h cache_tester.h error_translator.h repair_chain.h board_map.h)
 qt_add_qml_module(nvme-recovery-studio URI RecoveryStudio VERSION 1.0
     QML_FILES Main.qml
     RESOURCES
@@ -102,6 +102,7 @@ qt_add_resources(nvme-recovery-studio "catalog"
         ../data/catalog/usb_nvme_bridges.json
         ../data/catalog/controller_families.json
         ../data/catalog/firmware_issues.json
+        ../data/catalog/firmware_sources.json
         ../data/catalog/tools.json
         ../data/catalog/nvme_codes.json
         ../data/catalog/board_layouts.json

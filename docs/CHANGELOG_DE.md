@@ -1,5 +1,10 @@
 # Änderungsprotokoll
 
+## 22.11.2026 – Offline-Firmware-Archiv
+- Firmware-Archiv: lädt offizielle Firmware von Western Digital/SanDisk (.fluf) und Samsung (ISO) automatisch, 19 Herstellerquellen mit offizieller Seite, Import loser Dateien und ganzer Ordner, Export.
+- Passende Firmware wird zur gewählten SSD offline vorgeschlagen; Samsung-ISOs laufen in der Linux-Edition direkt (fumagician).
+- Boot-Stick: Partition NVMEDATEN mit Firmware-Archiv, Werkzeugen und KI-Wissen; Linux-Edition übernimmt sie beim Start.
+
 ## 22.11.2026 – Helle Oberfläche
 - Main.qml komplett im freigegebenen hellen Design neu: Kopfzeile, Navigation, Gerätekarten, Gesundheitsring, Kacheln, Controller-Meldungen mit Übersetzung, Platinenansicht, KI-Assistent rechts; alle Funktionen und Dialoge übernommen.
 - 84 SVG-Symbole (native/icons).

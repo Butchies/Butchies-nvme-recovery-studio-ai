@@ -30,6 +30,7 @@
 #include "error_translator.h"
 #include "repair_chain.h"
 #include "board_map.h"
+#include "firmware_archive.h"
 #include <QSet>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -59,8 +60,12 @@ class RecoveryController final : public QObject {
     Q_PROPERTY(QVariantMap stickProgress READ stickProgress NOTIFY stickChanged)
     Q_PROPERTY(QVariantMap cacheProgress READ cacheProgress NOTIFY cacheChanged)
     Q_PROPERTY(QVariantMap repairProgress READ repairProgress NOTIFY repairChanged)
+    Q_PROPERTY(QVariantMap archive READ archive NOTIFY archiveChanged)
+    Q_PROPERTY(QVariantList archiveMatches READ archiveMatches NOTIFY archiveChanged)
 public:
     explicit RecoveryController(QObject *parent=nullptr):QObject(parent) {
+        const QString seeded=FirmwareArchive::seedFromStick();
+        if(!seeded.isEmpty()) ai(seeded);
         const auto k=m_kb.summary();
         ai(QStringLiteral("KI-Agent aktiv. Wissensbasis: %1 Einträge, %2 Geräte, %3 USB-Bridges, %4 Controller-Modelle.")
             .arg(k.value("cases").toInt()).arg(k.value("devices").toInt()).arg(k.value("bridges").toInt()).arg(k.value("controllers").toInt()));
@@ -154,16 +159,23 @@ public:
         const QString disk=target.value("devicePath").toString();
         m_stickWorker=QThread::create([this,image,disk,confirm]{
             int lastStep=-1;
-            const auto result=StickWriter::write(image,disk,confirm,m_cancel,[this,&lastStep](int p,const QString &t){
+            auto progress=[this,&lastStep](int p,const QString &t){
                 const bool step=p/5!=lastStep; lastStep=p/5;
                 QMetaObject::invokeMethod(this,[this,p,t,step]{
                     m_stick["percent"]=p; m_stick["phase"]=t; emit stickChanged();
                     if(step) ai(QStringLiteral("Boot-Stick [%1%2] %3 %").arg(QString(p/5,QChar(0x2588)),QString(20-p/5,QChar(0x2591))).arg(p));
                 },Qt::QueuedConnection);
-            });
+            };
+            auto result=StickWriter::write(image,disk,confirm,m_cancel,progress);
+            if(result.value("ok").toBool()) {
+                // Offline-Paket: Firmware-Archiv, Werkzeuge und KI-Wissen mit auf den Stick.
+                progress(99,QStringLiteral("Lege Datenpartition NVMEDATEN an und kopiere Firmware-Archiv, Werkzeuge und KI-Wissen …"));
+                result["dataMessage"]=StickWriter::addDataPartition(disk,FirmwareArchive::appDataDir()).value("message");
+            }
             QMetaObject::invokeMethod(this,[this,result]{
                 if(m_stickWorker) { m_stickWorker->wait(); m_stickWorker->deleteLater(); m_stickWorker=nullptr; }
                 m_stick["running"]=false; m_stick["phase"]=result.value("message"); m_stick["ok"]=result.value("ok");
+                if(!result.value("dataMessage").toString().isEmpty()) m_stick["phase"]=result.value("message").toString()+QLatin1Char(' ')+result.value("dataMessage").toString();
                 emit stickChanged();
                 ai(result.value("message").toString());
                 m_kb.recordAction(QStringLiteral("bootstick_ergebnis"),{},result);
@@ -635,6 +647,7 @@ private:
         m_aiReport=RecoveryAgent::analyze(verified,m_experience);
         m_aiReport["geraet"]=verified;
         m_aiReport["index"]=index;
+        emit archiveChanged();
         m_kb.recordDiagnosis(verified,m_aiReport);
         {
             auto entry=m_devices[index].toMap();
@@ -861,7 +874,99 @@ public:
         setStatus(QStringLiteral("Ziel verfügbar: %1 GiB frei. Noch keine Recovery gestartet.")
             .arg(volume.bytesAvailable()/1024/1024/1024));
     }
+    // ------------------------------------------------ Offline-Firmware-Archiv
+    QVariantMap archive() const { auto m=FirmwareArchive::stats(); m.insert(m_archiveRun); return m; }
+    QVariantList archiveMatches() const { return m_aiReport.contains("geraet") ? FirmwareArchive::match(m_aiReport.value("geraet").toMap()) : QVariantList{}; }
+    // Lädt alle erreichbaren offiziellen Firmwaredateien ins Archiv.
+    Q_INVOKABLE void fillArchive() {
+        if(m_archiveRun.value("laeuft").toBool()) return;
+        m_archiveQueue.clear(); m_archiveDone=0; m_archiveNew=0; m_archiveStep=-1;
+        m_archiveRun={{"laeuft",true},{"prozent",0},{"phase",QStringLiteral("Lese Herstellerlisten …")}};
+        emit archiveChanged();
+        ai(QStringLiteral("Firmware-Archiv: lade Herstellerlisten (offizielle Server)."));
+        const auto sources=ToolManager::loadJson(QStringLiteral("firmware_sources.json")).value("quellen").toArray();
+        m_archivePending=0;
+        for(const auto &v:sources) {
+            const auto q=v.toObject();
+            const QString art=q.value("art").toString();
+            if(art!=QStringLiteral("wd-dashboard") && art!=QStringLiteral("samsung-iso")) continue;
+            ++m_archivePending;
+            auto *r=m_net.get(archiveRequest(QUrl(q.value("liste").toString())));
+            connect(r,&QNetworkReply::finished,this,[this,r,q,art]{
+                r->deleteLater();
+                const QString body=QString::fromUtf8(r->readAll());
+                const auto entries=FirmwareArchive::load();
+                int found=0;
+                if(r->error()!=QNetworkReply::NoError) ai(QStringLiteral("Firmware-Archiv: %1 nicht erreichbar (%2).").arg(q.value("hersteller").toString(),r->errorString()));
+                else if(art==QStringLiteral("wd-dashboard")) {
+                    const QString base=q.value("basis").toString();
+                    QRegularExpression re(QStringLiteral("firmware/([^/<\"\\s]+)/([^/<\"\\s]+)/device_properties\\.xml"));
+                    QSet<QString> seen;
+                    for(auto it=re.globalMatch(body);it.hasNext();) {
+                        const auto m=it.next();
+                        const QString key=m.captured(1)+QLatin1Char('/')+m.captured(2);
+                        if(seen.contains(key)) continue; seen.insert(key);
+                        m_archiveQueue.append(QVariantMap{{"art","wd-props"},{"url",base+QStringLiteral("firmware/")+key+QStringLiteral("/device_properties.xml")},
+                            {"basis",base+QStringLiteral("firmware/")+key+QLatin1Char('/')},{"modell",m.captured(1)},{"version",m.captured(2)},{"hersteller",q.value("hersteller").toString()}});
+                        ++found;
+                    }
+                } else {
+                    QRegularExpression re(QStringLiteral("https?://[^\"'\\s<>]+?\\.iso"));
+                    QSet<QString> seen;
+                    for(auto it=re.globalMatch(body);it.hasNext();) {
+                        const QString url=it.next().captured(0);
+                        if(seen.contains(url) || FirmwareArchive::hasSource(entries,url)) continue; seen.insert(url);
+                        QString name=QUrl(url).fileName(); name.chop(4);
+                        QString model=name; model.remove(QStringLiteral("Samsung_SSD_")); model.replace(QLatin1Char('_'),QLatin1Char(' '));
+                        const QString ver=model.section(QLatin1Char(' '),-1);
+                        model=model.section(QLatin1Char(' '),0,-2);
+                        m_archiveQueue.append(QVariantMap{{"art","datei"},{"url",url},{"hersteller",QStringLiteral("Samsung")},{"modell",model},{"version",ver},{"dateiart",QStringLiteral("samsung-iso")}});
+                        ++found;
+                    }
+                }
+                ai(QStringLiteral("Firmware-Archiv: %1 – %2 Firmwarestände gefunden.").arg(q.value("hersteller").toString()).arg(found));
+                if(--m_archivePending==0) { m_archiveTotal=m_archiveQueue.size(); archiveNext(); }
+            });
+        }
+        if(m_archivePending==0) archiveFinish(QStringLiteral("Keine automatisch ladbaren Quellen in firmware_sources.json."));
+    }
+    Q_INVOKABLE void cancelArchive() { m_archiveQueue.clear(); }
+    Q_INVOKABLE void importArchive(const QString &folderUrl) {
+        const QString path=folderUrl.startsWith(QStringLiteral("file:")) ? QUrl(folderUrl).toLocalFile() : folderUrl;
+        auto dev=m_aiReport.value("geraet").toMap();
+        dev["catalogVendor"]=m_aiReport.value("catalog").toMap().value("vendorName");
+        const auto r=FirmwareArchive::importFolder(path,dev);
+        ai(QStringLiteral("Firmware-Archiv: ")+r.value("message").toString());
+        emit archiveChanged();
+    }
+    Q_INVOKABLE void exportArchive(const QString &folderUrl) {
+        const QString path=folderUrl.startsWith(QStringLiteral("file:")) ? QUrl(folderUrl).toLocalFile() : folderUrl;
+        ai(QStringLiteral("Export: ")+FirmwareArchive::exportTo(path).value("message").toString());
+    }
+    Q_INVOKABLE QVariantList firmwareVendors() const {
+        QVariantList out;
+        for(const auto &v:ToolManager::loadJson(QStringLiteral("firmware_sources.json")).value("quellen").toArray()) out.append(v.toObject().toVariantMap());
+        return out;
+    }
+    Q_INVOKABLE void openUrl(const QString &url) { QDesktopServices::openUrl(QUrl(url)); }
+    // Samsung-ISO aus dem Archiv direkt ausführen (Linux-Edition).
+    Q_INVOKABLE void runArchivedIso(const QString &path) {
+        if(m_worker || m_fwWorker || m_repairWorker || m_cacheWorker) { ai(QStringLiteral("Bitte warten, bis der laufende Vorgang beendet ist.")); return; }
+        m_fwProgress={{"phase",QStringLiteral("Samsung-Firmware-Update …")},{"percent",0},{"running",true}};
+        emit firmwareChanged(); emit recoveryChanged();
+        m_kb.recordAction(QStringLiteral("firmware_samsung_iso"),m_aiReport.value("geraet").toMap(),{{"datei",QFileInfo(path).fileName()}});
+        m_fwWorker=QThread::create([this,path]{
+            const auto r=FirmwareArchive::runSamsungIso(path,[this](const QString &l){ QMetaObject::invokeMethod(this,[this,l]{ ai(l); },Qt::QueuedConnection); });
+            QMetaObject::invokeMethod(this,[this,r]{
+                if(m_fwWorker) { m_fwWorker->wait(); m_fwWorker->deleteLater(); m_fwWorker=nullptr; }
+                m_fwProgress={{"phase",r.value("message")},{"percent",r.value("ok").toBool()?100:0},{"running",false},{"result",r}};
+                emit firmwareChanged(); emit recoveryChanged(); ai(r.value("message").toString());
+            },Qt::QueuedConnection);
+        });
+        m_fwWorker->start();
+    }
 signals:
+    void archiveChanged();
     void devicesChanged();
     void statusChanged();
     void aiReportChanged();
@@ -899,6 +1004,76 @@ private:
     QVariantMap m_cache;
     QThread *m_repairWorker=nullptr;
     QVariantMap m_repair;
+    QVariantMap m_archiveRun;
+    QVariantList m_archiveQueue;
+    int m_archivePending=0, m_archiveTotal=0, m_archiveDone=0, m_archiveNew=0, m_archiveStep=-1;
+    QNetworkRequest archiveRequest(const QUrl &u) const {
+        QNetworkRequest r(u);
+        r.setHeader(QNetworkRequest::UserAgentHeader,QStringLiteral("Mozilla/5.0 NVMeRecoveryStudioAI"));
+        r.setAttribute(QNetworkRequest::RedirectPolicyAttribute,QNetworkRequest::NoLessSafeRedirectPolicy);
+        r.setTransferTimeout(120000);
+        return r;
+    }
+    void archiveProgress(const QString &phase) {
+        const int p=m_archiveTotal ? int(100.0*m_archiveDone/m_archiveTotal) : 0;
+        m_archiveRun["prozent"]=p; m_archiveRun["phase"]=phase;
+        m_archiveRun["fortschritt"]=QStringLiteral("%1 / %2").arg(m_archiveDone).arg(m_archiveTotal);
+        emit archiveChanged();
+        if(p/5!=m_archiveStep) { m_archiveStep=p/5; ai(QStringLiteral("Firmware-Archiv [%1%2] %3 %").arg(QString(p/5,QChar(0x2588)),QString(20-p/5,QChar(0x2591))).arg(p)); }
+    }
+    void archiveFinish(const QString &msg) {
+        m_archiveRun={{"laeuft",false},{"prozent",100},{"phase",msg}};
+        emit archiveChanged(); ai(QStringLiteral("Firmware-Archiv: ")+msg);
+    }
+    void archiveNext() {
+        if(m_archiveQueue.isEmpty()) {
+            archiveFinish(QStringLiteral("fertig – %1 neue Dateien geladen, insgesamt %2 im Archiv.").arg(m_archiveNew).arg(FirmwareArchive::stats().value("dateien").toInt()));
+            return;
+        }
+        const auto job=m_archiveQueue.takeFirst().toMap();
+        if(job.value("art")==QStringLiteral("wd-props")) {
+            archiveProgress(QStringLiteral("%1 %2 %3 – prüfe").arg(job.value("hersteller").toString(),job.value("modell").toString().replace(QLatin1Char('_'),QLatin1Char(' ')),job.value("version").toString()));
+            auto *r=m_net.get(archiveRequest(QUrl(job.value("url").toString())));
+            connect(r,&QNetworkReply::finished,this,[this,r,job]{
+                r->deleteLater();
+                const QString xml=QString::fromUtf8(r->readAll());
+                auto m=QRegularExpression(QStringLiteral("<fwfile>\\s*([^<\\s]+)\\s*</fwfile>")).match(xml);
+                QString file=m.hasMatch() ? m.captured(1) : QRegularExpression(QStringLiteral("([A-Za-z0-9_\\-]+\\.fluf)")).match(xml).captured(1);
+                if(r->error()!=QNetworkReply::NoError || file.isEmpty()) { ++m_archiveDone; QTimer::singleShot(0,this,[this]{ archiveNext(); }); return; }
+                QStringList deps;
+                for(auto it=QRegularExpression(QStringLiteral("<dependency[^>]*>\\s*([^<\\s]+)\\s*</dependency>")).globalMatch(xml);it.hasNext();) deps<<it.next().captured(1);
+                QStringList models{job.value("modell").toString().replace(QLatin1Char('_'),QLatin1Char(' '))};
+                for(auto it=QRegularExpression(QStringLiteral("<model[^>]*>\\s*([^<]+?)\\s*</model>")).globalMatch(xml);it.hasNext();) models<<it.next().captured(1);
+                auto next=job; next["art"]=QStringLiteral("datei"); next["url"]=job.value("basis").toString()+file;
+                next["dateiart"]=QStringLiteral("nvme-bild"); next["voraussetzungen"]=deps; next["modelle"]=models;
+                next["dateiname"]=job.value("modell").toString()+QLatin1Char('_')+job.value("version").toString()+QLatin1Char('_')+file;
+                m_archiveQueue.prepend(next);
+                QTimer::singleShot(0,this,[this]{ archiveNext(); });
+            });
+            return;
+        }
+        if(FirmwareArchive::hasSource(FirmwareArchive::load(),job.value("url").toString())) { ++m_archiveDone; QTimer::singleShot(0,this,[this]{ archiveNext(); }); return; }
+        archiveProgress(QStringLiteral("Lade %1 %2 %3").arg(job.value("hersteller").toString(),job.value("modell").toString().replace(QLatin1Char('_'),QLatin1Char(' ')),job.value("version").toString()));
+        const QString part=QDir(FirmwareArchive::dir()).filePath(QStringLiteral("download.part"));
+        auto *out=new QFile(part,this); out->open(QIODevice::WriteOnly|QIODevice::Truncate);
+        auto *r=m_net.get(archiveRequest(QUrl(job.value("url").toString())));
+        connect(r,&QNetworkReply::readyRead,this,[r,out]{ out->write(r->readAll()); });
+        connect(r,&QNetworkReply::finished,this,[this,r,out,job,part]{
+            out->write(r->readAll()); out->close(); out->deleteLater(); r->deleteLater();
+            ++m_archiveDone;
+            if(r->error()==QNetworkReply::NoError && QFileInfo(part).size()>1024) {
+                QJsonArray models; for(const auto &m:job.value("modelle").toStringList()) models.append(m);
+                if(models.isEmpty()) models.append(job.value("modell").toString());
+                QJsonObject meta{{"hersteller",job.value("hersteller").toString()},{"modelle",models},{"version",job.value("version").toString()},
+                                 {"art",job.value("dateiart").toString()},{"quelle",job.value("url").toString()},
+                                 {"voraussetzungen",QJsonArray::fromStringList(job.value("voraussetzungen").toStringList())}};
+                meta["dateiname"]=job.contains("dateiname") ? job.value("dateiname").toString() : QUrl(job.value("url").toString()).fileName();
+                if(!FirmwareArchive::add(part,meta).isEmpty()) ++m_archiveNew;
+            }
+            QFile::remove(part);
+            QTimer::singleShot(0,this,[this]{ archiveNext(); });
+        });
+    }
     QVariantMap m_repairByDevice;
     QThread *m_fwWorker=nullptr;
     QVariantMap m_fwPlan;

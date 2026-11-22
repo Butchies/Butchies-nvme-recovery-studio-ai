@@ -1,6 +1,6 @@
 [Unit]
 Description=NVMe Recovery Studio AI (Vollbild-Kiosk)
-After=systemd-user-sessions.service plymouth-quit-wait.service nvme-recovery-persistence.service NetworkManager.service
+After=mnt-nvmedaten.mount systemd-user-sessions.service plymouth-quit-wait.service nvme-recovery-persistence.service NetworkManager.service
 Wants=NetworkManager.service
 Conflicts=getty@tty1.service
 
