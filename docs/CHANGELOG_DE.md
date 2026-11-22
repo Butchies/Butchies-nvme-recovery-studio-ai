@@ -1,5 +1,8 @@
 # Änderungsprotokoll
 
+## 22.11.2026 – Design Gold · Weiß · Lila · Rosa
+- Farben Gold/Weiß/Lila/Rosa für Programm, Startanimation und Installer; Logo D in Lila-Rosa mit goldenem Funken; neues Installer-Seitenbild „by Butchies“.
+
 ## 22.11.2026 – Startanimation
 - Startanimation: Butchies-Logo, dann Programmlogo mit Leuchtimpuls, Titel und Ladebalken (ca. 3,6 s, Klick überspringt). Eigenes Logo als native/icons/butchies.png.
 
