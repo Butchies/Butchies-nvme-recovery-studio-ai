@@ -17,27 +17,28 @@ ApplicationWindow {
     // ---------------------------------------------------------------- Theme
     QtObject {
         id: theme
-        readonly property color bg: "#f4f6fa"
+        readonly property color bg: "#f6f7fb"
         readonly property color card: "#ffffff"
-        readonly property color line: "#e5e9f0"
+        readonly property color line: "#eceef3"
         readonly property color text: "#1f2937"
         readonly property color strong: "#0f172a"
         readonly property color muted: "#667085"
-        readonly property color accent: "#2563eb"
-        readonly property color accentSoft: "#e8f0fe"
-        readonly property color accentText: "#1d4ed8"
-        readonly property color good: "#12b76a"
-        readonly property color goodSoft: "#e7f6ec"
-        readonly property color goodText: "#166534"
-        readonly property color warn: "#f79009"
-        readonly property color warnSoft: "#fff4e0"
-        readonly property color warnText: "#9a5b00"
-        readonly property color bad: "#d92d20"
-        readonly property color badSoft: "#fdecec"
-        readonly property color badText: "#b42318"
+        readonly property color accent: "#4f46e5"
+        readonly property color accentSoft: "#eef2ff"
+        readonly property color accentText: "#4338ca"
+        readonly property color good: "#22c55e"
+        readonly property color goodSoft: "#e8f8ef"
+        readonly property color goodText: "#15803d"
+        readonly property color warn: "#f59e0b"
+        readonly property color warnSoft: "#fff5e6"
+        readonly property color warnText: "#b45309"
+        readonly property color bad: "#ef4444"
+        readonly property color badSoft: "#fdeeee"
+        readonly property color badText: "#c0262d"
+        readonly property color accent2: "#6366f1"
         readonly property string mono: Qt.platform.os === "windows" ? "Consolas" : "DejaVu Sans Mono"
     }
-    font.family: Qt.platform.os === "windows" ? "Segoe UI" : "DejaVu Sans"
+    font.family: Qt.fontFamilies().indexOf("Inter") >= 0 ? "Inter" : (Qt.platform.os === "windows" ? "Segoe UI Variable Text" : "DejaVu Sans")
     font.pixelSize: 14
     palette.window: theme.bg
     palette.base: "#ffffff"
@@ -77,7 +78,8 @@ ApplicationWindow {
     component Card: Rectangle {
         default property alias content: inner.data
         property alias spacing: inner.spacing
-        color: theme.card; radius: 12; border.color: theme.line
+        color: theme.card; radius: 16; border.color: theme.line
+        Rectangle { z: -1; anchors.fill: parent; anchors.topMargin: 6; anchors.leftMargin: 4; anchors.rightMargin: 4; anchors.bottomMargin: -4; radius: 18; color: "#0f101828" }
         implicitHeight: inner.implicitHeight + 36
         ColumnLayout { id: inner; anchors.fill: parent; anchors.margins: 18; spacing: 10 }
     }
@@ -108,9 +110,11 @@ ApplicationWindow {
             Label { text: ab.text; font.bold: true; color: ab.primary ? "#ffffff" : (ab.danger ? theme.badText : "#344054"); opacity: ab.enabled ? 1 : 0.5 }
         }
         background: Rectangle {
-            radius: 8
-            color: ab.primary ? (ab.down ? "#1e40af" : theme.accent) : (ab.down ? "#f2f4f7" : "#ffffff")
-            border.color: ab.primary ? theme.accent : (ab.danger ? "#f4b4ae" : "#d0d5dd")
+            radius: 10
+            gradient: ab.primary ? primaryGrad : null
+            color: ab.primary ? theme.accent : (ab.down ? "#f2f4f7" : "#ffffff")
+            border.color: ab.primary ? "transparent" : (ab.danger ? "#f4b4ae" : "#d9dde5")
+            Gradient { id: primaryGrad; GradientStop { position: 0; color: ab.down ? "#4338ca" : theme.accent2 } GradientStop { position: 1; color: ab.down ? "#3730a3" : theme.accent } }
             opacity: ab.enabled ? 1 : 0.6
         }
     }
@@ -125,13 +129,18 @@ ApplicationWindow {
         property string value
         property string note
         property string level: "grey"
+        property real fill: -1
         Layout.fillWidth: true
-        implicitHeight: 96; radius: 12; color: theme.card; border.color: theme.line
+        implicitHeight: fill >= 0 ? 122 : 100; radius: 16; color: theme.card; border.color: theme.line
         ColumnLayout {
             anchors.fill: parent; anchors.margins: 14; spacing: 4
             Label { text: label; color: theme.muted }
             Label { text: value; font.pixelSize: 24; font.bold: true; color: theme.strong }
             Pill { text: note; level: parent.parent.level; visible: note !== "" }
+            Rectangle {
+                visible: fill >= 0; Layout.fillWidth: true; Layout.topMargin: 6; height: 6; radius: 3; color: "#eef0f4"
+                Rectangle { width: parent.width * Math.max(0, Math.min(1, fill / 100)); height: 6; radius: 3; color: window.levelColor(level) }
+            }
         }
     }
 
@@ -212,10 +221,7 @@ ApplicationWindow {
         Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: theme.line }
         RowLayout {
             anchors.fill: parent; anchors.leftMargin: 24; anchors.rightMargin: 24; spacing: 16
-            Rectangle {
-                width: 34; height: 34; radius: 9; color: theme.accent
-                Image { anchors.centerIn: parent; source: window.icon("chip", "white"); sourceSize: Qt.size(20, 20) }
-            }
+            Image { source: "icons/logo.svg"; sourceSize: Qt.size(38, 38) }
             Label { text: "NVMe Recovery Studio AI"; font.pixelSize: 17; font.bold: true; color: theme.strong }
             Rectangle {
                 radius: 999; color: theme.accentSoft; implicitHeight: 24; implicitWidth: edLabel.implicitWidth + 20
@@ -274,7 +280,11 @@ ApplicationWindow {
                         required property var modelData
                         visible: modelData.show
                         Layout.fillWidth: true; implicitHeight: 42
-                        background: Rectangle { radius: 8; color: window.page === modelData.page ? theme.accentSoft : (parent.hovered ? "#f5f7fa" : "transparent") }
+                        background: Rectangle {
+                            radius: 10; color: window.page === modelData.page ? theme.accentSoft : (parent.hovered ? "#f5f7fa" : "transparent")
+                            gradient: window.page === modelData.page ? navGrad : null
+                            Gradient { id: navGrad; orientation: Gradient.Horizontal; GradientStop { position: 0; color: "#eef2ff" } GradientStop { position: 1; color: "#f7f8ff" } }
+                        }
                         contentItem: RowLayout {
                             spacing: 10
                             Image { source: window.icon(modelData.icon, window.page === modelData.page ? "blue" : "grey"); sourceSize: Qt.size(18, 18) }
@@ -284,6 +294,16 @@ ApplicationWindow {
                     }
                 }
                 Item { Layout.fillHeight: true }
+                Rectangle {
+                    Layout.fillWidth: true; radius: 14; border.color: theme.line; color: "#ffffff"; implicitHeight: arcCol.implicitHeight + 24
+                    ColumnLayout {
+                        id: arcCol; anchors.fill: parent; anchors.margins: 12; spacing: 4
+                        Label { text: "Firmware-Archiv"; color: theme.muted; font.pixelSize: 12 }
+                        Label { text: (controller.archive.dateien || 0) + " Dateien · " + ((controller.archive.megabyte || 0) >= 1024 ? ((controller.archive.megabyte / 1024).toFixed(1) + " GB") : ((controller.archive.megabyte || 0) + " MB")); font.bold: true; color: theme.strong }
+                        Pill { text: controller.archive.laeuft ? "aktualisiert " + (controller.archive.prozent || 0) + " %" : ((controller.archive.dateien || 0) > 0 ? "offline bereit" : "wird gefüllt"); level: (controller.archive.dateien || 0) > 0 ? "good" : "grey" }
+                    }
+                    MouseArea { anchors.fill: parent; onClicked: window.page = 3; cursorShape: Qt.PointingHandCursor }
+                }
                 ActionButton { Layout.fillWidth: true; text: controller.linuxEdition ? "Geräte erkennen" : "USB-Geräte erkennen"; iconName: "refresh"; enabled: !controller.recoveryRunning; onClicked: controller.refresh() }
             }
         }
@@ -306,7 +326,7 @@ ApplicationWindow {
                         delegate: Rectangle {
                             required property var modelData
                             required property int index
-                            Layout.fillWidth: true; implicitHeight: 64; radius: 10; color: "#ffffff"
+                            Layout.fillWidth: true; implicitHeight: 70; radius: 14; color: "#ffffff"
                             border.width: window.selected === index ? 2 : 1
                             border.color: window.selected === index ? theme.accent : theme.line
                             readonly property string lvl: modelData.protected ? "grey" : (modelData.romModeSuspect ? "bad" : window.severityLevel(modelData.aiSeverity))
@@ -346,13 +366,15 @@ ApplicationWindow {
                                 Layout.fillWidth: true; spacing: 18
                                 ColumnLayout {
                                     Layout.fillWidth: true; spacing: 6
+                                    Label { text: "KI-DIAGNOSE"; font.pixelSize: 11; font.bold: true; font.letterSpacing: 0.8; color: theme.accent2 }
                                     Label { text: window.dev.nvmeControllerModel && window.dev.nvmeControllerModel !== "Nicht ermittelt" ? window.dev.nvmeControllerModel : (window.dev.name || ""); font.pixelSize: 22; font.bold: true; color: theme.strong }
                                     Label { color: theme.muted; Layout.fillWidth: true; elide: Text.ElideRight
                                             text: "Firmware " + (window.dev.nvmeFirmware || "–") + " · " + (window.report.catalog && window.report.catalog.controllerName ? window.report.catalog.controllerName : (window.report.catalog && window.report.catalog.vendorName ? window.report.catalog.vendorName : "Controller unbekannt")) + " · " + (window.dev.nvmePassthrough || "") }
                                     Rectangle {
-                                        Layout.fillWidth: true; radius: 10; color: "#f8fafc"; border.color: theme.line
+                                        Layout.fillWidth: true; radius: 10; color: "#f8f9fc"; border.color: theme.line
                                         implicitHeight: verdict.implicitHeight + 24
-                                        Label { id: verdict; anchors.fill: parent; anchors.margins: 12; wrapMode: Text.WordWrap; textFormat: Text.StyledText
+                                        Rectangle { width: 4; height: parent.height; radius: 2; color: window.levelColor(window.severityLevel(window.report.severity)) }
+                                        Label { id: verdict; anchors.fill: parent; anchors.margins: 12; anchors.leftMargin: 16; wrapMode: Text.WordWrap; textFormat: Text.StyledText
                                                 text: "<b>KI-Diagnose:</b> " + (window.report.diagnosis || "") + (window.report.kiModell ? " <b>Wahrscheinliche Ursache: " + window.report.kiModell.text + " (" + Math.round(window.report.kiModell.wahrscheinlichkeit * 100) + " %).</b>" : "") }
                                     }
                                     Flow {
@@ -360,7 +382,15 @@ ApplicationWindow {
                                         ActionButton { text: "Automatisch retten"; iconName: "save"; primary: !controller.linuxEdition || window.severityLevel(window.report.severity) !== "bad"; enabled: !controller.recoveryRunning; onClicked: { window.page = 1; controller.startAutoRecovery(window.selected, destination.text) } }
                                         ActionButton { visible: controller.linuxEdition; text: "Reparieren"; iconName: "tool"; primary: window.severityLevel(window.report.severity) === "bad"; enabled: !controller.recoveryRunning; onClicked: { window.page = 2; controller.startRepair(window.selected, fullSurfaceBox.checked, "") } }
                                         ActionButton { text: "Cache testen"; iconName: "cache"; enabled: !controller.recoveryRunning; onClicked: { window.page = 4; controller.runCacheTest(window.selected, longTestBox.checked, writeTestBox.checked) } }
-                                        ActionButton { text: "Firmware …"; iconName: "chip"; enabled: !controller.recoveryRunning; onClicked: firmwareFileDialog.open() }
+                                        ActionButton {
+                                            readonly property var best: controller.archiveMatches.length > 0 && !controller.archiveMatches[0].istAktuell && controller.archiveMatches[0].vorhanden ? controller.archiveMatches[0] : null
+                                            text: best ? "Firmware " + best.version + " einspielen" : "Firmware …"; iconName: "chip"; enabled: !controller.recoveryRunning
+                                            onClicked: {
+                                                if (!best) { window.page = 3; return }
+                                                if (best.art === "samsung-iso" || best.art === "lvfs-cab") controller.runArchived(best.pfad, best.art)
+                                                else { firmwareDialog.fileUrl = "file:///" + best.pfad.replace(/^\/+/, ""); controller.prepareFirmware(window.selected, firmwareDialog.fileUrl, noBackupBox.checked); firmwareDialog.open() }
+                                            }
+                                        }
                                     }
                                 }
                                 // Health ring
@@ -389,16 +419,16 @@ ApplicationWindow {
                         // Tiles
                         RowLayout {
                             Layout.fillWidth: true; spacing: 12; visible: window.hasDevice && !!window.dev.smartAvailable
-                            Tile { label: "Temperatur"; value: (window.dev.temperatureCelsius || "–") + " °C"
+                            Tile { fill: Math.min(100, +window.dev.temperatureCelsius || 0); label: "Temperatur"; value: (window.dev.temperatureCelsius || "–") + " °C"
                                    level: +window.dev.temperatureCelsius >= 70 ? "bad" : (+window.dev.temperatureCelsius >= 55 ? "warn" : "good")
                                    note: +window.dev.temperatureCelsius >= 70 ? "zu heiß" : (+window.dev.temperatureCelsius >= 55 ? "erhöht" : "normal") }
-                            Tile { label: "Reserve"; value: (window.dev.availableSparePercent || "–") + " %"
+                            Tile { fill: +window.dev.availableSparePercent || 0; label: "Reserve"; value: (window.dev.availableSparePercent || "–") + " %"
                                    level: +window.dev.availableSparePercent < 20 ? "bad" : (+window.dev.availableSparePercent < 90 ? "warn" : "good")
                                    note: +window.dev.availableSparePercent < 20 ? "erschöpft" : (+window.dev.availableSparePercent < 90 ? "sinkt" : "voll") }
-                            Tile { label: "Verschleiß"; value: (window.dev.percentageUsed || "–") + " %"
+                            Tile { fill: +window.dev.percentageUsed || 0; label: "Verschleiß"; value: (window.dev.percentageUsed || "–") + " %"
                                    level: +window.dev.percentageUsed >= 90 ? "bad" : (+window.dev.percentageUsed >= 30 ? "warn" : "good")
                                    note: +window.dev.percentageUsed >= 90 ? "verbraucht" : (+window.dev.percentageUsed >= 30 ? "mittel" : "gering") }
-                            Tile { label: "Medienfehler"; value: window.dev.mediaErrors || "–"
+                            Tile { fill: (+window.dev.mediaErrors > 0 ? 80 : 0); label: "Medienfehler"; value: window.dev.mediaErrors || "–"
                                    level: +window.dev.mediaErrors > 0 ? "bad" : "good"; note: +window.dev.mediaErrors > 0 ? "vorhanden" : "keine" }
                         }
                         // Controller messages + board
@@ -802,7 +832,7 @@ ApplicationWindow {
                                     Label { text: modelData.text; Layout.fillWidth: true; elide: Text.ElideRight; font.pixelSize: 13 }
                                     Label { text: Math.round(modelData.wahrscheinlichkeit * 100) + " %"; font.bold: true; font.pixelSize: 13 } }
                                 Progress { Layout.fillWidth: true; implicitHeight: 8; value: modelData.wahrscheinlichkeit * 100
-                                           barColor: index === 0 ? (modelData.ursache === "gesund" ? theme.good : theme.bad) : (index === 1 ? theme.warn : theme.accent) }
+                                           barColor: index === 0 ? (modelData.ursache === "gesund" ? theme.good : "#f97316") : (index === 1 ? theme.warn : theme.accent2) }
                             }
                         }
                         Label { visible: window.report.kiModell && window.report.kiModell.gruende.length > 0; Layout.fillWidth: true; wrapMode: Text.WordWrap; color: theme.muted; font.pixelSize: 12

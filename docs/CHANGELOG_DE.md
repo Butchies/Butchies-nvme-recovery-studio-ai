@@ -1,5 +1,9 @@
 # Änderungsprotokoll
 
+## 22.11.2026 – Neues Logo und verfeinertes Design
+- Logo D (M.2 mit KI-Funke) für Programm, Taskleiste und Installer.
+- Indigo-Farben, weiche Schatten, Hauptknopf mit Verlauf, Kacheln mit Füllbalken, Diagnose mit farbigem Seitenstreifen, Firmware aus dem Archiv direkt in der Diagnose, Archiv-Stand unten links.
+
 ## 22.11.2026 – Offline-Firmware-Archiv
 - Linux-Stick: fwupd/LVFS (Firmware vieler Hersteller und OEM-SSDs, offline einspielbar) und openSeaChest (herstellerunabhängiges Firmware-Werkzeug) eingebaut.
 - Archiv aktualisiert sich selbst (Start + täglich bei Internet), durchsucht alle Herstellerseiten automatisch und lädt fehlende Werkzeuge nach.

@@ -9,6 +9,7 @@ qt_add_executable(nvme-recovery-studio
 qt_add_qml_module(nvme-recovery-studio URI RecoveryStudio VERSION 1.0
     QML_FILES Main.qml
     RESOURCES
+        icons/logo.svg
         icons/box-amber.svg
         icons/box-blue.svg
         icons/box-green.svg
