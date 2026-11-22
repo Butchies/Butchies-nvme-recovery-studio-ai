@@ -18,6 +18,9 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 PrivilegesRequired=admin
 WizardStyle=modern
+SetupIconFile=..\native\app\app.ico
+WizardImageFile=wizard.bmp
+WizardSmallImageFile=wizard-small.bmp
 UninstallDisplayIcon={app}\{#MyAppExeName}
 [Languages]
 Name: "de"; MessagesFile: "compiler:Languages\German.isl"
