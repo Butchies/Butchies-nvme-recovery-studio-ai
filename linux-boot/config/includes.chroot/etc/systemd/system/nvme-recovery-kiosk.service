@@ -1,7 +1,7 @@
 [Unit]
 Description=NVMe Recovery Studio AI (Vollbild-Kiosk)
-After=mnt-nvmedaten.mount systemd-user-sessions.service plymouth-quit-wait.service nvme-recovery-persistence.service NetworkManager.service
-Wants=NetworkManager.service
+After=systemd-user-sessions.service systemd-logind.service
+Wants=systemd-logind.service
 Conflicts=getty@tty1.service
 
 [Service]
@@ -12,8 +12,9 @@ TTYPath=/dev/tty1
 TTYReset=yes
 TTYVHangup=yes
 TTYVTDisallocate=yes
-StandardInput=tty-fail
+StandardInput=tty
 StandardOutput=journal
+StandardError=journal
 UtmpIdentifier=tty1
 UtmpMode=user
 Environment=XDG_RUNTIME_DIR=/run/nvme-recovery
@@ -21,10 +22,11 @@ Environment=QT_QPA_PLATFORM=wayland
 Environment=QT_QUICK_CONTROLS_STYLE=Fusion
 RuntimeDirectory=nvme-recovery
 RuntimeDirectoryMode=0700
-# cage zeigt ausschließlich die Anwendung; beim Beenden startet sie neu.
+ExecStartPre=/usr/bin/test -x /opt/nvme-recovery-studio/bin/nvme-recovery-studio
 ExecStart=/usr/bin/cage -s -- /opt/nvme-recovery-studio/bin/nvme-recovery-studio
 Restart=always
-RestartSec=2
+RestartSec=3
+StartLimitIntervalSec=0
 
 [Install]
 WantedBy=graphical.target
