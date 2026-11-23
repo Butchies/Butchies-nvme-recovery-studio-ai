@@ -45,7 +45,12 @@ rsync -a --exclude '.git' --exclude 'linux-boot/work' --exclude 'linux-boot/out'
 echo "${APP_VERSION:-0.0.0}" > "$WORK/config/includes.chroot/opt/src/VERSION"
 
 progress "System bauen (lädt Pakete, kompiliert die Anwendung – dauert länger)"
-lb build 2>&1 | tee "$OUT/build.log" | grep -E '^(P:|E:|W:)' || true
+if ! lb build > "$OUT/build.log" 2>&1; then
+  tail -n 100 "$OUT/build.log" >&2
+  echo "Linux-ISO-Build fehlgeschlagen. Vollständiges Protokoll: $OUT/build.log" >&2
+  exit 1
+fi
+printf "Build erfolgreich. Protokoll: %s\\n" "$OUT/build.log"
 
 progress "Ergebnis prüfen"
 ISO="$(ls -1 "$WORK"/*.iso 2>/dev/null | head -n1 || true)"
