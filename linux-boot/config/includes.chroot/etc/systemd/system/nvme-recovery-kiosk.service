@@ -3,6 +3,7 @@ Description=NVMe Recovery Studio AI (Vollbild-Kiosk)
 After=systemd-user-sessions.service systemd-logind.service
 Wants=systemd-logind.service
 Conflicts=getty@tty1.service
+StartLimitIntervalSec=0
 
 [Service]
 Type=simple
@@ -26,7 +27,6 @@ ExecStartPre=/usr/bin/test -x /opt/nvme-recovery-studio/bin/nvme-recovery-studio
 ExecStart=/usr/bin/cage -s -- /opt/nvme-recovery-studio/bin/nvme-recovery-studio
 Restart=always
 RestartSec=3
-StartLimitIntervalSec=0
 
 [Install]
 WantedBy=graphical.target
