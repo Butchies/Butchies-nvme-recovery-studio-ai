@@ -106,6 +106,7 @@ jobs:
 
   linux:
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     needs: windows
     env:
       VER: 0.6.${{ github.run_number }}
@@ -123,6 +124,14 @@ jobs:
             DEBIAN_FRONTEND=noninteractive apt-get install -y -qq live-build rsync ca-certificates curl >/dev/null
             ./linux-boot/build.sh'
           ls -la linux-boot/out
+
+      - name: "Linux-Build-Protokoll auch bei Fehler sichern"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-build-protokoll
+          path: linux-boot/out/build.log
+          if-no-files-found: warn
 
       - name: "[92 %] Prüfen, ob das Programm im Abbild steckt"
         run: |
