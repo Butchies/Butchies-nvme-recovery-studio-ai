@@ -124,6 +124,16 @@ jobs:
             ./linux-boot/build.sh'
           ls -la linux-boot/out
 
+      - name: "[92 %] Prüfen, ob das Programm im Abbild steckt"
+        run: |
+          sudo apt-get install -y -qq squashfs-tools >/dev/null
+          mkdir -p iso && sudo mount -o loop,ro linux-boot/out/nvme-recovery-studio-ai-linux.iso iso
+          unsquashfs -l iso/live/filesystem.squashfs > inhalt.txt
+          sudo umount iso
+          grep -E 'opt/nvme-recovery-studio/bin/nvme-recovery-studio$' inhalt.txt || { echo "Programm fehlt im Abbild"; grep -iE '^E:|error' linux-boot/out/build.log | tail -40; exit 1; }
+          grep -E 'mnt-nvmedaten.mount|nvme-recovery-kiosk.service' inhalt.txt | head
+          grep -E 'usr/sbin/nvme$|usr/sbin/smartctl$|usr/bin/fwupdtool$|openSeaChest_Firmware' inhalt.txt | head
+
       - name: "[95 %] Boot-Abbild veröffentlichen (Release „aktuell“)"
         uses: softprops/action-gh-release@v2
         with:
