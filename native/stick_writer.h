@@ -167,7 +167,7 @@ inline QVariantMap addDataPartition(const QString &diskPath, const QString &appD
     for(QDirIterator it(appData,QDir::Files,QDirIterator::Subdirectories);it.hasNext();) {
         const QString src=it.next();
         const QString rel=QDir(appData).relativeFilePath(src);
-        if(rel.startsWith(QStringLiteral("boot/"))) continue;   // das Boot-Abbild selbst nicht doppelt
+        if(rel.startsWith(QStringLiteral("boot/")) || rel.startsWith(QStringLiteral("update/"))) continue;   // Abbild und Setup nicht doppelt
         const QString dst=QDir(base).filePath(rel);
         QDir().mkpath(QFileInfo(dst).path());
         QFile::remove(dst);

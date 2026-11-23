@@ -1,5 +1,11 @@
 # Änderungsprotokoll
 
+## 23.11.2026 – Startfehler behoben, USB-Erkennung, Updater
+- Programm startete nicht (doppelte Start-Animation in der Oberfläche) – behoben; der Build prüft jetzt jeden Start und veröffentlicht nur fehlerfreie Versionen.
+- USB-NVMe-Gehäuse im UAS-Modus (von Windows als SCSI gemeldet) werden jetzt erkannt; interne Laufwerke bleiben gesperrt.
+- Eingebauter Updater: lädt neue Versionen selbst, installiert auf Klick oder beim Beenden still und startet neu; erkennt veraltete Boot-Sticks.
+- Linux-Boot-Abbild wird automatisch gebaut und mit veröffentlicht.
+
 ## 22.11.2026 – Start-Animation
 - „Butchies präsentiert“, danach ploppt das Programm-Logo auf, Name mit schimmerndem „AI“, Ladebalken; Klick überspringt.
 

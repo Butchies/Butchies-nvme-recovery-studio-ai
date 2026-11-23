@@ -107,7 +107,7 @@ inline QVariantMap inspect(const QString &path) {
         report["deviceVendor"]=extract(desc->VendorIdOffset);
         report["deviceProduct"]=extract(desc->ProductIdOffset);
         report["deviceFirmware"]=extract(desc->ProductRevisionOffset);
-        if(!usb) report["error"]="Windows meldet keinen USB-Speicherbus; Gerät gesperrt.";
+        if(!usb) { report["error"]="Windows meldet keinen USB-Speicherbus; Gerät gesperrt."; CloseHandle(handle); return report; }
     } else {
         report["error"]=QStringLiteral("STORAGE_DEVICE_DESCRIPTOR nicht verfügbar (%1).").arg(GetLastError());
     }

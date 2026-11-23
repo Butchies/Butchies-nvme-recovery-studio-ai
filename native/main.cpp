@@ -36,6 +36,10 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QDesktopServices>
+#include <QVersionNumber>
+#ifndef APP_VERSION
+#define APP_VERSION "0.0.0"
+#endif
 #include <QUrl>
 #include <QTimer>
 #include <QQuickWindow>
@@ -62,6 +66,7 @@ class RecoveryController final : public QObject {
     Q_PROPERTY(QVariantMap cacheProgress READ cacheProgress NOTIFY cacheChanged)
     Q_PROPERTY(QVariantMap repairProgress READ repairProgress NOTIFY repairChanged)
     Q_PROPERTY(QVariantMap archive READ archive NOTIFY archiveChanged)
+    Q_PROPERTY(QVariantMap update READ update NOTIFY updateChanged)
     Q_PROPERTY(QVariantList archiveMatches READ archiveMatches NOTIFY archiveChanged)
 public:
     explicit RecoveryController(QObject *parent=nullptr):QObject(parent) {
@@ -70,6 +75,10 @@ public:
         // Archiv hält sich selbst aktuell: 20 s nach dem Start, danach stündlich prüfen
         // (lädt höchstens alle 24 h), sobald Internet (LAN/WLAN) da ist.
         QTimer::singleShot(20000,this,[this]{ autoArchive(); });
+        QTimer::singleShot(8000,this,[this]{ checkUpdate(); });
+        m_updateTimer.setInterval(3*60*60*1000);
+        connect(&m_updateTimer,&QTimer::timeout,this,[this]{ checkUpdate(); });
+        m_updateTimer.start();
         m_archiveTimer.setInterval(60*60*1000);
         connect(&m_archiveTimer,&QTimer::timeout,this,[this]{ autoArchive(); });
         m_archiveTimer.start();
@@ -106,7 +115,7 @@ public:
         if(m_stick.value("running").toBool()) return;
         m_stick={{"running",true},{"percent",0},{"phase",QStringLiteral("Suche neueste Linux-Boot-Edition …")}};
         emit stickChanged();
-        QNetworkRequest req(QUrl(QStringLiteral("https://api.github.com/repos/Butchies/Butchies-nvme-recovery-studio-ai/releases/latest")));
+        QNetworkRequest req(QUrl(QStringLiteral("https://api.github.com/repos/Butchies/Butchies-nvme-recovery-studio-ai/releases/tags/aktuell")));
         req.setHeader(QNetworkRequest::UserAgentHeader,QStringLiteral("NVMeRecoveryStudioAI"));
         auto *reply=m_net.get(req);
         connect(reply,&QNetworkReply::finished,this,[this,reply]{
@@ -140,6 +149,10 @@ public:
                 const bool ok=r2->error()==QNetworkReply::NoError && (QFile::remove(target),QFile::rename(out->fileName(),target));
                 m_stick={{"running",false},{"percent",ok?100:0},{"image",ok?target:QString()},
                          {"phase",ok?QStringLiteral("Boot-Abbild geladen: %1").arg(QDir::toNativeSeparators(target)):QStringLiteral("Download fehlgeschlagen: %1").arg(r2->errorString())}};
+                if(ok) {   // Version des Abbilds merken – kommt beim Stick-Erstellen mit auf den Stick.
+                    QFile v(ToolManager::appDataFile(QStringLiteral("stick-version.txt")));
+                    if(v.open(QIODevice::WriteOnly|QIODevice::Truncate)) v.write(m_update.value("neu",QStringLiteral(APP_VERSION)).toString().toUtf8());
+                }
                 emit stickChanged(); ai(m_stick.value("phase").toString());
             });
         });
@@ -438,7 +451,7 @@ public:
         ps.start(QStringLiteral("powershell.exe"), {
             QStringLiteral("-NoProfile"),QStringLiteral("-NonInteractive"),
             QStringLiteral("-Command"),
-            QStringLiteral("$ErrorActionPreference='Stop'; Get-CimInstance Win32_DiskDrive | Where-Object { $_.InterfaceType -eq 'USB' -or $_.PNPDeviceID -match '^USBSTOR|^USB\\' } | Select-Object Model,SerialNumber,Size,DeviceID,InterfaceType,PNPDeviceID | ConvertTo-Json -Compress")
+            QStringLiteral("$ErrorActionPreference='Stop'; @(Get-CimInstance Win32_DiskDrive | ForEach-Object { $par=''; try { $par=(Get-PnpDeviceProperty -InstanceId $_.PNPDeviceID -KeyName DEVPKEY_Device_Parent -ErrorAction Stop).Data } catch {}; [pscustomobject]@{Model=$_.Model;SerialNumber=$_.SerialNumber;Size=$_.Size;DeviceID=$_.DeviceID;InterfaceType=$_.InterfaceType;PNPDeviceID=$_.PNPDeviceID;Parent=$par} }) | ConvertTo-Json -Compress")
         });
         if (!ps.waitForFinished(15000) || ps.exitStatus()!=QProcess::NormalExit || ps.exitCode()!=0) {
             setStatus(QStringLiteral("USB-Inventarisierung fehlgeschlagen; keine Geräte freigegeben."));
@@ -458,8 +471,11 @@ public:
             const auto number=path.mid(QStringLiteral("\\\\.\\PHYSICALDRIVE").size()).toUInt(&valid);
             Q_UNUSED(number);
             if(!valid) continue;
-            const QString pnp=obj.value("PNPDeviceID").toString();
-            if(!pnp.startsWith("USB",Qt::CaseInsensitive)) continue;
+            // USB-NVMe-Gehäuse laufen meist im UAS-Modus: Windows meldet sie dann als
+            // „SCSI“. Maßgeblich ist deshalb die Busart, die das Laufwerk selbst meldet
+            // (UsbBridge::inspect → usbConfirmed). VID/PID stehen beim UAS-Gerät im
+            // übergeordneten USB-Gerät (Parent).
+            const QString pnp=obj.value("PNPDeviceID").toString()+QLatin1Char(' ')+obj.value("Parent").toString();
             QVariantMap d;
             d["name"]=obj.value("Model").toString();
             d["serial"]=obj.value("SerialNumber").toString();
@@ -1039,7 +1055,65 @@ public:
         });
         m_fwWorker->start();
     }
+    // ------------------------------------------------------------- Updater
+    // Quelle: Release „aktuell“ im GitHub-Repo mit version.json, Setup und Boot-Abbild.
+    // Windows: neue Version wird im Hintergrund geladen und auf Klick (oder beim
+    // Beenden) still installiert; das Programm startet danach von selbst neu.
+    // Boot-Stick: ältere Stick-Version wird erkannt und zum Aktualisieren angeboten.
+    QVariantMap update() const { return m_update; }
+    Q_INVOKABLE void checkUpdate() {
+        if(m_update.value("laedt").toBool()) return;
+        QNetworkRequest req(QUrl(QStringLiteral("https://github.com/Butchies/Butchies-nvme-recovery-studio-ai/releases/download/aktuell/version.json")));
+        req.setHeader(QNetworkRequest::UserAgentHeader,QStringLiteral("NVMeRecoveryStudioAI"));
+        req.setAttribute(QNetworkRequest::RedirectPolicyAttribute,QNetworkRequest::NoLessSafeRedirectPolicy);
+        req.setTransferTimeout(30000);
+        auto *r=m_net.get(req);
+        connect(r,&QNetworkReply::finished,this,[this,r]{
+            r->deleteLater();
+            if(r->error()!=QNetworkReply::NoError) return;   // kein Internet: still bleiben
+            const auto o=QJsonDocument::fromJson(r->readAll()).object();
+            const QString latest=o.value("version").toString();
+            if(latest.isEmpty()) return;
+            m_update["aktuell"]=QStringLiteral(APP_VERSION);
+            m_update["neu"]=latest;
+            m_update["neuer"]=QVersionNumber::fromString(latest)>QVersionNumber::fromString(QStringLiteral(APP_VERSION));
+            // Boot-Stick angeschlossen? Dann dessen Stand vergleichen.
+            const QString root=FirmwareArchive::findStickData();
+            QFile sv(QDir(root).filePath(QStringLiteral("nvme-recovery-studio/stick-version.txt")));
+            if(!root.isEmpty() && sv.open(QIODevice::ReadOnly)) {
+                const QString stick=QString::fromUtf8(sv.readAll()).trimmed();
+                m_update["stick"]=stick;
+                m_update["stickAlt"]=QVersionNumber::fromString(stick)<QVersionNumber::fromString(latest);
+            }
+            emit updateChanged();
+#ifdef Q_OS_WIN
+            if(m_update.value("neuer").toBool() && !m_update.value("bereit").toBool()) downloadUpdate(o.value("setup").toString());
+#else
+            if(m_update.value("neuer").toBool()) ai(QStringLiteral("Neue Version %1 verfügbar – Boot-Stick unter Windows mit „Boot-Stick aktualisieren“ erneuern.").arg(latest));
+#endif
+        });
+    }
+    Q_INVOKABLE void installUpdate() {
+#ifdef Q_OS_WIN
+        const QString setup=m_update.value("datei").toString();
+        if(!m_update.value("bereit").toBool() || !QFile::exists(setup)) return;
+        if(m_worker || m_fwWorker || m_repairWorker || m_cacheWorker || m_stickWorker) { ai(QStringLiteral("Update wartet, bis der laufende Vorgang fertig ist.")); return; }
+        ai(QStringLiteral("Installiere Version %1 – das Programm startet gleich neu.").arg(m_update.value("neu").toString()));
+        if(QProcess::startDetached(setup,{QStringLiteral("/VERYSILENT"),QStringLiteral("/SUPPRESSMSGBOXES"),QStringLiteral("/NORESTART"),QStringLiteral("/CLOSEAPPLICATIONS"),QStringLiteral("/NEUSTART")})) {
+            m_update["installiert"]=true;
+            QCoreApplication::quit();
+        }
+#endif
+    }
+    // Beim Beenden: bereitliegendes Update still installieren (ohne Neustart).
+    void installOnExit() {
+#ifdef Q_OS_WIN
+        if(m_update.value("bereit").toBool() && !m_update.value("installiert").toBool() && QFile::exists(m_update.value("datei").toString()))
+            QProcess::startDetached(m_update.value("datei").toString(),{QStringLiteral("/VERYSILENT"),QStringLiteral("/SUPPRESSMSGBOXES"),QStringLiteral("/NORESTART")});
+#endif
+    }
 signals:
+    void updateChanged();
     void archiveChanged();
     void devicesChanged();
     void statusChanged();
@@ -1079,6 +1153,39 @@ private:
     QThread *m_repairWorker=nullptr;
     QVariantMap m_repair;
     QVariantMap m_archiveRun;
+    QVariantMap m_update{{"aktuell",QStringLiteral(APP_VERSION)}};
+    QTimer m_updateTimer;
+    void downloadUpdate(const QString &url) {
+        if(url.isEmpty()) return;
+        const QString target=QDir(ToolManager::appDataFile(QStringLiteral("update"))).filePath(QStringLiteral("NVMeRecoveryStudioAI_Setup.exe"));
+        QDir().mkpath(QFileInfo(target).path());
+        QNetworkRequest req{QUrl(url)};
+        req.setHeader(QNetworkRequest::UserAgentHeader,QStringLiteral("NVMeRecoveryStudioAI"));
+        req.setAttribute(QNetworkRequest::RedirectPolicyAttribute,QNetworkRequest::NoLessSafeRedirectPolicy);
+        auto *r=m_net.get(req);
+        auto *out=new QFile(target+QStringLiteral(".part"),r);
+        out->open(QIODevice::WriteOnly|QIODevice::Truncate);
+        m_update["laedt"]=true; m_update["prozent"]=0; emit updateChanged();
+        ai(QStringLiteral("Neue Version %1 gefunden – wird im Hintergrund geladen.").arg(m_update.value("neu").toString()));
+        auto *last=new int(-1);
+        connect(r,&QNetworkReply::readyRead,this,[r,out]{ out->write(r->readAll()); });
+        connect(r,&QNetworkReply::downloadProgress,this,[this,last](qint64 got,qint64 total){
+            if(total<=0) return;
+            const int p=int(100*got/total);
+            m_update["prozent"]=p; emit updateChanged();
+            if(p/5!=*last) { *last=p/5; ai(QStringLiteral("Update [%1%2] %3 %").arg(QString(p/5,QChar(0x2588)),QString(20-p/5,QChar(0x2591))).arg(p)); }
+        });
+        connect(r,&QNetworkReply::finished,this,[this,r,out,target,last]{
+            delete last;
+            out->write(r->readAll()); out->close(); r->deleteLater();
+            const bool ok=r->error()==QNetworkReply::NoError && QFileInfo(out->fileName()).size()>1000000
+                          && (QFile::remove(target),QFile::rename(out->fileName(),target));
+            m_update["laedt"]=false; m_update["bereit"]=ok; m_update["datei"]=target;
+            emit updateChanged();
+            ai(ok ? QStringLiteral("Update %1 bereit – „Jetzt aktualisieren“ oder beim Beenden automatisch.").arg(m_update.value("neu").toString())
+                  : QStringLiteral("Update-Download fehlgeschlagen: %1").arg(r->errorString()));
+        });
+    }
     QVariantMap m_vendorResult;
     QTimer m_archiveTimer;
     void autoArchive() {
@@ -1188,6 +1295,7 @@ int main(int argc,char *argv[]) {
     if(qEnvironmentVariableIsEmpty("QT_QUICK_CONTROLS_STYLE")) qputenv("QT_QUICK_CONTROLS_STYLE","Fusion");
     QGuiApplication app(argc,argv);
     RecoveryController controller;
+    QObject::connect(&app,&QCoreApplication::aboutToQuit,&controller,[&controller]{ controller.installOnExit(); });
     QQmlApplicationEngine engine;
     engine.setInitialProperties({{"controller",QVariant::fromValue(&controller)}});
     engine.loadFromModule("RecoveryStudio","Main");

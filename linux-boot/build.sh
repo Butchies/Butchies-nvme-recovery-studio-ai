@@ -42,6 +42,7 @@ cp -a "$HERE/config/." "$WORK/config/"
 mkdir -p "$WORK/config/includes.chroot/opt/src"
 rsync -a --exclude '.git' --exclude 'linux-boot/work' --exclude 'linux-boot/out' \
   "$REPO/native" "$REPO/data" "$WORK/config/includes.chroot/opt/src/"
+echo "${APP_VERSION:-0.0.0}" > "$WORK/config/includes.chroot/opt/src/VERSION"
 
 progress "System bauen (lädt Pakete, kompiliert die Anwendung – dauert länger)"
 lb build 2>&1 | tee "$OUT/build.log" | grep -E '^(P:|E:|W:)' || true

@@ -2,7 +2,7 @@
 # Kompiliert NVMe Recovery Studio AI im Live-System und entfernt danach die
 # Build-Werkzeuge wieder, damit das Abbild klein bleibt.
 set -e
-cmake -S /opt/src/native -B /opt/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/nvme-recovery-studio
+cmake -S /opt/src/native -B /opt/build -DCMAKE_BUILD_TYPE=Release -DAPP_VERSION="$(cat /opt/src/VERSION 2>/dev/null || echo 0.0.0)" -DCMAKE_INSTALL_PREFIX=/opt/nvme-recovery-studio
 cmake --build /opt/build --parallel "$(nproc)"
 cmake --install /opt/build
 rm -rf /opt/build /opt/src

@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.21)
 project(NVMeRecoveryStudioAI VERSION 0.1 LANGUAGES CXX)
+set(APP_VERSION "0.0.0" CACHE STRING "Programmversion (vom Build gesetzt)")
+add_compile_definitions(APP_VERSION="${APP_VERSION}")
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Qt6 6.5 REQUIRED COMPONENTS Core Gui Qml Quick Network)

@@ -312,6 +312,28 @@ ApplicationWindow {
                         text: controller.linuxEdition ? "Linux-Boot-Stick · direkter PCIe-Zugriff" : "Windows · nur externe USB-SSDs" }
             }
             Item { Layout.fillWidth: true }
+            // Update-Hinweis
+            Rectangle {
+                visible: !!controller.update.neuer || !!controller.update.stickAlt
+                radius: 999; color: theme.accentSoft; implicitHeight: 30; implicitWidth: updRow.implicitWidth + 24
+                RowLayout {
+                    id: updRow; anchors.centerIn: parent; spacing: 8
+                    Label { font.pixelSize: 12; font.bold: true; color: theme.accentText
+                        text: controller.update.laedt ? "Update " + controller.update.neu + " lädt … " + (controller.update.prozent || 0) + " %"
+                            : controller.update.bereit ? "Version " + controller.update.neu + " bereit"
+                            : controller.update.neuer ? "Neue Version " + controller.update.neu
+                            : "Boot-Stick veraltet (" + controller.update.stick + " → " + controller.update.neu + ")" }
+                    ToolButton {
+                        visible: !!controller.update.bereit || (!!controller.update.stickAlt && !controller.linuxEdition)
+                        text: controller.update.bereit ? "Jetzt aktualisieren" : "Stick erneuern"
+                        font.pixelSize: 12; font.bold: true
+                        onClicked: {
+                            if (controller.update.bereit) controller.installUpdate()
+                            else { window.page = 6; controller.downloadBootImage() }
+                        }
+                    }
+                }
+            }
             Rectangle {
                 radius: 999; color: theme.goodSoft; implicitHeight: 24; implicitWidth: kiLabel.implicitWidth + 36
                 RowLayout {
@@ -387,6 +409,7 @@ ApplicationWindow {
                     }
                     MouseArea { anchors.fill: parent; onClicked: window.page = 3; cursorShape: Qt.PointingHandCursor }
                 }
+                Label { Layout.alignment: Qt.AlignHCenter; text: "Version " + (controller.update.aktuell || ""); color: theme.muted; font.pixelSize: 11 }
                 ActionButton { Layout.fillWidth: true; text: controller.linuxEdition ? "Geräte erkennen" : "USB-Geräte erkennen"; iconName: "refresh"; enabled: !controller.recoveryRunning; onClicked: controller.refresh() }
             }
         }
@@ -959,82 +982,5 @@ ApplicationWindow {
                 }
             }
         }
-    }
-
-    // ------------------------------------------------------- Startanimation
-    // Ablauf (~3,6 s): Butchies-Logo erscheint → Programmlogo mit KI-Funke →
-    // Titel → Ausblenden. Klick überspringt. Eigenes Logo: icons/butchies.png.
-    Rectangle {
-        id: splash
-        parent: Overlay.overlay
-        anchors.fill: parent; z: 1000
-        color: "#ffffff"
-        property bool userLogo: userLogoImg.status === Image.Ready
-        Rectangle {
-            anchors.fill: parent; opacity: 0.9
-            gradient: Gradient { GradientStop { position: 0; color: "#ffffff" } GradientStop { position: 1; color: "#e8f0fe" } }
-        }
-        // 1) Butchies
-        Item {
-            id: brand; anchors.centerIn: parent; width: 420; height: 200; opacity: 0; scale: 0.9
-            Image { id: userLogoImg; anchors.centerIn: parent; source: "icons/butchies.png"; sourceSize.height: 180; fillMode: Image.PreserveAspectFit }
-            Label {
-                anchors.centerIn: parent; visible: !splash.userLogo
-                text: "Butchies"; font.pixelSize: 64; font.bold: true; font.letterSpacing: -1
-                color: theme.accentText
-            }
-            Label { anchors.horizontalCenter: parent.horizontalCenter; anchors.top: parent.bottom; text: "✦ präsentiert"; color: theme.goldText; font.pixelSize: 16 }
-        }
-        // 2) Programmlogo + Titel
-        Column {
-            id: product; anchors.centerIn: parent; spacing: 22; opacity: 0
-            Item {
-                width: 160; height: 160; anchors.horizontalCenter: parent.horizontalCenter
-                Rectangle { id: glow; anchors.centerIn: parent; width: 160; height: 160; radius: 80; color: "#3b82f6"; opacity: 0; scale: 0.6 }
-                Image { id: appLogo; anchors.centerIn: parent; source: "icons/logo.svg"; sourceSize: Qt.size(150, 150); scale: 0.4; rotation: -20 }
-            }
-            Label { id: title; anchors.horizontalCenter: parent.horizontalCenter; text: "NVMe Recovery Studio AI"; font.pixelSize: 34; font.bold: true; color: theme.accentText; opacity: 0 }
-            Label { id: sub; anchors.horizontalCenter: parent.horizontalCenter; color: theme.muted; font.pixelSize: 15; opacity: 0
-                    text: controller.linuxEdition ? "Linux-Boot-Edition · KI startet …" : "Windows-Edition · KI startet …" }
-            Rectangle {
-                id: loadBar; anchors.horizontalCenter: parent.horizontalCenter; width: 240; height: 4; radius: 2; color: "#e5ebf3"; opacity: 0
-                Rectangle { id: loadFill; width: 0; height: 4; radius: 2
-                    gradient: Gradient { orientation: Gradient.Horizontal; GradientStop { position: 0; color: "#60a5fa" } GradientStop { position: 1; color: "#1d4ed8" } } }
-            }
-        }
-        SequentialAnimation {
-            id: splashAnim; running: true
-            ParallelAnimation {
-                NumberAnimation { target: brand; property: "opacity"; to: 1; duration: 600; easing.type: Easing.OutCubic }
-                NumberAnimation { target: brand; property: "scale"; to: 1; duration: 900; easing.type: Easing.OutBack }
-            }
-            PauseAnimation { duration: 600 }
-            ParallelAnimation {
-                NumberAnimation { target: brand; property: "opacity"; to: 0; duration: 400 }
-                NumberAnimation { target: brand; property: "scale"; to: 1.08; duration: 400 }
-            }
-            ParallelAnimation {
-                NumberAnimation { target: product; property: "opacity"; to: 1; duration: 300 }
-                NumberAnimation { target: appLogo; property: "scale"; to: 1; duration: 800; easing.type: Easing.OutBack }
-                NumberAnimation { target: appLogo; property: "rotation"; to: 0; duration: 800; easing.type: Easing.OutCubic }
-                SequentialAnimation {
-                    PauseAnimation { duration: 350 }
-                    ParallelAnimation {
-                        NumberAnimation { target: glow; property: "opacity"; from: 0.35; to: 0; duration: 900 }
-                        NumberAnimation { target: glow; property: "scale"; from: 0.8; to: 1.8; duration: 900; easing.type: Easing.OutCubic }
-                    }
-                }
-            }
-            ParallelAnimation {
-                NumberAnimation { target: title; property: "opacity"; to: 1; duration: 400 }
-                NumberAnimation { target: sub; property: "opacity"; to: 1; duration: 600 }
-                NumberAnimation { target: loadBar; property: "opacity"; to: 1; duration: 400 }
-                NumberAnimation { target: loadFill; property: "width"; to: 240; duration: 900; easing.type: Easing.InOutCubic }
-            }
-            PauseAnimation { duration: 250 }
-            NumberAnimation { target: splash; property: "opacity"; to: 0; duration: 450; easing.type: Easing.InCubic }
-            ScriptAction { script: splash.visible = false }
-        }
-        MouseArea { anchors.fill: parent; onClicked: { splashAnim.stop(); splash.visible = false } }
     }
 }

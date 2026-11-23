@@ -21,6 +21,8 @@ WizardStyle=modern
 SetupIconFile=..\native\app\app.ico
 WizardImageFile=wizard.bmp
 WizardSmallImageFile=wizard-small.bmp
+CloseApplications=yes
+RestartApplications=no
 UninstallDisplayIcon={app}\{#MyAppExeName}
 [Languages]
 Name: "de"; MessagesFile: "compiler:Languages\German.isl"
@@ -34,3 +36,13 @@ Name: "{group}\{#MyAppName} deinstallieren"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "NVMe Recovery Studio AI starten"; Flags: nowait postinstall skipifsilent shellexec
+Filename: "{app}\{#MyAppExeName}"; Flags: nowait shellexec; Check: NeustartNachUpdate
+
+[Code]
+function NeustartNachUpdate: Boolean;
+var i: Integer;
+begin
+  Result := False;
+  for i := 1 to ParamCount do
+    if CompareText(ParamStr(i), '/NEUSTART') = 0 then Result := True;
+end;
