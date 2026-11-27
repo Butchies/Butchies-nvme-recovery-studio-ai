@@ -327,7 +327,7 @@ done:
     result["controllerMeldungen"]=ErrorTranslator::report(d);
     result["message"]=result.value("ok").toBool()
         ? QStringLiteral("REPARIERT durch „%1“ – SSD arbeitet wieder einwandfrei.").arg(result.value("repariertDurch").toString())
-        : (cancel.load() ? QStringLiteral("Abgebrochen.") : QStringLiteral("Nicht per Software reparierbar. Nächster Weg: %1.").arg(
+        : (cancel.load() ? QStringLiteral("Abgebrochen.") : QStringLiteral("Automatische Reparatur ohne Erfolg. Weitere Möglichkeiten: %1.").arg(
               result.value("naechsterWeg").toString()==QStringLiteral("speicherchips_defekt") ? QStringLiteral("Controller läuft wieder, aber der Nullfüll-Test fand defekte Speicherbereiche – Speicherchips beschädigt, SSD nicht mehr verlässlich")
             : result.value("naechsterWeg").toString()==QStringLiteral("notmodus_hersteller_werkzeug") ? QStringLiteral("Herstellerwerkzeug (MPTool) für den Notmodus oder Labor")
                                                                                                      : QStringLiteral("Herstellerwerkzeug oder Labor; Flash/Controller vermutlich defekt")));

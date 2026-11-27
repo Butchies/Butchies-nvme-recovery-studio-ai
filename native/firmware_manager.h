@@ -47,7 +47,7 @@ inline QVariantMap prepare(const QVariantMap &device, const QVariantMap &report,
     QFile f(file);
     QByteArray image;
     if(f.open(QIODevice::ReadOnly) && f.size()<=MaxImageBytes) image=f.readAll();
-    const bool sizeOk=!image.isEmpty() && image.size()%4==0;
+    const bool sizeOk=!image.isEmpty() && image.size()%4==0 && !image.startsWith("MZ") && !image.startsWith("MSCF") && !file.endsWith(".exe",Qt::CaseInsensitive);
     check(QStringLiteral("Firmwaredatei gültig"),sizeOk,QStringLiteral("%1, %2 Byte").arg(QFileInfo(file).fileName()).arg(image.size()));
     const QString sha=QString::fromLatin1(QCryptographicHash::hash(image,QCryptographicHash::Sha256).toHex());
     plan["sha256"]=sha;

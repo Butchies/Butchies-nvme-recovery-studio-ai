@@ -1,0 +1,112 @@
+#!/usr/bin/python3
+"""Gezielter Startbericht für den fotografierten Samsung-PCIe-Controller."""
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+PCI = Path("/sys/bus/pci/devices")
+ADDRESS = "0000:01:00.0"
+TOOLS = {"smartctl":"smartctl", "nvme-cli":"nvme", "ddrescue":"ddrescue",
+         "fwupd":"fwupdtool", "openseachest":"openSeaChest_Firmware"}
+os.environ["PATH"] = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+def read(p):
+    try:
+        return p.read_text().strip()
+    except OSError:
+        return ""
+
+def call(args, timeout=15):
+    try:
+        r = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                           text=True, errors="replace", timeout=timeout)
+        return r.returncode, r.stdout.strip()
+    except (OSError, subprocess.TimeoutExpired) as e:
+        return 1, str(e)
+
+def register():
+    appdata = Path(os.getenv("XDG_DATA_HOME", str(Path.home()/".local/share"))) / "nvme-recovery-studio"
+    appdata.mkdir(parents=True, exist_ok=True)
+    dst = appdata / "werkzeuge.json"
+    entries = json.loads(dst.read_text()) if dst.exists() else {}
+    for key, cmd in TOOLS.items():
+        found = shutil.which(cmd)
+        if found and not Path(entries.get(key) or "/nonexistent").is_file():
+            entries[key] = found
+    tmp = dst.with_suffix(".tmp")
+    tmp.write_text(json.dumps(entries,ensure_ascii=False))
+    tmp.replace(dst)
+
+def target(p):
+    return read(p/"vendor") == "0x144d" and read(p/"device") == "0xa808"
+
+def driver(p):
+    d = p/"driver"
+    return d.resolve().name if d.is_symlink() else ""
+
+def report():
+    print("PM981a | PCIe-Startprüfung |", time.strftime("%F %T"))
+    for cmd in [*TOOLS.values(), "fwupdmgr","lspci","modprobe"]:
+        print("Werkzeug",cmd,shutil.which(cmd) or "FEHLT")
+    p = PCI/ADDRESS
+    if not target(p):
+        print("Am Steckplatz aus dem Foto ist 144d:a808 nicht sichtbar. Weitere Treffer:",
+              ", ".join(d.name for d in PCI.glob("*") if target(d)) or "keine")
+        return
+    print(call(["lspci","-nnk","-s",ADDRESS])[1])
+    alias = read(p/"modalias")
+    override = read(p/"driver_override")
+    print("PCI-Klasse:",read(p/"class")," | Treiber vorher:",driver(p) or "ungebunden")
+    print("Treiberzuordnung für",alias,":",call(["modprobe","-R",alias])[1] if alias else "unbekannt")
+    if not driver(p):
+        if override not in ("","(null)","nvme"):
+            print("Abweichende Treiberzuweisung:",override)
+        elif read(p/"class") != "0x010802":
+            print("Gerät meldet keine Standard-NVMe-Klasse. Keine Zwangsbindung.")
+        else:
+            rc, detail = call(["modprobe","nvme"],45)
+            print("NVMe-Modul laden:",detail or ("OK" if rc==0 else "Fehler"))
+            if rc == 0 and not driver(p) and target(p):
+                # A separate process bounds how long the status display waits on the kernel.
+                rc,detail = call(["/bin/sh","-c",'printf "%s" "$1" > /sys/bus/pci/drivers_probe',
+                                   "probe",ADDRESS],60)
+                print("Einzelne reguläre Treiberprüfung:",detail or ("ausgeführt" if rc==0 else "fehlgeschlagen"))
+            call(["udevadm","settle","--timeout=8"],10)
+    print("Treiber danach:",driver(p) or "ungebunden")
+    ctrls = [c for c in sorted((p/"nvme").glob("nvme*")) if re.fullmatch(r"nvme\d+",c.name)]
+    identified=False
+    for c in ctrls:
+        dev="/dev/"+c.name
+        rc,out=call(["nvme","id-ctrl",dev,"-o","json"])
+        if rc:
+            print("Identify fehlgeschlagen:",out)
+            continue
+        try: info=json.loads(out)
+        except ValueError:
+            print("Identify lieferte keine auswertbare Antwort.");continue
+        if not str(info.get("mn","")).strip() or not str(info.get("sn","")).strip():
+            print("Unvollständige Identify-Antwort.");continue
+        identified=True
+        print("Identify bestätigt:",info["mn"],"| Seriennummer:",info["sn"],"| Firmware:",info.get("fr"))
+        print("SMART:",call(["smartctl","-H",dev])[1])
+        print("Firmware-Slots:",call(["nvme","fw-log",dev])[1])
+    print("Kernelmeldungen zum Vorgang:")
+    _,klog=call(["journalctl","-k","-b","--no-pager","-o","short-monotonic"])
+    related = {c.name for c in ctrls}
+    for line in klog.splitlines():
+        if ADDRESS in line:
+            related.update(re.findall(r"\bnvme\d+\b",line))
+    lines=[line for line in klog.splitlines() if ADDRESS in line or any(re.search(r"\b"+n+r"\b",line) for n in related)]
+    print("\n".join(lines[-28:]) or "Keine zuordenbare Kernelmeldung.")
+    print("Dell-Originalpakete: /run/live/medium/Firmware/PM981a/")
+    print("Ergebnis:", "Controller antwortet. Firmwarevariante anhand der Geräteidentität prüfen." if identified
+          else "Kein bestätigtes NVMe Identify. Standard-Firmwareübertragung derzeit nicht freigegeben.")
+
+if __name__=="__main__":
+    if "--register" in sys.argv: register()
+    else: report()

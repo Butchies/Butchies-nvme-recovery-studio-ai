@@ -1,0 +1,13 @@
+[Unit]
+Description=Samsung PCIe und NVMe-Treiber prüfen, Startbericht auf TTY2
+After=systemd-udev-trigger.service systemd-modules-load.service systemd-vconsole-setup.service
+Conflicts=getty@tty2.service
+
+[Service]
+Type=oneshot
+StandardOutput=tty
+StandardError=journal
+TTYPath=/dev/tty2
+ExecStart=/bin/bash -o pipefail -c '/usr/bin/python3 -u /usr/local/sbin/butchies-pcie-start 2>&1 | /usr/bin/tee /run/butchies-pcie.log'
+RemainAfterExit=yes
+TimeoutStartSec=240

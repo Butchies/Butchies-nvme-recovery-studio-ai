@@ -51,7 +51,7 @@ ApplicationWindow {
     palette.highlight: theme.accent
 
     // ------------------------------------------------------- Shared state
-    property int page: 0
+    property int page: controller.linuxEdition ? 9 : 0
     readonly property var report: controller.aiReport || ({})
     readonly property var dev: report.geraet || ({})
     readonly property int selected: report.index !== undefined ? report.index : -1
@@ -227,6 +227,29 @@ ApplicationWindow {
     }
 
     // ------------------------------------------------------------- Dialogs
+    FileDialog {
+        id: bundledFiles
+        title: "Firmwareordner · Dell-Originalpakete"
+        currentFolder: "file:///run/live/medium/Firmware/PM981a"
+        onAccepted: controller.manualAction("firmware","")
+    }
+    FolderDialog {
+        id: exportBoot
+        title: "Bootreport auf beschreibbarem Medium speichern"
+        onAccepted: controller.manualAction("export",selectedFolder.toString())
+    }
+    FileDialog {
+        id: addDriver
+        title: "Passendes Linux-Kernelmodul oder angeforderte Gerätefirmware wählen"
+        onAccepted: driverConfirm.open()
+    }
+    Dialog {
+        id: driverConfirm; modal: true; anchors.centerIn: Overlay.overlay
+        title: "Linux-Treiber hinzufügen?"
+        standardButtons: Dialog.Ok | Dialog.Cancel
+        Label { width: 520; wrapMode: Text.Wrap; text: "Nur Dateien aus einer vertrauenswürdigen Hersteller- oder Distributionsquelle auswählen. Passende Kernelmodule werden geladen.\n"+addDriver.selectedFile }
+        onAccepted: controller.manualAction("import",addDriver.selectedFile.toString())
+    }
     FolderDialog {
         id: folderDialog
         title: "Zielordner für Rettungsabbild"
@@ -234,6 +257,7 @@ ApplicationWindow {
     }
     FileDialog {
         id: firmwareFileDialog
+        currentFolder: controller.linuxEdition ? "file:///run/live/medium/Firmware/PM981a" : ""
         title: "Offizielle Firmwaredatei auswählen"
         nameFilters: ["Firmware (*.bin *.img *.fw *.enc *.fluf *.rom)", "Alle Dateien (*)"]
         onAccepted: { firmwareDialog.fileUrl = selectedFile.toString(); controller.prepareFirmware(window.selected, firmwareDialog.fileUrl, noBackupBox.checked); firmwareDialog.open() }
@@ -372,6 +396,8 @@ ApplicationWindow {
                 Label { text: "ARBEITSBEREICH"; font.pixelSize: 11; font.letterSpacing: 0.8; color: theme.muted; Layout.margins: 12; Layout.bottomMargin: 6 }
                 Repeater {
                     model: [
+                        { name: "Controller-Details", icon: "chip", page: 9, show: controller.linuxEdition },
+                        { name: "Manueller Modus", icon: "tool", page: 8, show: controller.linuxEdition },
                         { name: "Übersicht", icon: "home", page: 0, show: true },
                         { name: "Rettung", icon: "save", page: 1, show: true },
                         { name: "Reparatur", icon: "tool", page: 2, show: controller.linuxEdition },
@@ -453,7 +479,7 @@ ApplicationWindow {
                     }
                     Label {
                         visible: controller.devices.length === 0
-                        text: controller.linuxEdition ? "Keine NVMe-SSD am PCIe-Bus gefunden. SSD in den M.2-Steckplatz setzen und „Geräte erkennen“ wählen."
+                        text: controller.linuxEdition ? "Aktuell kein interner NVMe-Eintrag. Im manuellen Modus lassen sich Steckplatz, Protokoll und Firmwareordner weiterhin prüfen."
                                                       : "Keine externe USB-SSD angeschlossen. SSD im USB-Gehäuse anschließen – die KI erkennt sie automatisch."
                         color: theme.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true
                     }
@@ -912,6 +938,107 @@ ApplicationWindow {
                                         text: modelData }
                             }
                         }
+                    }
+                    ColumnLayout {
+                        id: manualPage
+                        Layout.fillWidth: true
+                        property string addr: deviceBox.currentIndex >= 0 && controller.devices[deviceBox.currentIndex] ? controller.devices[deviceBox.currentIndex].pciAddress : "0000:01:00.0"
+                        Heading { text: "Manueller Modus"; iconName: "tool" }
+                        Label { Layout.fillWidth: true; wrapMode: Text.Wrap; text: "Interner PCIe-Controller · Einzelaktionen" }
+                        ComboBox { id: deviceBox; Layout.fillWidth: true; model: controller.devices; textRole: "name"; displayText: currentIndex >= 0 ? currentText + "  ·  " + manualPage.addr : "Letzter bekannter Steckplatz 0000:01:00.0" }
+                        GridLayout {
+                            Layout.fillWidth: true; columns: 2; rowSpacing: 4; columnSpacing: 6
+                            enabled: !controller.manualBusy && !controller.recoveryRunning
+                            Button { text: "Hardware scannen"; onClicked: controller.manualAction("scan","") }
+                            Button { text: "Treiberdatei hinzufügen"; onClicked: addDriver.open() }
+                            Button { text: "Bootreport lesen"; onClicked: controller.manualAction("report","") }
+                            Button { text: "Bootreport speichern"; onClicked: exportBoot.open() }
+                            Button { text: "Firmwareordner öffnen"; onClicked: bundledFiles.open() }
+                            Button { text: "Geräte neu einlesen"; enabled: !controller.manualBusy && !controller.recoveryRunning; onClicked: controller.refresh() }
+                            Repeater {
+                                model: [["PCIe und Treiber","status"],["Treiberbindung versuchen","probe"],["Identify lesen","identify"],["SMART lesen","smart"],["Firmware-Slots lesen","slots"],["Firmwareordner anzeigen und prüfen","firmware"],["Werkzeuge","tools"],["Startprotokoll","history"]]
+                                Button { required property var modelData; text: modelData[0]; enabled: !controller.manualBusy && !controller.recoveryRunning; onClicked: controller.manualAction(modelData[1],manualPage.addr) }
+                            }
+                        }
+                        TextArea { Layout.fillWidth: true; readOnly: true; wrapMode: TextEdit.WrapAnywhere; selectByMouse: true; text: controller.manualOutput || "Wähle eine Einzelaktion. Firmwareordner und Protokoll sind auch ohne erkanntes Laufwerk verfügbar." }
+                    }
+                    ColumnLayout {
+                        id: detail
+                        Layout.fillWidth: true
+                        spacing: 12
+                        property string address: picker.currentIndex >= 0 && controller.devices[picker.currentIndex] ? (controller.devices[picker.currentIndex].pciAddress || "") : "0000:01:00.0"
+                        property var keys: ["pcie","identity","health","namespace","slots","errors"]
+                        property string resultKey: ""
+                        readonly property string queryKey: address + "/" + keys[tabs.currentIndex]
+                        function read() {
+                            if (controller.manualBusy || controller.recoveryRunning || !address) return
+                            resultKey = queryKey
+                            outputFade.restart()
+                            controller.manualAction("detail-" + keys[tabs.currentIndex], address)
+                        }
+                        Heading { text: "Controller-Details"; iconName: "chip" }
+                        Label {
+                            Layout.fillWidth: true; wrapMode: Text.WordWrap; color: theme.muted
+                            text: "PCIe-Adresse " + detail.address + "  ·  Lesende Abfragen am internen Controller"
+                        }
+                        RowLayout {
+                            Layout.fillWidth: true
+                            ComboBox {
+                                id: picker; Layout.fillWidth: true; enabled: !controller.manualBusy
+                                model: controller.devices; textRole: "name"
+                                displayText: currentIndex >= 0 ? currentText : "Zuletzt bekannter Steckplatz"
+                            }
+                            ActionButton { text: "Auslesen"; iconName: "refresh"; enabled: !controller.manualBusy && !controller.recoveryRunning; onClicked: detail.read() }
+                        }
+                        TabBar {
+                            id: tabs; Layout.fillWidth: true; enabled: !controller.manualBusy
+                            background: Rectangle { color: theme.card; border.color: theme.line; radius: 10 }
+                            onCurrentIndexChanged: if (window.page === 9 && !controller.manualBusy && !controller.recoveryRunning) detail.read()
+                            Repeater {
+                                model: ["PCIe","Identify","SMART","Namespaces","Firmware","Fehler"]
+                                TabButton {
+                                    id: section
+                                    required property string modelData
+                                    text: modelData
+                                    font.pixelSize: 12; font.bold: checked
+                                    contentItem: Label {
+                                        text: section.text; font: section.font
+                                        color: section.checked ? theme.accentText : theme.muted
+                                        horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter
+                                    }
+                                    background: Rectangle {
+                                        radius: 8
+                                        color: section.checked ? theme.accentSoft : (section.hovered ? theme.bg : "transparent")
+                                        Behavior on color { ColorAnimation { duration: 160 } }
+                                    }
+                                }
+                            }
+                        }
+                        Rectangle {
+                            id: outputCard
+                            Layout.fillWidth: true
+                            implicitHeight: 370
+                            color: theme.card; border.color: theme.line; radius: 12; clip: true
+                            NumberAnimation { id: outputFade; target: outputCard; property: "opacity"; from: 0.4; to: 1; duration: 260; easing.type: Easing.OutCubic }
+                            ScrollView {
+                                anchors.fill: parent; anchors.margins: 12
+                                TextArea {
+                                    readOnly: true; selectByMouse: true; wrapMode: TextEdit.WrapAnywhere
+                                    color: theme.text; font.family: theme.mono; font.pixelSize: 13
+                                    textFormat: TextEdit.PlainText
+                                    text: detail.resultKey === detail.queryKey && controller.manualOutput ? controller.manualOutput : "Wähle einen Controller und klicke auf Auslesen.\n\nPCIe zeigt den Steckplatz, die Gerätekennung und die Treiberbindung.\nDie NVMe-Registerkarten zeigen die vollständige Ausgabe der jeweiligen Abfrage."
+                                }
+                            }
+                        }
+                        Connections {
+                            target: controller
+                            function onManualChanged() {
+                                if (window.page === 9 && !controller.manualBusy && detail.resultKey === detail.queryKey)
+                                    outputFade.restart()
+                                if (window.page !== 9) detail.resultKey = ""
+                            }
+                        }
+                        BusyIndicator { running: controller.manualBusy; visible: running; Layout.alignment: Qt.AlignHCenter; implicitHeight: 30 }
                     }
                 }
                 Label { Layout.leftMargin: 24; Layout.rightMargin: 24; Layout.bottomMargin: 18; Layout.fillWidth: true; wrapMode: Text.WordWrap; color: theme.muted; text: controller.status }
