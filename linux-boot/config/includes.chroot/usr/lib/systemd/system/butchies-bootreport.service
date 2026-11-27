@@ -1,0 +1,6 @@
+[Unit]
+Description=Bootreport mit Hardware, Firmware und Startfehlern sichern
+After=local-fs.target
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/butchies-hardware capture

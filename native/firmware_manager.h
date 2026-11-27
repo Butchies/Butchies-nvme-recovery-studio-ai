@@ -47,10 +47,17 @@ inline QVariantMap prepare(const QVariantMap &device, const QVariantMap &report,
     QFile f(file);
     QByteArray image;
     if(f.open(QIODevice::ReadOnly) && f.size()<=MaxImageBytes) image=f.readAll();
-    const bool sizeOk=!image.isEmpty() && image.size()%4==0;
+    const bool sizeOk=!image.isEmpty() && image.size()%4==0 && !image.startsWith("MZ") && !image.startsWith("MSCF") && !file.endsWith(".exe",Qt::CaseInsensitive);
     check(QStringLiteral("Firmwaredatei gültig"),sizeOk,QStringLiteral("%1, %2 Byte").arg(QFileInfo(file).fileName()).arg(image.size()));
     const QString sha=QString::fromLatin1(QCryptographicHash::hash(image,QCryptographicHash::Sha256).toHex());
     plan["sha256"]=sha;
+    if(QFileInfo(file).fileName()==QStringLiteral("Dell-PM981a-G4GWG-15305129.bin")) {
+        const QString model=device.value("nvmeControllerModel").toString().trimmed().toUpper();
+        const bool modelOk=model.contains(QStringLiteral("MZVLB1T0HBLR"));
+        check(QStringLiteral("Dell-PM981a-Modell"),modelOk,
+              modelOk ? model : QStringLiteral("Dieses Dell-Abbild ist nur für die bestätigte PM981a-Familie vorgesehen."));
+        check(QStringLiteral("Dell-Abbild SHA-256"),sha==QStringLiteral("08156487302ee23413e2a6ceffc0ba1a94d9e881db55b407c0d81d79fa660db9"),sha);
+    }
 
     // Template knowledge: is there an official target version for this model?
     QString expected;
@@ -85,7 +92,9 @@ inline QVariantMap prepare(const QVariantMap &device, const QVariantMap &report,
     plan["file"]=file;
     plan["controllerPath"]=device.value("controllerPath");
     const QString serial=device.value("nvmeControllerSerial").toString();
-    plan["approvalCode"]=expert ? QString() : serial.right(4).toUpper();
+    plan["approvalCode"]=serial.right(4).toUpper();
+    check(QStringLiteral("Seriennummer für Freigabe"),serial.size()>=4,
+          serial.size()>=4 ? QStringLiteral("Letzte vier Zeichen der NVMe-Seriennummer") : QStringLiteral("NVMe-Seriennummer fehlt; Freigabe unmöglich"));
     plan["expert"]=expert;
     plan["checks"]=checks;
     plan["allowed"]=allowed;
@@ -96,8 +105,7 @@ inline QVariantMap prepare(const QVariantMap &device, const QVariantMap &report,
         immediate ? QStringLiteral("Aktivierung sofort ohne Neustart (vom Controller unterstützt).")
                   : QStringLiteral("Aktivierung durch Controller-Reset direkt nach der Übertragung.")};
     plan["summary"]=allowed
-        ? (expert ? QStringLiteral("Expertenmodus: Alle technischen Prüfungen bestanden – Flashen ohne Bestätigungscode möglich.")
-                  : QStringLiteral("Alle Pflichtprüfungen bestanden. Zum Flashen den Bestätigungscode eingeben (letzte 4 Zeichen der Seriennummer)."))
+        ? QStringLiteral("Alle Pflichtprüfungen bestanden. Zum Flashen den Bestätigungscode eingeben (letzte 4 Zeichen der Seriennummer).")
         : QStringLiteral("Flashen gesperrt: mindestens eine Pflichtprüfung ist nicht erfüllt.");
     return plan;
 }
@@ -108,7 +116,7 @@ inline QVariantMap execute(const QVariantMap &plan, const QVariantMap &device, c
     QVariantMap r;
     r["ok"]=false;
     if(!plan.value("allowed").toBool()) { r["message"]=QStringLiteral("Prüfungen nicht bestanden."); return r; }
-    if(!plan.value("expert").toBool() && (typedCode.trimmed().toUpper()!=plan.value("approvalCode").toString() || plan.value("approvalCode").toString().isEmpty())) {
+    if(typedCode.trimmed().toUpper()!=plan.value("approvalCode").toString() || plan.value("approvalCode").toString().isEmpty()) {
         r["message"]=QStringLiteral("Bestätigungscode stimmt nicht – nichts wurde geschrieben."); return r;
     }
 #ifdef Q_OS_WIN

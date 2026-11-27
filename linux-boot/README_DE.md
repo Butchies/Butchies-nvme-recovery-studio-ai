@@ -13,7 +13,7 @@ Startet von einem USB-Stick (UEFI und BIOS) direkt in NVMe Recovery Studio AI im
 
 **Abbild bauen** (Debian 13, Root, Internet):
 ```
-sudo apt install live-build rsync
+sudo apt install live-build rsync p7zip-full
 sudo ./linux-boot/build.sh        # Fortschritt in Prozent; Ergebnis: linux-boot/out/*.iso
 ```
 
@@ -32,5 +32,13 @@ sudo ./linux-boot/build.sh        # Fortschritt in Prozent; Ergebnis: linux-boot
 | `config/includes.chroot/etc/systemd/system/nvme-recovery-kiosk.service` | startet die Anwendung im Vollbild (cage) |
 | `config/includes.chroot/usr/local/sbin/nvme-recovery-persistence-setup` | legt beim ersten Start den dauerhaften Speicher an |
 | `make-stick.sh` | Stick unter Linux schreiben |
+
+Das Dell-PM981a-Abbild `Firmware/PM981a/Dell-PM981a-G4GWG-15305129.bin`
+liegt als unveränderte Nutzlast mit Manifest und SHA-256-Prüfung im ISO und
+wird beim Start ins Firmwarearchiv übernommen. Ein Windows-EXE ist unter
+Linux keine ausführbare Firmwaremaßnahme. Die Anwendung verlangt NVMe Identify,
+Modellprüfung, freie SSD und eine ausdrückliche Freigabe mit Seriennummerncode.
+Bei `144d:a808` ohne NVMe-Geräteknoten ist dieses Update nicht möglich;
+ein herstellerspezifischer Notmodus-Loader ist derzeit nicht verfügbar.
 
 Status: Konfiguration vorhanden, Abbild noch nicht gebaut und nicht auf Hardware getestet.

@@ -92,7 +92,8 @@ public:
         ai(QStringLiteral("Lernende KI geladen: vortrainiert mit %1 typischen Fehlerbildern, %2 eigene gelernte Fälle, %3 Rettungen als Vergleich.")
             .arg(m_model.pretrainedCases()).arg(m_model.trainedCases()).arg(m_model.rescueCases()));
         if(linuxEdition()) ai(QStringLiteral("Expertenmodus (Linux-Boot-Edition): keine Rückfragen, kein Bestätigungscode, keine Sicherungspflicht. Nur Boot-Stick und Quelle=Ziel bleiben gesperrt."));
-        ai(QStringLiteral("Überwache USB-Anschlüsse: neue SSDs werden automatisch erkannt und untersucht."));
+        if(linuxEdition()) ai(QStringLiteral("Überwache interne PCIe-Controller."));
+        else ai(QStringLiteral("Überwache USB-Anschlüsse: neue SSDs werden automatisch erkannt und untersucht."));
         int installed=0;
         for(const auto &t:m_tools.status()) if(t.toMap().value("installiert").toBool()) ++installed;
         ai(QStringLiteral("Werkzeuge: %1 von %2 installiert/registriert. Fehlende Werkzeuge im Bereich „Werkzeuge“.")
@@ -102,6 +103,31 @@ public:
         m_toolSig=m_tools.signature();
         connect(&m_watch,&QTimer::timeout,this,&RecoveryController::checkDevices);
         m_watch.start(4000);
+    }
+    Q_PROPERTY(QString manualOutput READ manualOutput NOTIFY manualChanged)
+    Q_PROPERTY(bool manualBusy READ manualBusy NOTIFY manualChanged)
+    QString m_manualOutput;
+    QProcess *m_manual=nullptr;
+    QString manualOutput() const { return m_manualOutput; }
+    bool manualBusy() const { return m_manual!=nullptr; }
+    Q_INVOKABLE void manualAction(const QString &action, const QString &address) {
+        if(!linuxEdition() || m_manual || recoveryRunning()) return;
+        auto *p=new QProcess(this);
+        m_manual=p;
+        m_manualOutput=QStringLiteral("Vorgang läuft …");
+        emit manualChanged();
+        p->setProcessChannelMode(QProcess::MergedChannels);
+        const auto done=[this,p](const QString &fallback) {
+            if(m_manual!=p) return;
+            m_manualOutput=QString::fromUtf8(p->readAll()).trimmed();
+            if(m_manualOutput.isEmpty()) m_manualOutput=fallback;
+            m_manual=nullptr; p->deleteLater(); emit manualChanged();
+        };
+        connect(p,&QProcess::finished,this,[done](int exitCode,QProcess::ExitStatus){done(QStringLiteral("Exit-Code %1").arg(exitCode));});
+        connect(p,&QProcess::errorOccurred,this,[p,done](QProcess::ProcessError e){if(e==QProcess::FailedToStart) done(p->errorString());});
+        if(QStringList{"scan","report","export","import"}.contains(action)) {
+            p->start(QStringLiteral("/usr/local/sbin/butchies-hardware"),{action,QUrl(address).isLocalFile()?QUrl(address).toLocalFile():address});
+        } else p->start(QStringLiteral("/usr/local/sbin/butchies-manual"),{action,address});
     }
     QStringList aiMonitor() const { return m_aiLog; }
     QVariantMap knowledge() const { return m_kb.summary(); }
@@ -346,7 +372,7 @@ public:
     // Step 2: only with the approval code.
     Q_INVOKABLE void flashFirmware(const QString &code) {
         if(m_fwWorker || m_worker || !m_fwPlan.value("allowed").toBool()) return;
-        if(!m_fwPlan.value("expert").toBool() && code.trimmed().toUpper()!=m_fwPlan.value("approvalCode").toString()) {
+        if(code.trimmed().toUpper()!=m_fwPlan.value("approvalCode").toString() || m_fwPlan.value("approvalCode").toString().isEmpty()) {
             ai(QStringLiteral("Bestätigungscode falsch – es wurde nichts geschrieben."));
             return;
         }
@@ -620,7 +646,7 @@ private:
         if(index<0 || index>=m_devices.size()) {
             m_aiReport.clear();
             emit aiReportChanged();
-            setStatus(QStringLiteral("KI-Diagnose: Kein externes USB-Gerät ausgewählt."));
+            setStatus(linuxEdition() ? QStringLiteral("Kein interner Controller ausgewählt.") : QStringLiteral("Kein externes USB-Gerät ausgewählt."));
             return false;
         }
         const auto device=m_devices.at(index).toMap();
@@ -635,7 +661,7 @@ private:
         if(!stillThere) {
             m_aiReport.clear();
             emit aiReportChanged();
-            setStatus(QStringLiteral("KI-Diagnose gestoppt: USB-Gerät nicht mehr bestätigt."));
+            setStatus(linuxEdition() ? QStringLiteral("PCIe-Funktion nicht mehr erreichbar.") : QStringLiteral("USB-Gerät nicht mehr bestätigt."));
             return false;
         }
         QVariantMap verified=device;
@@ -1062,6 +1088,12 @@ public:
     // Boot-Stick: ältere Stick-Version wird erkannt und zum Aktualisieren angeboten.
     QVariantMap update() const { return m_update; }
     Q_INVOKABLE void checkUpdate() {
+#ifndef Q_OS_WIN
+        if(QFile::exists(QStringLiteral("/usr/local/sbin/butchies-studio-update"))) {
+            linuxUpdate(false);
+            return;
+        }
+#endif
         if(m_update.value("laedt").toBool()) return;
         QNetworkRequest req(QUrl(QStringLiteral("https://github.com/Butchies/Butchies-nvme-recovery-studio-ai/releases/download/aktuell/version.json")));
         req.setHeader(QNetworkRequest::UserAgentHeader,QStringLiteral("NVMeRecoveryStudioAI"));
@@ -1093,8 +1125,43 @@ public:
 #endif
         });
     }
+    void linuxUpdate(bool install) {
+        if(m_update.value("laedt").toBool() || m_manual || recoveryRunning()) return;
+        auto *p=new QProcess(this);
+        m_update["laedt"]=true;
+        emit updateChanged();
+        connect(p,&QProcess::errorOccurred,this,[this,p](QProcess::ProcessError error){
+            if(error!=QProcess::FailedToStart) return;
+            m_update["laedt"]=false;
+            emit updateChanged();
+            p->deleteLater();
+        });
+        connect(p,&QProcess::finished,this,[this,p,install](int code,QProcess::ExitStatus status){
+            const QString out=QString::fromUtf8(p->readAllStandardOutput()).trimmed();
+            const QString err=QString::fromUtf8(p->readAllStandardError()).trimmed();
+            p->deleteLater();
+            m_update["laedt"]=false;
+            if(code==0 && status==QProcess::NormalExit && out.startsWith("UPDATE ")) {
+                m_update["neu"]=out.section(' ',-1);
+                m_update["bereit"]=true;
+                m_update["neuer"]=true;
+            } else if(install && code==0 && out.startsWith("INSTALLED ")) {
+                auto *restart=new QTimer(this);
+                connect(restart,&QTimer::timeout,this,[this,restart]{
+                    if(recoveryRunning() || m_manual) return;
+                    restart->stop();
+                    QCoreApplication::quit();
+                });
+                restart->start(1000);
+            } else if(install) setStatus(err.isEmpty() ? out : err);
+            emit updateChanged();
+        });
+        p->start(QStringLiteral("/usr/local/sbin/butchies-studio-update"),{install?"install":"check",QStringLiteral(APP_VERSION)});
+    }
     Q_INVOKABLE void installUpdate() {
-#ifdef Q_OS_WIN
+#ifndef Q_OS_WIN
+        if(m_update.value("bereit").toBool()) linuxUpdate(true);
+#else
         const QString setup=m_update.value("datei").toString();
         if(!m_update.value("bereit").toBool() || !QFile::exists(setup)) return;
         if(m_worker || m_fwWorker || m_repairWorker || m_cacheWorker || m_stickWorker) { ai(QStringLiteral("Update wartet, bis der laufende Vorgang fertig ist.")); return; }
@@ -1113,6 +1180,7 @@ public:
 #endif
     }
 signals:
+    void manualChanged();
     void updateChanged();
     void archiveChanged();
     void devicesChanged();
@@ -1298,7 +1366,11 @@ int main(int argc,char *argv[]) {
     QObject::connect(&app,&QCoreApplication::aboutToQuit,&controller,[&controller]{ controller.installOnExit(); });
     QQmlApplicationEngine engine;
     engine.setInitialProperties({{"controller",QVariant::fromValue(&controller)}});
+#ifdef BUTCHIES_RAW_QML
+    engine.load(QUrl(QStringLiteral("qrc:/studio/Main.qml")));
+#else
     engine.loadFromModule("RecoveryStudio","Main");
+#endif
     if(engine.rootObjects().isEmpty()) return -1;
     controller.refresh();
     // Nur für den automatischen Build: echtes Bildschirmfoto der Oberfläche speichern.

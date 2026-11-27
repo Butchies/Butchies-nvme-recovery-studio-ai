@@ -1,0 +1,49 @@
+#!/usr/bin/python3
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import subprocess
+import sys
+import tempfile
+
+URL="https://github.com/Butchies/Butchies-nvme-recovery-studio-ai/releases/download/linux-studio/"
+ROOT=Path("/root/Butchies-Recovery/Update")
+
+def download(asset, path, limit):
+    subprocess.run(["curl","-fsSL","--proto","=https","--proto-redir","=https",
+                    "--max-time","120","--max-filesize",str(limit),"-o",str(path),URL+asset],check=True)
+
+def version(s):
+    if not re.fullmatch(r"\d+\.\d+\.\d+",s):raise ValueError("Ungültige Updateversion.")
+    return tuple(map(int,s.split(".")))
+
+def main():
+    ROOT.mkdir(parents=True,exist_ok=True)
+    with tempfile.TemporaryDirectory(dir=ROOT) as d:
+        path=Path(d)
+        download("linux-update.json",path/"manifest",8192)
+        meta=json.loads((path/"manifest").read_text())
+        if version(meta["version"])<=version(sys.argv[2].split("-")[0]):
+            print("Linux-Studio ist aktuell.");return
+        asset="studio-"+meta["version"]+"-amd64"
+        if sys.argv[1]=="check":
+            print("UPDATE "+meta["version"]);return
+        download(asset,path/"studio",64*1024*1024)
+        binary=path/"studio"
+        if hashlib.sha256(binary.read_bytes()).hexdigest()!=meta["sha256"]:
+            raise ValueError("Prüfsumme stimmt nicht.")
+        binary.chmod(0o755)
+        screenshot=path/"probe.png"
+        env=dict(os.environ,QT_QPA_PLATFORM="offscreen",QT_QUICK_BACKEND="software",
+                 NVME_SCREENSHOT=str(screenshot),NVME_SCREENSHOT_DELAY="3500",
+                 XDG_DATA_HOME=str(path/"probe-data"))
+        subprocess.run([str(binary)],env=env,check=True,timeout=30)
+        if not screenshot.is_file() or screenshot.stat().st_size==0:
+            raise ValueError("Startprüfung lieferte kein Fenster.")
+        os.replace(binary,ROOT/"studio")
+        print("INSTALLED "+meta["version"])
+
+try:main()
+except (OSError,ValueError,KeyError,subprocess.SubprocessError) as e:sys.exit(str(e))

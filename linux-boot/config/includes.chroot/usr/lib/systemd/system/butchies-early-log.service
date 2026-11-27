@@ -1,0 +1,8 @@
+[Unit]
+Description=Kernelprotokoll ab frühem Systemstart festhalten
+DefaultDependencies=no
+After=systemd-journald.socket
+Before=sysinit.target
+[Service]
+Type=simple
+ExecStart=/bin/sh -c 'exec /usr/bin/journalctl -k -b -f -n all --no-pager -o short-monotonic > /run/butchies-early-kernel.log'

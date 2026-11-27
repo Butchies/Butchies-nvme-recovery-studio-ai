@@ -1,0 +1,103 @@
+#!/usr/bin/python3
+import hashlib
+import os
+import re
+import subprocess
+import sys
+from pathlib import Path
+from shutil import which
+
+os.environ["PATH"] = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+pci = Path("/sys/bus/pci/devices")
+folder = Path("/run/live/medium/Firmware/PM981a")
+sums = {"G4GWG":"009a9414ea4513468724a8d9103f18eb74243062fc1303af5490dec999ef3716",
+        "YF6KT":"b7d804180cb3e791a1af5f4a0efdbf9ab17b58dca9d7c4954f9609d2f7eec17a"}
+
+def value(p):
+    return p.read_text().strip() if p.exists() else ""
+
+def run(*args):
+    proc=subprocess.run(args,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,errors="replace",timeout=50)
+    print(proc.stdout.strip() or ("OK" if proc.returncode==0 else "Fehler "+str(proc.returncode)))
+    return proc.returncode
+
+def main(action,addr):
+    if action=="firmware":
+        print("Firmwareordner:",folder)
+        for key,expected in sums.items():
+            matches=list(folder.glob("*_"+key+"_*.EXE"))
+            if len(matches)!=1:
+                print(key,"Paket fehlt oder ist mehrdeutig.");continue
+            path=matches[0]
+            print(path.name,"\nSHA-256:", "bestätigt" if hashlib.sha256(path.read_bytes()).hexdigest()==expected else "FEHLER")
+        print("G4GWG: Dell-Komponente 108183. YF6KT: SED, 108182. Beides sind Windows-Updatepakete.")
+        return
+    if action=="tools":
+        for cmd in ("lspci","modprobe","nvme","smartctl","ddrescue","fwupdmgr","openSeaChest_Firmware"):
+            print(cmd,which(cmd) or "fehlt")
+        return
+    if action=="history":
+        p=Path("/run/butchies-pcie.log")
+        print(value(p) or "Startbericht liegt noch nicht vor.");return
+    if not re.fullmatch(r"[0-9a-f]{4}:[0-9a-f]{2}:[0-9a-f]{2}\.[0-7]",addr):
+        print("Kein PCIe-Steckplatz ausgewählt.");return
+    d=pci/addr
+    if not d.exists():
+        print("PCIe-Funktion",addr,"ist aktuell verschwunden. Geräteübersicht erneut einlesen.");return
+    if not value(d/"class").startswith("0x0108") and (value(d/"vendor"),value(d/"device"))!=("0x144d","0xa808"):
+        print("Keine passende NVMe-PCIe-Funktion.");return
+    ctrls=sorted(c.name for c in (d/"nvme").glob("nvme*") if re.fullmatch("nvme[0-9]+",c.name))
+    if action=="linux-firmware":
+        serials = {value(Path("/sys/class/nvme")/name/"serial") for name in ctrls} - {""}
+        if not serials:
+            print("Keine Firmware übertragen · NVMe-Verwaltungsschnittstelle fehlt.")
+            return
+        result = subprocess.run(["fwupdmgr","get-devices","--json"],capture_output=True,text=True,timeout=45)
+        if result.returncode:
+            print(result.stderr.strip() or "fwupd-Geräteabfrage fehlgeschlagen.")
+            return
+        matches = [entry for entry in json.loads(result.stdout).get("Devices", [])
+                   if entry.get("Plugin")=="nvme" and entry.get("Serial") in serials]
+        if len(matches)!=1 or not re.fullmatch(r"[0-9a-fA-F]{40}",matches[0].get("DeviceId","")):
+            print("fwupd konnte den ausgewählten Controller nicht eindeutig zuordnen.")
+            return
+        print("Linux-Firmwareangebot für", matches[0].get("Name","NVMe"), flush=True)
+        run("fwupdmgr","refresh")
+        run("fwupdmgr","get-updates",matches[0]["DeviceId"])
+        return
+    if action=="detail-pcie":
+        run("lspci","-nnvvk","-s",addr)
+        for field in ("vendor","device","subsystem_vendor","subsystem_device","class","revision",
+                      "current_link_speed","current_link_width","max_link_speed","max_link_width","modalias","numa_node"):
+            print(field,":",value(d/field) or "nicht verfügbar")
+        print("Treiber:",(d/"driver").resolve().name if (d/"driver").is_symlink() else "ungebunden")
+        print("NVMe-Verwaltungsgerät:",", ".join(ctrls) or "keines")
+        return
+    if action=="status":
+        run("lspci","-nnk","-s",addr)
+        print("NVMe-Verwaltungsgerät:",", ".join(ctrls) or "keines")
+        return
+    if action=="probe":
+        if addr!="0000:01:00.0" or (value(d/"vendor"),value(d/"device"))!=("0x144d","0xa808"):
+            print("Treiberprüfung für die Samsung am dokumentierten Steckplatz verfügbar.");return
+        subprocess.run(["/usr/local/sbin/butchies-pcie-start"],check=False,timeout=220);return
+    commands={"identify":["nvme","id-ctrl"],"smart":["smartctl","-H"],"slots":["nvme","fw-log"]}
+    commands.update({"detail-identity":["nvme","id-ctrl","-H"],
+                     "detail-health":["nvme","smart-log"],
+                     "detail-namespace":["nvme","list-ns","-a"],
+                     "detail-slots":["nvme","fw-log"],
+                     "detail-errors":["nvme","error-log"]})
+    if action not in commands:raise ValueError("Unbekannte Aktion")
+    if not ctrls:
+        print("PCIe sichtbar. Für diesen Befehl fehlt das NVMe-Verwaltungsgerät.");return
+    for name in ctrls:
+        print("/dev/"+name,flush=True)
+        run(*commands[action],"/dev/"+name)
+        if action=="detail-namespace":
+            for namespace in sorted(Path("/sys/block").glob(name+"n*")):
+                if re.fullmatch(name+r"n\d+",namespace.name):
+                    run("nvme","id-ns","-H","/dev/"+namespace.name)
+
+if __name__=="__main__":
+    try:main(*sys.argv[1:])
+    except (ValueError,OSError,subprocess.TimeoutExpired) as e:sys.exit(str(e))

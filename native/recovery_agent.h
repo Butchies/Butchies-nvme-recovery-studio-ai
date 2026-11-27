@@ -27,6 +27,7 @@ inline QVariantMap analyze(const QVariantMap &device, const QVariantMap &experie
     bool canRead=false;
 
     const bool linuxEdition=device.value("edition").toString()=="linux";
+    result["linuxEdition"]=linuxEdition;
     if(linuxEdition && device.value("protected").toBool()) {
         result["diagnosis"]=QStringLiteral("Geschützt: %1. Dieses Laufwerk wird weder gerettet noch repariert.").arg(device.value("protectedReason").toString());
         result["severity"]="Gesperrt";
@@ -71,8 +72,9 @@ inline QVariantMap analyze(const QVariantMap &device, const QVariantMap &experie
         severity="Kritisch";
         confidence="Mittel";
         canRead=false;
-        warnings << "Kein Datenzugriff über USB möglich; ein Rettungsabbild kann nicht erstellt werden.";
-        actions.append("Hardware prüfen: anderes Gehäuse/Kabel, direkter USB-Anschluss ohne Hub, SSD-Kontakte und Temperatur.");
+        warnings << (linuxEdition ? "Kein lesbarer NVMe-Namespace für ein Rettungsabbild." : "Kein Datenzugriff über USB möglich.");
+        if(linuxEdition) actions.append("Im manuellen Modus Controllerantwort und Firmware-Slots prüfen.");
+        else actions.append("USB-Gehäuse und Kabel prüfen.");
         if(!linuxEdition) actions.append("SSD direkt in einen M.2-Steckplatz setzen und mit der Linux-Boot-Edition auf Notmodus prüfen (Controller-Identifikation über PCIe).");
     } else if(!device.value("nvmeIdentifyAvailable").toBool()) {
         diagnosis="NVMe-Controller über die USB-Bridge nicht identifizierbar.";
@@ -264,7 +266,7 @@ inline QVariantMap planRescue(const QVariantMap &diagnosis, const QVariantMap &e
     const QString severity=diagnosis.value("severity").toString();
     if(!diagnosis.value("canImage").toBool() || severity=="Gesperrt") {
         plan["allowed"]=false;
-        plan["reason"]=QStringLiteral("Rettung gesperrt: Gerät ist nicht als externes USB-Laufwerk bestätigt.");
+        plan["reason"]=diagnosis.value("linuxEdition").toBool() ? (severity=="Gesperrt" ? diagnosis.value("diagnosis").toString() : QStringLiteral("Kein lesbarer NVMe-Namespace. Im manuellen Modus PCIe und Controller prüfen.")) : QStringLiteral("Rettung gesperrt: Gerät ist nicht als externes USB-Laufwerk bestätigt.");
         return plan;
     }
     plan["allowed"]=true;

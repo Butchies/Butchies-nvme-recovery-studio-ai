@@ -1,0 +1,49 @@
+name: Linux-Studio-Update
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version größer als die zuletzt veröffentlichte (z. B. 0.6.9)"
+        required: true
+permissions:
+  contents: write
+concurrency: linux-studio-release
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    container: debian:trixie
+    defaults:
+      run:
+        shell: bash
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - run: apt-get update -qq && apt-get install -y -qq git ca-certificates
+      - uses: actions/checkout@v4
+      - name: Bauen und Start prüfen
+        env:
+          VER: ${{ inputs.version }}
+        run: |
+          set -eu
+          printf '%s\n' "$VER" | grep -Ex '[0-9]+\.[0-9]+\.[0-9]+'
+          apt-get update -qq
+          apt-get install -y -qq build-essential cmake qt6-base-dev qt6-declarative-dev qt6-qpa-plugins qml6-module-qtquick qml6-module-qtquick-controls qml6-module-qtquick-layouts qml6-module-qtquick-dialogs qml6-module-qtquick-templates qml6-module-qtquick-window qml6-module-qtqml-workerscript qml6-module-qt-labs-folderlistmodel gh
+          cmake -S native -B build -DCMAKE_BUILD_TYPE=Release -DAPP_VERSION="$VER"
+          cmake --build build --parallel 2
+          QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software NVME_SCREENSHOT="$PWD/probe.png" timeout 30 build/nvme-recovery-studio
+          test -s probe.png
+          mkdir out
+          cp build/nvme-recovery-studio "out/studio-$VER-amd64"
+          sha=$(sha256sum "out/studio-$VER-amd64" | cut -d ' ' -f1)
+          printf '{"version":"%s","sha256":"%s"}\n' "$VER" "$sha" > out/linux-update.json
+      - name: Linux-Update veröffentlichen
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VER: ${{ inputs.version }}
+        run: |
+          set -eu
+          if gh release view linux-studio --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload linux-studio "out/studio-$VER-amd64" --repo "$GITHUB_REPOSITORY"
+            gh release upload linux-studio out/linux-update.json --clobber --repo "$GITHUB_REPOSITORY"
+          else
+            gh release create linux-studio "out/studio-$VER-amd64" out/linux-update.json --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "Linux Studio Updates" --notes "Programmkorrekturen für den Linux-Recovery-Stick." --latest=false
+          fi

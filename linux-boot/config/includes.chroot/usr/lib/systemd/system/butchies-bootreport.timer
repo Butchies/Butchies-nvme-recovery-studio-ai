@@ -1,0 +1,8 @@
+[Unit]
+Description=Bootreport früh sichern und nach dem Start ergänzen
+[Timer]
+OnBootSec=8s
+OnUnitInactiveSec=2min
+AccuracySec=2s
+[Install]
+WantedBy=timers.target

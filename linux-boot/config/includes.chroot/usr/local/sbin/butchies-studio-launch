@@ -1,0 +1,4 @@
+#!/bin/sh
+update=/root/Butchies-Recovery/Update/studio
+if [ -x "$update" ]; then exec "$update"; fi
+exec /opt/nvme-recovery-studio/bin/nvme-recovery-studio

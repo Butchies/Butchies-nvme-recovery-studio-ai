@@ -1,0 +1,8 @@
+[Unit]
+Description=Manuell hinzugefügte Linux-Treiber für den laufenden Kernel bereitstellen
+After=local-fs.target systemd-udev-trigger.service
+Before=nvme-recovery-kiosk.service
+ConditionPathIsDirectory=/root/Butchies-Recovery/Treiber
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/butchies-hardware restore

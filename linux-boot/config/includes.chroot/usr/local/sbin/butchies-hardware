@@ -1,0 +1,188 @@
+#!/usr/bin/python3
+"""Hardwareinventar und Bootreports für Butchies Recovery."""
+import datetime
+import json
+import fnmatch
+import os
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+os.environ["PATH"]="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+BOOT=Path("/proc/sys/kernel/random/boot_id")
+STATE=Path("/root/Butchies-Recovery")
+REPORTS=STATE/"Bootreports"
+DRIVERS=STATE/"Treiber"
+KERNEL=os.uname().release
+
+def cmd(*args, timeout=20):
+    try:
+        p=subprocess.run(args,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,
+                         text=True,errors="replace",timeout=timeout)
+        return p.returncode,p.stdout.strip()
+    except (OSError,subprocess.TimeoutExpired) as e:
+        return 1,str(e)
+
+def required(*args):
+    rc,out=cmd(*args)
+    if rc:raise ValueError(out or "Befehl fehlgeschlagen: "+args[0])
+    return out
+
+def atomic(path,data):
+    path.parent.mkdir(parents=True,exist_ok=True)
+    with tempfile.NamedTemporaryFile(dir=path.parent,delete=False) as f:
+        f.write(data)
+    os.replace(f.name,path)
+
+def sections(items):
+    return "\n\n".join(title+"\n"+(cmd(*args)[1] or "(keine Ausgabe)") for title,args in items)
+
+def devices():
+    for bus in ("pci","usb"):
+        for d in sorted(Path("/sys/bus",bus,"devices").glob("*")):
+            alias=d/"modalias"
+            try:
+                yield d,alias.read_text().strip()
+            except OSError: continue
+
+def inventory():
+    lines=[sections([("PCI-Geräte und Treiber",["lspci","-nnk"]),("USB-Geräte",["lsusb"]),
+                     ("WLAN/LAN",["nmcli","-t","-f","DEVICE,TYPE,STATE","device"]),("Funkstatus",["nmcli","radio","all"])])]
+    for d,alias in devices():
+        if not (d/"driver").exists():
+            lines.append(d.name+" · ungebunden · "+alias+" · Module: "+(cmd("modprobe","-R",alias)[1] or "keine"))
+    return "\n".join(lines)
+
+def missing(text):
+    names=set()
+    for line in text.splitlines():
+        for pattern in (r"Direct firmware load for ([\w./+-]+) failed",r"firmware: failed to load ([\w./+-]+)"):
+            match=re.search(pattern,line,re.I)
+            if match:
+                name=Path(match[1])
+                if not name.is_absolute() and ".." not in name.parts:names.add(str(name))
+    return names
+
+def klog():
+    rc,out=cmd("journalctl","-k","-b","--no-pager","-o","short-monotonic")
+    return out if rc==0 and out and out!="-- No entries --" else cmd("dmesg")[1]
+
+def report():
+    bootid=BOOT.read_text().strip()
+    path=REPORTS/("Bootreport-"+bootid+".txt")
+    kernel=klog()
+    persistent=cmd("findmnt","-n","-o","SOURCE,FSTYPE","-T","/root")[1]
+    text="Butchies Recovery · Bootreport "+bootid+"\n"+datetime.datetime.now().astimezone().isoformat()+" · Kernel "+KERNEL+"\nBerichtspeicher: "+persistent
+    text+="\n\nDiese Firmwaredateien wurden vom Kernel als fehlend gemeldet:\n"+("\n".join(sorted(missing(kernel))) or "Keine passende Fehlermeldung erfasst.")
+    text+="\n\n"+inventory()+"\n\n"+sections([
+        ("Fehlgeschlagene Dienste",["systemctl","--failed","--no-pager"]),
+        ("Startwarnungen und Fehler",["journalctl","-b","-p","warning","--no-pager","-o","short-monotonic"]),
+        ("Recovery-Dienste",["journalctl","-b","--no-pager","-u","nvme-recovery-kiosk.service","-u","butchies-nvme-screen.service"]),
+        ("Laufwerke",["lsblk","-o","NAME,TYPE,SIZE,MODEL,TRAN,MOUNTPOINTS"]),
+        ("NVMe-Übersicht",["nvme","list"])])
+    detail=Path("/run/butchies-pcie.log")
+    if detail.exists():text+="\n\nPCIe-Startprüfung\n"+detail.read_text(errors="replace")
+    early=Path("/run/butchies-early-kernel.log")
+    if early.exists():
+        early_text=early.read_text(errors="replace")
+        if early_text.strip() and early_text.strip()!=kernel.strip():text+="\n\nFrühe Kernelaufzeichnung\n"+early_text
+    text+="\n\nKernelmeldungen seit Start\n"+kernel+"\n"
+    atomic(path,text.encode())
+    # Mirror only onto a mounted data partition on the physical live USB stick.
+    mount=Path("/mnt/nvmedaten")
+    if mount.is_mount():
+        def parent(m):
+            rc,dev=cmd("findmnt","-n","-o","SOURCE","--mountpoint",m)
+            if rc or not dev.startswith("/dev/"):return ""
+            rc,name=cmd("lsblk","-dn","-o","PKNAME",dev)
+            return name if rc==0 else ""
+        bootdisk=parent("/run/live/medium")
+        if bootdisk and bootdisk==parent(str(mount)):
+            try:atomic(mount/"Bootreports"/path.name,text.encode())
+            except OSError:pass
+    return path
+
+def checkfile(path):
+    p=Path(path)
+    if not p.is_absolute() or not p.is_file() or not 0<p.stat().st_size<=128*1024**2:
+        raise ValueError("Bitte eine reguläre Datei bis 128 MiB wählen.")
+    return p
+
+def module(p,save):
+    ver=required("modinfo","-F","vermagic",str(p)).split()
+    if not ver or ver[0]!=KERNEL:raise ValueError("Kernelversion stimmt nicht überein: "+" ".join(ver))
+    aliases=required("modinfo","-F","alias",str(p)).splitlines()
+    hits=[d for d,a in devices() if any(fnmatch.fnmatchcase(a,pattern) for pattern in aliases)]
+    if not hits:raise ValueError("Kein passendes PCI-/USB-Gerät für die Modul-Aliase.")
+    if all((d/"driver").exists() for d in hits):raise ValueError("Alle passenden Geräte haben bereits einen gebundenen Treiber.")
+    for dep in required("modinfo","-F","depends",str(p)).split(","):
+        if dep.strip():required("modprobe","--",dep.strip())
+    required("insmod",str(p))
+    if save:atomic(DRIVERS/"Module"/KERNEL/p.name,p.read_bytes())
+    print("Modul geladen. Passende Geräte:",", ".join(d.name for d in hits))
+
+def firmware(p):
+    matches=[n for n in missing(klog()) if Path(n).name==p.name]
+    if len(matches)!=1:raise ValueError("Der Kernel hat keinen eindeutigen fehlenden Firmwarepfad mit diesem Dateinamen gemeldet.")
+    dest=Path("/lib/firmware/updates")/KERNEL/matches[0]
+    data=p.read_bytes()
+    atomic(dest,data);atomic(DRIVERS/"Firmware"/KERNEL/matches[0],data)
+    print("Linux-Gerätefirmware bereitgestellt:",dest,"· Gerät erneut erkennen oder neu starten.")
+
+def restore():
+    root=DRIVERS/"Firmware"/KERNEL
+    for p in root.rglob("*"):
+        if p.is_file():atomic(Path("/lib/firmware/updates")/KERNEL/p.relative_to(root),p.read_bytes())
+    for p in (DRIVERS/"Module"/KERNEL).glob("*.ko*"):
+        try:module(p,False)
+        except ValueError as e:print(e)
+
+def mirror_usb(reportfile):
+    # Label is an explicit opt-in to receiving boot diagnostics.
+    raw=required("lsblk","-J","-p","-o","NAME,TYPE,TRAN,LABEL,FSTYPE,MOUNTPOINTS")
+    candidates=[]
+    for d in json.loads(raw)["blockdevices"]:
+        if d.get("type")!="disk" or d.get("tran")!="usb":continue
+        for part in [d]+d.get("children",[]):
+            if part.get("label")=="BOOTREPORT" and part.get("fstype") in ("vfat","exfat"):
+                candidates.append(part)
+    if len(candidates)!=1:return
+    part=candidates[0]
+    points=[s for s in part.get("mountpoints") or [] if s]
+    if len(points)>1:return
+    mounted=False
+    if points:target=Path(points[0])
+    else:
+        target=Path("/run/butchies-report-usb")
+        target.mkdir(exist_ok=True)
+        required("mount","-o","nodev,nosuid,noexec",part["name"],str(target))
+        mounted=True
+    try:
+        atomic(target/"Bootreports"/reportfile.name,reportfile.read_bytes())
+        required("sync","-f",str(target))
+    finally:
+        if mounted:required("umount",str(target))
+
+def main(action,arg=""):
+    if action=="scan":print(inventory())
+    elif action=="report":
+        p=report();print("Vollständiger Bericht:",p,"\n\n"+p.read_text()[:9000])
+    elif action=="export":
+        folder=Path(arg)
+        if not folder.is_absolute() or not folder.is_dir():raise ValueError("Zielordner wählen.")
+        p=report();dest=folder/p.name;atomic(dest,p.read_bytes());dest.chmod(0o644);print("Für den Chat gespeichert:",dest)
+    elif action=="capture":
+        p=report();print(p);mirror_usb(p)
+    elif action=="restore":restore()
+    elif action=="import":
+        p=checkfile(arg)
+        if re.search(r"\.ko(?:\.(?:xz|zst|gz))?$",p.name):module(p,True)
+        else:firmware(p)
+    else:raise ValueError("Unbekannte Aktion.")
+
+if __name__=="__main__":
+    try:main(*sys.argv[1:])
+    except (OSError,ValueError) as err:sys.exit(str(err))

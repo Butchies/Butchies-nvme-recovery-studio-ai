@@ -121,7 +121,7 @@ jobs:
           docker run --rm --privileged -e APP_VERSION="$VER" -v "$PWD":/repo -w /repo debian:trixie bash -c '
             set -e
             apt-get update -qq
-            DEBIAN_FRONTEND=noninteractive apt-get install -y -qq live-build rsync ca-certificates curl >/dev/null
+            DEBIAN_FRONTEND=noninteractive apt-get install -y -qq live-build rsync ca-certificates curl p7zip-full >/dev/null
             ./linux-boot/build.sh'
           ls -la linux-boot/out
 
