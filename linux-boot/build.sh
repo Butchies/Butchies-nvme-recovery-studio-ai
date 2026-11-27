@@ -39,6 +39,16 @@ lb config \
 
 progress "Paketlisten, Dienste und Programmquellen übernehmen"
 cp -a "$HERE/config/." "$WORK/config/"
+firmware_source="$REPO/Firmware/PM981a"
+firmware_target="$WORK/config/includes.binary/Firmware/PM981a"
+mkdir -p "$firmware_target"
+cp "$firmware_source/README.md" "$firmware_source/downloads.txt" "$firmware_target/"
+while read -r checksum url; do
+    package="$firmware_target/${url##*/}"
+    curl --fail --location --retry 3 --max-time 120 --user-agent 'Mozilla/5.0' \
+        --referer 'https://www.dell.com/' --output "$package" "$url"
+    printf '%s  %s\n' "$checksum" "$package" | sha256sum --check
+done < "$firmware_source/downloads.txt"
 mkdir -p "$WORK/config/includes.chroot/opt/src"
 rsync -a --exclude '.git' --exclude 'linux-boot/work' --exclude 'linux-boot/out' \
   "$REPO/native" "$REPO/data" "$WORK/config/includes.chroot/opt/src/"
