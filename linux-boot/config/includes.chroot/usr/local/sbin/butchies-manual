@@ -47,6 +47,24 @@ def main(action,addr):
     if not value(d/"class").startswith("0x0108") and (value(d/"vendor"),value(d/"device"))!=("0x144d","0xa808"):
         print("Keine passende NVMe-PCIe-Funktion.");return
     ctrls=sorted(c.name for c in (d/"nvme").glob("nvme*") if re.fullmatch("nvme[0-9]+",c.name))
+    if action=="linux-firmware":
+        serials = {value(Path("/sys/class/nvme")/name/"serial") for name in ctrls} - {""}
+        if not serials:
+            print("Keine Firmware übertragen · NVMe-Verwaltungsschnittstelle fehlt.")
+            return
+        result = subprocess.run(["fwupdmgr","get-devices","--json"],capture_output=True,text=True,timeout=45)
+        if result.returncode:
+            print(result.stderr.strip() or "fwupd-Geräteabfrage fehlgeschlagen.")
+            return
+        matches = [entry for entry in json.loads(result.stdout).get("Devices", [])
+                   if entry.get("Plugin")=="nvme" and entry.get("Serial") in serials]
+        if len(matches)!=1 or not re.fullmatch(r"[0-9a-fA-F]{40}",matches[0].get("DeviceId","")):
+            print("fwupd konnte den ausgewählten Controller nicht eindeutig zuordnen.")
+            return
+        print("Linux-Firmwareangebot für", matches[0].get("Name","NVMe"), flush=True)
+        run("fwupdmgr","refresh")
+        run("fwupdmgr","get-updates",matches[0]["DeviceId"])
+        return
     if action=="detail-pcie":
         run("lspci","-nnvvk","-s",addr)
         for field in ("vendor","device","subsystem_vendor","subsystem_device","class","revision",

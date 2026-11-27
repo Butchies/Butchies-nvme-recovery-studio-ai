@@ -953,7 +953,8 @@ ApplicationWindow {
                             Button { text: "Treiberdatei hinzufügen"; onClicked: addDriver.open() }
                             Button { text: "Bootreport lesen"; onClicked: controller.manualAction("report","") }
                             Button { text: "Bootreport speichern"; onClicked: exportBoot.open() }
-                            Button { text: "Firmwareordner öffnen"; onClicked: bundledFiles.open() }
+                            Button { text: "Dell-Pakete für Windows"; onClicked: bundledFiles.open() }
+                            Button { text: "Linux-Firmware suchen (LVFS)"; onClicked: controller.manualAction("linux-firmware",manualPage.addr) }
                             Button { text: "Geräte neu einlesen"; enabled: !controller.manualBusy && !controller.recoveryRunning; onClicked: controller.refresh() }
                             Repeater {
                                 model: [["PCIe und Treiber","status"],["Treiberbindung versuchen","probe"],["Identify lesen","identify"],["SMART lesen","smart"],["Firmware-Slots lesen","slots"],["Firmwareordner anzeigen und prüfen","firmware"],["Werkzeuge","tools"],["Startprotokoll","history"]]
