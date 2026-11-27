@@ -312,7 +312,7 @@ ApplicationWindow {
                 TextField { id: approvalField; Layout.fillWidth: true; visible: !!controller.firmwarePlan.approvalCode; placeholderText: "Bestätigungscode: letzte 4 Zeichen der Seriennummer" }
                 ActionButton {
                     text: "Jetzt flashen"; danger: true; iconName: "chip"
-                    enabled: !!controller.firmwarePlan.allowed && !controller.firmwareProgress.running && (!!controller.firmwarePlan.expert || approvalField.text.length === 4)
+                    enabled: !!controller.firmwarePlan.allowed && !controller.firmwareProgress.running && approvalField.text.length === 4
                     onClicked: controller.flashFirmware(approvalField.text)
                 }
             }

@@ -372,7 +372,7 @@ public:
     // Step 2: only with the approval code.
     Q_INVOKABLE void flashFirmware(const QString &code) {
         if(m_fwWorker || m_worker || !m_fwPlan.value("allowed").toBool()) return;
-        if(!m_fwPlan.value("expert").toBool() && code.trimmed().toUpper()!=m_fwPlan.value("approvalCode").toString()) {
+        if(code.trimmed().toUpper()!=m_fwPlan.value("approvalCode").toString() || m_fwPlan.value("approvalCode").toString().isEmpty()) {
             ai(QStringLiteral("Bestätigungscode falsch – es wurde nichts geschrieben."));
             return;
         }

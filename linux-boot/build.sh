@@ -42,13 +42,31 @@ cp -a "$HERE/config/." "$WORK/config/"
 firmware_source="$REPO/Firmware/PM981a"
 firmware_target="$WORK/config/includes.binary/Firmware/PM981a"
 mkdir -p "$firmware_target"
-cp "$firmware_source/README.md" "$firmware_source/downloads.txt" "$firmware_target/"
+cp "$firmware_source/README.md" "$firmware_source/downloads.txt" \
+  "$firmware_source/index.json" "$firmware_target/"
+command -v 7z >/dev/null || { echo '7z fehlt: sudo apt install p7zip-full' >&2; exit 1; }
 while read -r checksum url; do
     package="$firmware_target/${url##*/}"
     curl --fail --location --retry 3 --max-time 120 --user-agent 'Mozilla/5.0' \
         --referer 'https://www.dell.com/' --output "$package" "$url"
     printf '%s  %s\n' "$checksum" "$package" | sha256sum --check
 done < "$firmware_source/downloads.txt"
+tmp_firmware="$(mktemp -d)"
+trap 'rm -rf "$tmp_firmware"' EXIT
+g4gwg="$(find "$firmware_target" -maxdepth 1 -name '*G4GWG*EXE' -print -quit)"
+[ -n "$g4gwg" ] || { echo 'Dell G4GWG-Paket fehlt' >&2; exit 1; }
+7z x -y -o"$tmp_firmware" "$g4gwg" >/dev/null
+inner="$(find "$tmp_firmware" -type f -iname 'MUP_PM981a_15305129.exe' -print -quit)"
+[ -n "$inner" ] || { echo 'MUP_PM981a_15305129.exe im Dell-Paket nicht gefunden' >&2; exit 1; }
+printf '%s  %s\n' 'e016ee21712ce6c3f1aaeb44df03b426a5e5c11094dd019e110a105c5c779792' "$inner" | sha256sum --check
+python3 - "$inner" "$firmware_target/Dell-PM981a-G4GWG-15305129.bin" <<'PY'
+import pathlib, sys
+source=pathlib.Path(sys.argv[1]).read_bytes()
+image=source[0x8d8d0:0x1cd8d0]
+assert len(image)==0x140000 and b'FW_IMAGE_META_SIGNATURE_________15305129' in image
+pathlib.Path(sys.argv[2]).write_bytes(image)
+PY
+(cd "$firmware_target" && echo '08156487302ee23413e2a6ceffc0ba1a94d9e881db55b407c0d81d79fa660db9  Dell-PM981a-G4GWG-15305129.bin' | sha256sum --check)
 mkdir -p "$WORK/config/includes.chroot/opt/src"
 rsync -a --exclude '.git' --exclude 'linux-boot/work' --exclude 'linux-boot/out' \
   "$REPO/native" "$REPO/data" "$WORK/config/includes.chroot/opt/src/"

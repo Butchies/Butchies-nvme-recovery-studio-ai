@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "eintraege": [
+    {
+      "hersteller": "Samsung / Dell OEM",
+      "modelle": [
+        "MZVLB1T0HBLR-000D1"
+      ],
+      "version": "15305129",
+      "art": "nvme-bild",
+      "datei": "Dell-PM981a-G4GWG-15305129.bin",
+      "sha256": "08156487302ee23413e2a6ceffc0ba1a94d9e881db55b407c0d81d79fa660db9",
+      "groesse": 1310720,
+      "quelle": "Dell G4GWG / MUP_PM981a_15305129.exe",
+      "hinweis": "Originalnutzlast aus Dell Windows-Paket; Linux NVMe Admin Firmware Download nur nach Modellprüfung und ausdrücklicher Freigabe. Kein Notmodus-Loader."
+    }
+  ]
+}

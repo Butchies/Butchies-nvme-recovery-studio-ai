@@ -168,10 +168,23 @@ inline QVariantMap importFolder(const QString &folder, const QVariantMap &forDev
     if(idx.open(QIODevice::ReadOnly)) {
         if(QDir(root).absolutePath()==QDir(dir()).absolutePath()) return {{"ok",true},{"message",QStringLiteral("Das ist bereits das eigene Archiv.")}};
         const auto foreign=QJsonDocument::fromJson(idx.readAll()).object().value("eintraege").toArray();
-        copyTree(root,dir(),false,copied);
         auto mine=load();
         QSet<QString> known; for(const auto &e:mine) known.insert(e.toObject().value("datei").toString());
-        for(const auto &e:foreign) if(!known.contains(e.toObject().value("datei").toString())) { mine.append(e); ++added; }
+        for(const auto &e:foreign) {
+            const auto meta=e.toObject();
+            const QString rel=meta.value("datei").toString();
+            const QString digest=meta.value("sha256").toString().toLower();
+            if(rel.isEmpty() || QDir::isAbsolutePath(rel) || rel.contains(QStringLiteral("..")) || digest.size()!=64) continue;
+            const QString source=QDir(root).filePath(rel), target=QDir(dir()).filePath(rel);
+            if(sha256(source)!=digest) continue;
+            if(sha256(target)!=digest) {
+                QDir().mkpath(QFileInfo(target).path());
+                QFile::remove(target);
+                if(!QFile::copy(source,target)) continue;
+                ++copied;
+            }
+            if(!known.contains(rel)) { mine.append(e); known.insert(rel); ++added; }
+        }
         save(mine);
         return {{"ok",true},{"message",QStringLiteral("Archiv übernommen: %1 neue Einträge, %2 Dateien kopiert.").arg(added).arg(copied)}};
     }
@@ -215,14 +228,22 @@ inline QString findStickData() {
 
 // Beim Start: Daten vom Stick übernehmen (fehlende Dateien, Wissen nur wenn noch keins da ist).
 inline QString seedFromStick() {
+    // Das schreibgeschützte ISO enthält ein kleines, verifiziertes OEM-Archiv.
+    // Dieses unabhängig von der optionalen NVMEDATEN-Partition übernehmen.
+    QString bundled;
+#ifndef Q_OS_WIN
+    const QString isoArchive=QStringLiteral("/run/live/medium/Firmware/PM981a");
+    if(QFile::exists(QDir(isoArchive).filePath(QStringLiteral("index.json"))))
+        bundled=importFolder(isoArchive).value("message").toString();
+#endif
     const QString root=findStickData();
-    if(root.isEmpty()) return {};
+    if(root.isEmpty()) return bundled;
     const QString base=QDir(root).filePath(QStringLiteral("nvme-recovery-studio"));
-    if(!QDir(base).exists()) return {};
+    if(!QDir(base).exists()) return bundled;
     int copied=0;
     copyTree(base,appDataDir(),false,copied);
     importFolder(QDir(base).filePath(QStringLiteral("firmware")));
-    return copied ? QStringLiteral("Vom Boot-Stick übernommen: %1 Dateien (Firmware-Archiv, Werkzeuge, KI-Wissen).").arg(copied) : QString();
+    return bundled+(copied ? QStringLiteral(" Vom Boot-Stick übernommen: %1 Dateien (Firmware-Archiv, Werkzeuge, KI-Wissen).").arg(copied) : QString());
 }
 
 // Samsung liefert Firmware als bootfähiges ISO. Die Linux-Edition packt es aus
