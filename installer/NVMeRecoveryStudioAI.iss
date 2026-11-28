@@ -34,6 +34,7 @@ Source: "..\linux-boot\out\nvme-recovery-studio-ai-linux.iso"; DestDir: "{app}\b
 Source: "..\linux-boot\out\nvme-recovery-studio-ai-linux.iso.sha256"; DestDir: "{app}\boot"; Flags: ignoreversion
 Source: "..\Firmware\PM981a\README.md"; DestDir: "{app}\Firmware\PM981a"; Flags: ignoreversion
 Source: "..\Firmware\PM981a\index.json"; DestDir: "{app}\Firmware\PM981a"; Flags: ignoreversion
+Source: "..\docs\UEBERGABE_LINUX_WINDOWS_2026-11-28.md"; DestDir: "{app}\Dokumentation"; Flags: ignoreversion
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
 Name: "{group}\{#MyAppName} deinstallieren"; Filename: "{uninstallexe}"

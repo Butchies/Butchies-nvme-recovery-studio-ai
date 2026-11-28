@@ -109,6 +109,7 @@ jobs:
             out/version.json
             linux-boot/out/nvme-recovery-studio-ai-linux.iso
             linux-boot/out/nvme-recovery-studio-ai-linux.iso.sha256
+            docs/UEBERGABE_LINUX_WINDOWS_2026-11-28.md
 
       - name: "[100 %] Release-Markierung auf aktuellen Stand setzen"
         shell: pwsh
