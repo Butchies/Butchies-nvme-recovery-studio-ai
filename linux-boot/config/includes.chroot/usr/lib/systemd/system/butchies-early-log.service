@@ -6,3 +6,5 @@ Before=sysinit.target
 [Service]
 Type=simple
 ExecStart=/bin/sh -c 'exec /usr/bin/journalctl -k -b -f -n all --no-pager -o short-monotonic > /run/butchies-early-kernel.log'
+[Install]
+WantedBy=sysinit.target

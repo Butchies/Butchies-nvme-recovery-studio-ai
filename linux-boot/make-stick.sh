@@ -14,18 +14,23 @@ read -r -p "ALLE Daten auf $DEV werden gelöscht. Zur Bestätigung STICK eingebe
 dd if="$ISO" of="$DEV" bs=4M conv=fsync oflag=direct status=progress
 sync; partprobe "$DEV"; sleep 2
 END=$(parted -sm "$DEV" unit MiB print | awk -F: 'NR>2{gsub("MiB","",$3); if($3>m)m=$3} END{print int(m)+1}')
+MB=4096
 if [ -n "$DATA" ] && [ -d "$DATA" ]; then
   MB=$(( $(du -sm "$DATA" | cut -f1) + 2048 )); [ "$MB" -ge 4096 ] || MB=4096
-  parted -s "$DEV" mkpart primary "${END}MiB" "$((END+MB))MiB"
-  partprobe "$DEV"; sleep 2
-  DPART="$(lsblk -lnpo NAME "$DEV" | tail -n1)"
-  mkfs.exfat -n NVMEDATEN "$DPART"
+fi
+TOTAL=$(parted -sm "$DEV" unit MiB print | awk -F: 'NR==2{gsub("MiB","",$2); print int($2)}')
+[ $((TOTAL-END-MB)) -ge 1024 ] || { echo "Stick zu klein: NVMEDATEN (${MB} MiB) und persistence (mindestens 1 GiB) passen nicht."; exit 1; }
+parted -s "$DEV" mkpart primary "${END}MiB" "$((END+MB))MiB"
+partprobe "$DEV"; sleep 2
+DPART="$(lsblk -lnpo NAME "$DEV" | tail -n1)"
+mkfs.exfat -n NVMEDATEN "$DPART"
+if [ -n "$DATA" ] && [ -d "$DATA" ]; then
   mkdir -p /tmp/nvmedaten && mount "$DPART" /tmp/nvmedaten
   echo "Kopiere Offline-Paket (Firmware-Archiv, Werkzeuge, KI-Wissen) …"
   rsync -r --info=progress2 --exclude boot/ "$DATA"/ /tmp/nvmedaten/nvme-recovery-studio/
   umount /tmp/nvmedaten
-  END=$((END+MB))
 fi
+END=$((END+MB))
 parted -s "$DEV" mkpart primary ext4 "${END}MiB" 100%
 partprobe "$DEV"; sleep 2
 PART="$(lsblk -lnpo NAME "$DEV" | tail -n1)"

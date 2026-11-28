@@ -9,6 +9,8 @@
 #include <QVariantList>
 #include <QVariantMap>
 #include <QFileInfo>
+#include <QFile>
+#include <QCryptographicHash>
 #include <QDir>
 #include <QStorageInfo>
 #include <QStandardPaths>
@@ -139,6 +141,21 @@ public:
     // GitHub releases (asset *.iso), progress in percent.
     Q_INVOKABLE void downloadBootImage() {
         if(m_stick.value("running").toBool()) return;
+#ifdef Q_OS_WIN
+        const QString bundled=QDir(QCoreApplication::applicationDirPath()).filePath(QStringLiteral("boot/nvme-recovery-studio-ai-linux.iso"));
+        QFile checksum(bundled+QStringLiteral(".sha256"));
+        if(QFileInfo::exists(bundled) && checksum.open(QIODevice::ReadOnly)) {
+            const QByteArray expected=checksum.readLine().left(64).toLower();
+            QFile image(bundled);
+            QCryptographicHash hash(QCryptographicHash::Sha256);
+            if(expected.size()==64 && image.open(QIODevice::ReadOnly) && hash.addData(&image) && hash.result().toHex()==expected) {
+                m_stick={{"running",false},{"percent",100},{"image",bundled},
+                         {"phase",QStringLiteral("Linux-Boot-Abbild aus dem Windows-Installer geprüft und bereit.")}};
+                emit stickChanged(); ai(m_stick.value("phase").toString()); return;
+            }
+            ai(QStringLiteral("Mitgeliefertes ISO hat eine falsche Prüfsumme; suche das veröffentlichte Abbild."));
+        }
+#endif
         m_stick={{"running",true},{"percent",0},{"phase",QStringLiteral("Suche neueste Linux-Boot-Edition …")}};
         emit stickChanged();
         QNetworkRequest req(QUrl(QStringLiteral("https://api.github.com/repos/Butchies/Butchies-nvme-recovery-studio-ai/releases/tags/aktuell")));
@@ -216,7 +233,12 @@ public:
             if(result.value("ok").toBool()) {
                 // Offline-Paket: Firmware-Archiv, Werkzeuge und KI-Wissen mit auf den Stick.
                 progress(99,QStringLiteral("Lege Datenpartition NVMEDATEN an und kopiere Firmware-Archiv, Werkzeuge und KI-Wissen …"));
-                result["dataMessage"]=StickWriter::addDataPartition(disk,FirmwareArchive::appDataDir()).value("message");
+                const auto data=StickWriter::addDataPartition(disk,FirmwareArchive::appDataDir());
+                result["dataMessage"]=data.value("message");
+                if(!data.value("ok").toBool()) {
+                    result["ok"]=false;
+                    result["message"]=QStringLiteral("ISO geschrieben, aber Bootreport-Partition NVMEDATEN fehlt. Stick ist nicht fertig vorbereitet.");
+                }
             }
             QMetaObject::invokeMethod(this,[this,result]{
                 if(m_stickWorker) { m_stickWorker->wait(); m_stickWorker->deleteLater(); m_stickWorker=nullptr; }

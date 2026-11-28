@@ -30,6 +30,10 @@ Name: "de"; MessagesFile: "compiler:Languages\German.isl"
 Name: "desktopicon"; Description: "Desktop-Verknüpfung erstellen"; GroupDescription: "Zusätzliche Aufgaben:"
 [Files]
 Source: "..\dist\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\linux-boot\out\nvme-recovery-studio-ai-linux.iso"; DestDir: "{app}\boot"; Flags: ignoreversion
+Source: "..\linux-boot\out\nvme-recovery-studio-ai-linux.iso.sha256"; DestDir: "{app}\boot"; Flags: ignoreversion
+Source: "..\Firmware\PM981a\README.md"; DestDir: "{app}\Firmware\PM981a"; Flags: ignoreversion
+Source: "..\Firmware\PM981a\index.json"; DestDir: "{app}\Firmware\PM981a"; Flags: ignoreversion
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
 Name: "{group}\{#MyAppName} deinstallieren"; Filename: "{uninstallexe}"

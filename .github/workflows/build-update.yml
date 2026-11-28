@@ -2,8 +2,7 @@ name: Build und Update (Windows + Linux-Boot-Stick)
 
 on:
   push:
-    branches: [main]
-    tags: ['v*']
+    branches: [main, linux-recovery-updates]
   workflow_dispatch:
 
 permissions:
@@ -12,8 +11,10 @@ permissions:
 jobs:
   windows:
     runs-on: windows-latest
+    needs: linux
     env:
       VER: 0.6.${{ github.run_number }}
+      REL_TAG: ${{ github.ref_name == 'main' && 'aktuell' || 'linux-preview' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -80,34 +81,44 @@ jobs:
           git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" bildschirmfotos
 
       - name: "[85 %] Installer bauen"
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-boot-iso
+          path: linux-boot/out
+
+      - name: "[86 %] ISO prüfen und Installer bauen"
         shell: pwsh
         run: |
+          $iso = 'linux-boot/out/nvme-recovery-studio-ai-linux.iso'
+          $expected = (Get-Content "$iso.sha256" -Raw).Split(' ')[0].Trim().ToLowerInvariant()
+          if ((Get-FileHash $iso -Algorithm SHA256).Hash.ToLowerInvariant() -ne $expected) { throw 'Linux-ISO-Prüfsumme stimmt nicht.' }
           & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DMyAppVersion=$env:VER" installer\NVMeRecoveryStudioAI.iss
           Get-ChildItem out\*.exe | Select-Object -First 1 | Rename-Item -NewName NVMeRecoveryStudioAI_Setup.exe
-          @{ version = $env:VER; setup = "https://github.com/${{ github.repository }}/releases/download/aktuell/NVMeRecoveryStudioAI_Setup.exe"; iso = "https://github.com/${{ github.repository }}/releases/download/aktuell/nvme-recovery-studio-ai-linux.iso" } | ConvertTo-Json | Set-Content -Encoding utf8NoBOM out\version.json
+          @{ version = $env:VER; setup = "https://github.com/${{ github.repository }}/releases/download/$env:REL_TAG/NVMeRecoveryStudioAI_Setup.exe"; iso = "https://github.com/${{ github.repository }}/releases/download/$env:REL_TAG/nvme-recovery-studio-ai-linux.iso" } | ConvertTo-Json | Set-Content -Encoding utf8NoBOM out\version.json
 
       - name: "[95 %] Update veröffentlichen (Release „aktuell“)"
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: aktuell
+          tag_name: ${{ env.REL_TAG }}
           name: NVMe Recovery Studio AI – aktuelle Version
           body: Wird vom eingebauten Updater automatisch geladen. Neu installieren ist nicht nötig.
           prerelease: false
-          make_latest: true
+          make_latest: ${{ github.ref_name == 'main' }}
           files: |
             out/NVMeRecoveryStudioAI_Setup.exe
             out/version.json
+            linux-boot/out/nvme-recovery-studio-ai-linux.iso
+            linux-boot/out/nvme-recovery-studio-ai-linux.iso.sha256
 
       - name: "[100 %] Release-Markierung auf aktuellen Stand setzen"
         shell: pwsh
         run: |
-          git tag -f aktuell
-          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" aktuell
+          git tag -f "$env:REL_TAG"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" "$env:REL_TAG"
 
   linux:
     runs-on: ubuntu-latest
     timeout-minutes: 90
-    needs: windows
     env:
       VER: 0.6.${{ github.run_number }}
     steps:
@@ -138,16 +149,19 @@ jobs:
           sudo apt-get install -y -qq squashfs-tools >/dev/null
           mkdir -p iso && sudo mount -o loop,ro linux-boot/out/nvme-recovery-studio-ai-linux.iso iso
           unsquashfs -l iso/live/filesystem.squashfs > inhalt.txt
-          sudo umount iso
           grep -E 'opt/nvme-recovery-studio/bin/nvme-recovery-studio$' inhalt.txt || { echo "Programm fehlt im Abbild"; grep -iE '^E:|error' linux-boot/out/build.log | tail -40; exit 1; }
           grep -E 'mnt-nvmedaten.mount|nvme-recovery-kiosk.service' inhalt.txt | head
+          grep -E 'timers.target.wants/butchies-bootreport.timer$' inhalt.txt || { echo "Bootreport-Timer fehlt im Abbild"; exit 1; }
+          test -f iso/Firmware/PM981a/Dell-PM981a-G4GWG-15305129.bin || { echo "Linux-Firmwaredatei fehlt im Abbild"; exit 1; }
+          echo '08156487302ee23413e2a6ceffc0ba1a94d9e881db55b407c0d81d79fa660db9  iso/Firmware/PM981a/Dell-PM981a-G4GWG-15305129.bin' | sha256sum --check
+          sudo umount iso
           grep -E 'usr/sbin/nvme$|usr/sbin/smartctl$|usr/bin/fwupdtool$|openSeaChest_Firmware' inhalt.txt | head
 
-      - name: "[95 %] Boot-Abbild veröffentlichen (Release „aktuell“)"
-        uses: softprops/action-gh-release@v2
+      - name: "[95 %] Geprüftes Boot-Abbild für Windows-Installer bereitstellen"
+        uses: actions/upload-artifact@v4
         with:
-          tag_name: aktuell
-          prerelease: false
-          files: |
+          name: linux-boot-iso
+          path: |
             linux-boot/out/nvme-recovery-studio-ai-linux.iso
             linux-boot/out/nvme-recovery-studio-ai-linux.iso.sha256
+          if-no-files-found: error

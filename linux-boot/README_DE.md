@@ -23,6 +23,24 @@ sudo ./linux-boot/build.sh        # Fortschritt in Prozent; Ergebnis: linux-boot
 
 **Starten**: Rechner vom Stick booten (Boot-Menü, meist F8/F11/F12). Secure Boot: Debian-Bootloader ist signiert; bei Problemen Secure Boot vorübergehend deaktivieren.
 
+**Bootreport für die Fehlersuche:** Ab 8 Sekunden nach dem Boot und danach alle
+2 Minuten werden PCI/USB-Geräte, Treiberbindungen, fehlende Kernel-Firmware,
+NVMe-Erkennung, WLAN/LAN, Startwarnungen und Kiosk-Logs gesammelt. Die Datei
+liegt auf der Windows-lesbaren Partition `NVMEDATEN` unter
+`Bootreports/Bootreport-<Boot-ID>.txt`. Ein fehlgeschlagenes Anlegen dieser
+Partition wird im Windows-Stick-Ersteller als Fehler angezeigt. Der Linux-Stick-
+Ersteller legt `NVMEDATEN` auch ohne zusätzlichen Datenordner an. Wird die
+Partition nicht eingebunden, liegt der Bericht im gestarteten System unter
+`/root/Butchies-Recovery/Bootreports/`; mit einem separaten USB-Stick mit
+exFAT/FAT32 und dem Label `BOOTREPORT` kann `sudo butchies-hardware capture`
+ihn dorthin kopieren. Ein bereits geschriebener alter Stick erhält diese
+Änderungen erst durch erneutes Schreiben des neuen ISO (dabei werden seine
+Daten gelöscht).
+
+Der Windows-Installer enthält dasselbe geprüfte Linux-ISO samt Linux-Werkzeugen
+und Firmwarearchiv im Unterordner `boot`. „Neueste laden“ prüft zuerst dieses
+lokale ISO per SHA-256; bei gültiger Prüfsumme ist kein Download nötig.
+
 **Aufbau**
 | Datei | Zweck |
 |---|---|
