@@ -13,7 +13,7 @@ Startet von einem USB-Stick (UEFI und BIOS) direkt in NVMe Recovery Studio AI im
 
 **Abbild bauen** (Debian 13, Root, Internet):
 ```
-sudo apt install live-build rsync p7zip-full
+sudo apt install live-build rsync p7zip-full python3
 sudo ./linux-boot/build.sh        # Fortschritt in Prozent; Ergebnis: linux-boot/out/*.iso
 ```
 

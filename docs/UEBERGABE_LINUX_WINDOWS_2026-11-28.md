@@ -53,7 +53,10 @@ allein aus diesem Text abgeleitet werden.
   Stick-Skripte, Python-Syntaxprüfung für `butchies-hardware`, YAML-Struktur.
 - Erster Release-Lauf `46134175193` scheiterte bereits an einem fehlenden
   Ausführungsrecht von `linux-boot/build.sh`. Das Recht ist im Folgecommit
-  korrigiert; den jeweiligen Folgelauf und seine Artefakte separat prüfen.
+  korrigiert. Folgelauf `46134427019` verifizierte bereits beide Dell-Pakete
+  samt innerer MUP-Datei, stoppte aber wegen fehlendem `python3` im
+  Docker-Buildcontainer; die Paketliste wurde ergänzt. Den jeweils neuesten
+  Folgelauf und seine Artefakte separat prüfen.
 - Es gibt aus dieser Änderung noch **keinen bestätigten USB-Start auf dem
   Nutzergerät** und keine erfolgreiche Flashprobe. Ein altes ISO/alter Stick
   bekommt die neuen Reports nicht rückwirkend; er muss mit einem
